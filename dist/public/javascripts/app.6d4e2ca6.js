@@ -1,1 +1,0 @@
-console.debug("empty main.js"),console.debug("in error.js");
