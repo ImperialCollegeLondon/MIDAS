@@ -1,4 +1,6 @@
 
+@import "flatly/variables";
+
 /* Move down content because we have a fixed navbar that is 50px tall */
 body {
   padding-top: 60px;
@@ -9,10 +11,18 @@ body {
   font-size: 20em;
 }
 
+.jumbotron {
+  padding: 50px 0 0 0;
+}
+
+.content {
+  margin-bottom: 20px;
+}
+
 .db-logo {
-  background: url(../images/cpmv-300x300.png) no-repeat right top;
-  height: 300px;
-  margin-top: 20px;
+  background: url(../images/cpmv-320x380.png) no-repeat center top;
+  height: 365px;
+  margin-top: 10px;
 }
 
 .partners {
@@ -28,4 +38,26 @@ body {
 .wtsi-cam { background-image: url(../images/logos/wtsi-cam-300x50.png) }
 .ucl      { background-image: url(../images/logos/ucl-logo-150x45.png) }
 .ox       { background-image: url(../images/logos/oxford-150x46.png) }
+
+footer {
+  background: $gray-lighter;
+  color: lighten($brand-primary, 20%);
+  font-size: smaller;
+}
+
+footer ul {
+  list-style: none outside none;
+  margin: 1em 0;
+  padding: 0;
+}
+
+footer li {
+  list-style: none outside none;
+  display: inline-block;
+  margin-left: 2em;
+}
+
+footer li.cr {
+  margin-left: 0;
+}
 

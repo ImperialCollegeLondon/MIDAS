@@ -1,5 +1,5 @@
 
-<div class="jumbotron">
+<section class="jumbotron">
   <div class="container">
     <div class="row">
       <div class="col-md-4 db-logo">
@@ -7,16 +7,17 @@
       <div class="col-md-8">
         <h1>HICF</h1>
         <p>
-          Working to provide tools for the rapid comparison of bacteria and
-          virus genomes in diagnostic and public health laboratories.
+          Working to provide tools for the rapid comparison of <br>
+          bacteria and virus genomes for diagnostic and public <br>
+          health laboratories.
         </p>
         <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p>
       </div>
     </div>
   </div>
-</div>
+</section>
 
-<div class="container">
+<section class="container content">
   <div class="row">
     <div class="col-md-1"></div>
     <div class="col-md-10">
@@ -48,6 +49,5 @@
       </p>
     </div>
   </div>
-
-<hr>
+</section>
 

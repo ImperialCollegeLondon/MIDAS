@@ -1,7 +1,11 @@
 
 <footer>
   <div class="container">
-    <p>&copy; Company 2014</p>
+    <ul>
+      <li class="cr">&copy; Company 2014</li>
+      <li><a href="#">Privacy policy</a></li>
+      <li><a href="#">Cookie policy</a></li>
+    </ul>
   </div>
 </footer>
 

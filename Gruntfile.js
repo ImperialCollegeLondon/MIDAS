@@ -162,7 +162,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: '<%= config.app %>/public/styles',
-          src: ['*.{scss,sass}'],
+          src: ['**/*.{scss,sass}'],
           dest: '.tmp/styles',
           ext: '.css'
         }]
@@ -171,7 +171,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: '<%= config.app %>/public/styles',
-          src: ['*.{scss,sass}'],
+          src: ['**/*.{scss,sass}'],
           dest: '.tmp/styles',
           ext: '.css'
         }]
@@ -200,7 +200,7 @@ module.exports = function (grunt) {
         src: ['<%= config.app %>/views/layouts/main.tt']
       },
       sass: {
-        src: ['<%= config.app %>/public/styles/{,*/}*.{scss,sass}'],
+        src: ['<%= config.app %>/public/styles/**/*.{scss,sass}'],
         ignorePath: /(\.\.\/){1,2}bower_components\//
       }
     },
@@ -340,7 +340,7 @@ module.exports = function (grunt) {
         expand: true,
         dot: true,
         cwd: '<%= config.app %>/public/styles',
-        src: '{,*/}*.css',
+        src: '**/*.css',
         dest: '.tmp/styles/'
       }
     },
@@ -384,7 +384,7 @@ module.exports = function (grunt) {
         files: ['Gruntfile.js']
       },
       sass: {
-        files: ['<%= config.app %>/public/styles/{,*/}*.{scss,sass}'],
+        files: ['<%= config.app %>/public/styles/**/*.{scss,sass}'],
         tasks: [
           'clean:dist',
           'sass:dist',
