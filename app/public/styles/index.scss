@@ -1,15 +1,9 @@
+// index.scss
+// jt6 20141118 WTSI
+//
+// rules for the index page
 
 @import "flatly/variables";
-
-/* Move down content because we have a fixed navbar that is 50px tall */
-body {
-  padding-top: 60px;
-  padding-bottom: 20px;
-}
-
-.fa-1 {
-  font-size: 20em;
-}
 
 .jumbotron {
   padding: 50px 0 0 0;
@@ -39,25 +33,4 @@ body {
 .ucl      { background-image: url(../images/logos/ucl-logo-150x45.png) }
 .ox       { background-image: url(../images/logos/oxford-150x46.png) }
 
-footer {
-  background: $gray-lighter;
-  color: lighten($brand-primary, 20%);
-  font-size: smaller;
-}
-
-footer ul {
-  list-style: none outside none;
-  margin: 1em 0;
-  padding: 0;
-}
-
-footer li {
-  list-style: none outside none;
-  display: inline-block;
-  margin-left: 2em;
-}
-
-footer li.cr {
-  margin-left: 0;
-}
 

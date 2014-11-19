@@ -1,0 +1,74 @@
+
+// site.scss
+// jt6 20111418 WTSI
+//
+// rules that are applicable to the whole site
+
+@import "flatly/variables";
+
+body {
+  // if we're using a navbar, we need to move the content down to leave room for it
+  // padding-top: 60px;
+  padding-bottom: 20px;
+}
+
+$link-color: rgba(22, 134, 186, 1);
+
+a {
+  color: $link-color; // rgba(53, 115, 177, 1);
+
+  &:hover, &:focus {
+    color: darken($link-color, 20%);
+  }
+
+  // add a FA icon to a link to denote a URL for an external site
+  $icon-font-size: 0.6em;
+
+  &.ext {
+    position: relative;
+    padding-right: $icon-font-size;
+
+    &:before {
+      position: absolute;
+      font-family: FontAwesome;
+      vertical-align: super;
+      font-size: $icon-font-size;
+      right: 0;
+      content: "\f08e";
+    }
+  }
+}
+
+footer {
+  background: $gray-lighter;
+  color: lighten($brand-primary, 20%);
+  font-size: smaller;
+
+  ul {
+    list-style: none outside none;
+    margin: 1em 0;
+    padding: 0;
+  }
+
+  li {
+    list-style: none outside none;
+    display: inline-block;
+    margin-left: 2em;
+  }
+
+  p {
+    margin: 10px 0;;
+  }
+
+  a.wt-link {
+    background: url(../images/supported-by-wt-113x30.png) no-repeat left bottom;
+    height: 30px;
+    width: 113px;
+    display: block;
+  }
+
+  button.sign-in {
+    float: right;
+  }
+}
+

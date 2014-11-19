@@ -18,7 +18,8 @@
 
     <!-- app CSS -->
     <!-- build:css({app/public,.tmp}) styles/app.css -->
-    <link href="styles/main.css" rel="stylesheet">
+    <link href="styles/site.css" rel="stylesheet">
+    <link href="styles/index.css" rel="stylesheet">
     <!-- endbuild -->
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -29,16 +30,16 @@
     <![endif]-->
   </head>
 
-  <body>
+  <body data-controller="[% controller %]" data-action="[% action %]">
 
-    [% PROCESS layouts/navbar.tt %]
+    [%# we don't want the navbar now, but we might later
+    PROCESS layouts/navbar.tt %]
 
     <main>
       [% content %]
     </main>
 
     [% PROCESS layouts/footer.tt %]
-
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
     <script>
@@ -50,12 +51,13 @@
       ga('create','UA-XXXXX-X');ga('send','pageview');
     </script>
 
-    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
 
     <!-- build:js({app/public,.tmp}) javascripts/app.js -->
-    <script src="javascripts/main.js"></script>
-    <script src="javascripts/error.js"></script>
+    <script src="javascripts/namespace.js"></script>
+    <script src="javascripts/util.js"></script>
+    <script src="javascripts/index.js"></script>
     <!-- endbuild -->
 
   </body>

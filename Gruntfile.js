@@ -1,6 +1,5 @@
 // Generated on 2014-11-11 using
 // generator-webapp 0.5.1
-'use strict';
 
 // # Globbing
 // for performance reasons we're only matching one level down:
@@ -8,7 +7,10 @@
 // If you want to recursively match all subfolders, use:
 // 'test/spec/**/*.js'
 
+/*global require, module*/
+
 module.exports = function (grunt) {
+  'use strict';
 
   // Time how long tasks take. Can help when optimizing build times
   require('time-grunt')(grunt);
@@ -130,18 +132,17 @@ module.exports = function (grunt) {
     },
 
     // Make sure code styles are up to par and there are no obvious mistakes
-    // jshint: {
-    //   options: {
-    //     jshintrc: '.jshintrc',
-    //     reporter: require('jshint-stylish')
-    //   },
-    //   all: [
-    //     'Gruntfile.js',
-    //     '<%= config.app %>/public/javascripts/{,*/}*.js',
-    //     '!<%= config.app %>/public/javascripts/vendor/*',
-    //     'test/spec/{,*/}*.js'
-    //   ]
-    // },
+    jshint: {
+      options: {
+        jshintrc: '.jshintrc',
+        reporter: require('jshint-stylish-ex')
+      },
+      all: [
+        'Gruntfile.js',
+        '<%= config.app %>/public/javascripts/**/*.js',
+        'test/spec/{,*/}*.js'
+      ]
+    },
 
     // Mocha testing framework configuration options
     // mocha: {
@@ -380,6 +381,14 @@ module.exports = function (grunt) {
     },
 
     watch: {
+      js: {
+        files: ['<%= config.app %>/public/javascripts/**/*.js'],
+        tasks: ['jshint']
+      },
+      // jstest: {
+      //   files: ['test/spec/{,*/}*.js'],
+      //   tasks: ['test:watch']
+      // },
       gruntfile: {
         files: ['Gruntfile.js']
       },
@@ -460,6 +469,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('build', [
     'clean:dist',
+    'jshint',
     'sass:dist',
     'useminPrepare',
     'concat:generated',

@@ -22,7 +22,7 @@
     <div class="col-md-1"></div>
     <div class="col-md-10">
       <p>
-        This consortium aims to work together to develop a technological
+        This <a class="ext" href="#">consortium</a> aims to work together to develop a technological
         solution based on the comparison of bacteria and viruses by comparing
         the sequence of their entire genome. We aim to make this as
         straightforward as possible to perform, so that the technology can be
