@@ -1,0 +1,56 @@
+
+<section class="jumbotron">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4 db-logo">
+      </div>
+      <div class="col-md-8">
+        <h1>HICF</h1>
+        <p>
+          Working to provide tools for the rapid comparison of <br>
+          bacteria and virus genomes for diagnostic and public <br>
+          health laboratories.
+        </p>
+        <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container">
+  <div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+      <p>
+        This consortium aims to work together to develop a technological
+        solution based on the comparison of bacteria and viruses by comparing
+        the sequence of their entire genome. We aim to make this as
+        straightforward as possible to perform, so that the technology can be
+        introduced into diagnostic and public health laboratories across the
+        UK, where it will provide information in real time on bacterial and
+        viral spread and outbreaks in hospitals and the community.
+      </p>
+      <!--
+      <p><a href="[% request.uri_for('/contact') %]">Contact us</a></p>
+      -->
+    </div>
+  </div>
+  <div class="row partners">
+    <div class="col-md-4 partner-info wtsi-cam">
+      <p>
+        Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
+      </p>
+    </div>
+    <div class="col-md-4 partner-info ucl">
+      <p>
+        Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
+      </p>
+   </div>
+    <div class="col-md-4 partner-info ox">
+      <p>
+        Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.
+      </p>
+    </div>
+  </div>
+</section>
+
