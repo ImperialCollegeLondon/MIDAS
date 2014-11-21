@@ -5,7 +5,7 @@
       <button id="signInButton"
               type="button"
               class="sign-in btn btn-primary btn-sm"
-              data-signed-in-text="Signed in"
+              data-signedin-text="Signed in"
               data-toggle="modal"
               data-target="#signInModal">
         Sign in
@@ -18,13 +18,16 @@
       <a href="http://www.sanger.ac.uk/legal/cookiespolicy.html">
         cookie policy</a> and
       <a href="http://www.sanger.ac.uk/legal/">
-        terms & conditions</a>
+        terms & conditions</a>&nbsp;&middot;&nbsp;
+      <a href="[% request.uri_for('/contact') %]">Contact us</a>
       <br>
+      [%- IF vars.controller == "index" %]
       <small>
         Virus <a href="http://commons.wikimedia.org/wiki/File:CowpeaMosaicVirus3D.png">image</a>
         by <a href="http://commons.wikimedia.org/wiki/User:Splette">Thomas Splettstoesser</a>
         / <a href="http://creativecommons.org/licenses/by-sa/3.0/deed.en">CC BY-SA 3.0</a>
       </small>
+      [%- END %]
     </p>
     <p><a class="wt-link" href="http://www.wellcome.ac.uk/"></a></p>
   </div>
@@ -35,6 +38,10 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+          <span class="sr-only">Close</span>
+        </button>
         <h2 class="modal-title" id="signInModalLabel">Sign in</h2>
         <form role="form">
           <div class="form-group">

@@ -10,7 +10,7 @@
 }
 
 .content {
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 
 .db-logo {
@@ -20,17 +20,21 @@
 }
 
 .partners {
-  margin-top: 30px;
+  margin: 30px 0;
 }
 
 .partner-info {
   background-repeat: no-repeat;
   background-position: center top;
+  border-left: 1px solid $gray-lighter;
   padding-top: 60px;
+}
+
+.partner-info:first-child {
+  border: none;
 }
 
 .wtsi-cam { background-image: url(../images/logos/wtsi-cam-300x50.png) }
 .ucl      { background-image: url(../images/logos/ucl-logo-150x45.png) }
 .ox       { background-image: url(../images/logos/oxford-150x46.png) }
-
 

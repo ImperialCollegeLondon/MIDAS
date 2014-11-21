@@ -31,7 +31,7 @@ var indexPage = (function() {
       $("#signInSubmitButton").on( "click", function() {
         console.debug( "CLICKED sign in submission button" );
         $("#signInModal").modal("hide");
-        $("#signInButton").button("signed-in")
+        $("#signInButton").button("signedin")
                           .prop("disabled", true );
       } );
     }
