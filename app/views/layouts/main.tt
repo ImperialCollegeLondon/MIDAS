@@ -58,7 +58,6 @@
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
 
     <!-- build:js({app/public,.tmp}) javascripts/app.js -->
-    <script src="javascripts/namespace.js"></script>
     <script src="javascripts/util.js"></script>
     <script src="javascripts/index.js"></script>
     <!-- endbuild -->
