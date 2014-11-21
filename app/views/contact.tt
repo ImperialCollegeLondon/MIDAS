@@ -1,0 +1,46 @@
+
+<section class="container">
+
+  <ol class="breadcrumb">
+    <li><a href="[% request.uri_for('/') %]">Home</a></li>
+    <li class="active">Contact us</li>
+  </ol>
+
+  <h1>Contact us</h1>
+
+  <div class="row partners">
+    <div class="col-md-4 partner-info wtsi-cam">
+      <address>
+        <strong>Wellcome Trust Sanger Institute</strong><br>
+        Wellcome Trust Genome Campus<br>
+        Hinxton<br>
+        Cambridge<br>
+        CB10 1SA<br>
+        UK<br>
+        <abbr title="Phone">P:</abbr> (123) 456-7890
+      </address>
+    </div>
+    <div class="col-md-4 partner-info ucl">
+      <address>
+        <strong>University College London</strong><br>
+        Gower Street<br>
+        London<br>
+        WC1E 6BT<br>
+        UK<br>
+        <abbr title="Phone">P:</abbr> (123) 456-7890
+      </address>
+    </div>
+    <div class="col-md-4 partner-info ox">
+      <address>
+        <strong>University of Oxford</strong><br>
+        University Offices<br>
+        Wellington Square<br>
+        Oxford<br>
+        OX1 2JD<br>
+        UK<br>
+        <abbr title="Phone">P:</abbr> (123) 456-7890
+      </address>
+    </div>
+  </div>
+</section>
+
