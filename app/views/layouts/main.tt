@@ -8,10 +8,11 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>hicf</title>
+    <title>HICF[% ' &middot; ' _ title IF title.defined %]</title>
 
-    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
-    <link rel="icon" href="/favicon.ico">
+    [% # the code to sort out favicons for all for various devices is a mess.
+       # We'll hide it away somewhere...
+    PROCESS favicon.tt %]
 
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.0/flatly/bootstrap.min.css" rel="stylesheet">
@@ -20,6 +21,7 @@
     <!-- build:css({app/public,.tmp}) styles/app.css -->
     <link href="styles/site.css" rel="stylesheet">
     <link href="styles/index.css" rel="stylesheet">
+    <link href="styles/contact-us.css" rel="stylesheet">
     <!-- endbuild -->
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -30,7 +32,8 @@
     <![endif]-->
   </head>
 
-  <body data-controller="[% controller %]" data-action="[% action %]">
+  <body[% ' data-controller="' _ vars.controller _ '"' IF vars.controller;
+          ' data-action="'     _ vars.action     _ '"' IF vars.action %]>
 
     [%# we don't want the navbar now, but we might later
     PROCESS layouts/navbar.tt %]
