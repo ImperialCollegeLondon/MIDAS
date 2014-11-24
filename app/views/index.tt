@@ -1,3 +1,4 @@
+[%- contactUsURI = request.uri_for("/contact") %]
 
 <section class="jumbotron">
   <div class="container">
@@ -11,7 +12,7 @@
           bacteria and virus genomes for diagnostic and public <br>
           health laboratories.
         </p>
-        <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p>
+        <p><a class="btn btn-primary btn-lg" href="[% contactUsURI %]" role="button">Contact us &raquo;</a></p>
       </div>
     </div>
   </div>
@@ -31,7 +32,7 @@
         viral spread and outbreaks in hospitals and the community.
       </p>
       <!--
-      <p><a href="[% request.uri_for('/contact') %]">Contact us</a></p>
+      <p><a href="[% contactUsURI %]">Contact us</a></p>
       -->
     </div>
   </div>
