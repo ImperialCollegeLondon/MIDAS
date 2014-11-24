@@ -20,7 +20,7 @@ WriteMakefile(
         'Test::More'        => 0,
         'Config::General'   => 0,
         'Dancer2'           => 0.153002,
-        'Template::Toolkit' => 0,
+        'Template'          => 0,
         'Plack'             => 0,
         'Starman'           => 0,
     },
