@@ -9,7 +9,7 @@
       </button>
       <a class="navbar-brand" href="[% request.uri_for('/') %]">HICF</a>
     </div>
-      [% IF breadcrumbs.size > 0 %]
+      [% IF breadcrumbs.defined AND breadcrumbs.size > 0 %]
       <ol class="inline-list breadcrumb">
         <li><a href="[% request.uri_for('/') %]">Home</a></li>
         [% lastCrumb = breadcrumbs.pop;
