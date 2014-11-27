@@ -30,50 +30,6 @@ module.exports = function (grunt) {
     // Project settings
     config: config,
 
-    // Watches files for changes and runs tasks based on the changed files
-    // watch: {
-    //   // bower: {
-    //   //   files: ['bower.json'],
-    //   //   tasks: ['wiredep']
-    //   // },
-    //   // js: {
-    //   //   files: ['<%= config.app %>/public/javascripts/{,*/}*.js'],
-    //   //   tasks: ['jshint'],
-    //   //   options: {
-    //   //     livereload: true
-    //   //   }
-    //   // },
-    //   // jstest: {
-    //   //   files: ['test/spec/{,*/}*.js'],
-    //   //   tasks: ['test:watch']
-    //   // },
-    //   gruntfile: {
-    //     files: ['Gruntfile.js']
-    //   },
-    //   sass: {
-    //     files: ['<%= config.app %>/public/styles/{,*/}*.{scss,sass}'],
-    //     tasks: ['sass:server', 'autoprefixer']
-    //   },
-    //   styles: {
-    //     files: ['<%= config.app %>/public/styles/{,*/}*.css'],
-    //     tasks: ['newer:copy:styles', 'autoprefixer']
-    //   },
-    //   templates: {
-    //     files: [ '<%= config.app %>/views/**/*.tt' ],
-    //     tasks: [ 'newer:copy:dist' ]
-    //   }
-    //   // livereload: {
-    //   //   options: {
-    //   //     livereload: '<%= connect.options.livereload %>'
-    //   //   },
-    //   //   files: [
-    //   //     '<%= config.app %>/views/{,*/}*.tt',
-    //   //     '.tmp/styles/{,*/}*.css',
-    //   //     '<%= config.app %>/public/images/{,*/}*'
-    //   //   ]
-    //   // }
-    // },
-
     // The actual grunt server settings
     // connect: {
     //   options: {
@@ -153,58 +109,6 @@ module.exports = function (grunt) {
     //     }
     //   }
     // },
-
-    // Compiles Sass to CSS and generates necessary files if requested
-    sass: {
-      options: {
-        loadPath: 'bower_components'
-      },
-      dist: {
-        files: [{
-          expand: true,
-          cwd: '<%= config.app %>/public/styles',
-          src: ['**/*.{scss,sass}'],
-          dest: '.tmp/styles',
-          ext: '.css'
-        }]
-      },
-      server: {
-        files: [{
-          expand: true,
-          cwd: '<%= config.app %>/public/styles',
-          src: ['**/*.{scss,sass}'],
-          dest: '.tmp/styles',
-          ext: '.css'
-        }]
-      }
-    },
-
-    // Add vendor prefixed styles
-    autoprefixer: {
-      options: {
-        browsers: ['> 1%', 'last 2 versions', 'Firefox ESR', 'Opera 12.1']
-      },
-      dist: {
-        files: [{
-          expand: true,
-          cwd: '.tmp/styles/',
-          src: '{,*/}*.css',
-          dest: '.tmp/styles/'
-        }]
-      }
-    },
-
-    // Automatically inject Bower components into the HTML file
-    wiredep: {
-      app: {
-        ignorePath: /^\/|\.\.\//,
-        src: ['<%= config.app %>/views/layouts/main.tt']
-      },
-      sass: {
-        src: ['<%= config.app %>/public/styles/**/*.{scss,sass}'],
-        ignorePath: /(\.\.\/){1,2}bower_components\//
-      }
-    },
 
     // Renames files for browser caching purposes
     filerev: {
@@ -321,7 +225,6 @@ module.exports = function (grunt) {
             expand: true,
             dot: true,
             cwd: '<%= config.app %>',
-            dest: '<%= config.dist %>',
             src: [
               'bin/*',
               'lib/*',
@@ -329,11 +232,13 @@ module.exports = function (grunt) {
               '**/*.conf',
               'public/*.{ico,png,txt}',
               'public/images/**',
-              '!**/.*.sw?'
+              '!**/.*.sw?',
+              'styles/fonts/**/*.*'
               // 'images/{,*/}*.webp',
               // '{,*/}*.html',
               // 'styles/fonts/{,*/}*.*'
-            ]
+            ],
+            dest: '<%= config.dist %>'
           }
         ]
       },
@@ -348,20 +253,20 @@ module.exports = function (grunt) {
 
     // Generates a custom Modernizr build that includes only the tests you
     // reference in your app
-    modernizr: {
-      dist: {
-        devFile: 'bower_components/modernizr/modernizr.js',
-        outputFile: '<%= config.dist %>/public/javascripts/vendor/modernizr.js',
-        files: {
-          src: [
-            '<%= config.dist %>/public/javascripts/{,*/}*.js',
-            '<%= config.dist %>/public/styles/{,*/}*.css',
-            '!<%= config.dist %>/public/javascripts/vendor/*'
-          ]
-        },
-        uglify: true
-      }
-    },
+    // modernizr: {
+    //   dist: {
+    //     devFile: 'bower_components/modernizr/modernizr.js',
+    //     outputFile: '<%= config.dist %>/public/javascripts/vendor/modernizr.js',
+    //     files: {
+    //       src: [
+    //         '<%= config.dist %>/public/javascripts/{,*/}*.js',
+    //         '<%= config.dist %>/public/styles/{,*/}*.css',
+    //         '!<%= config.dist %>/public/javascripts/vendor/*'
+    //       ]
+    //     },
+    //     uglify: true
+    //   }
+    // },
 
     // Run some tasks in parallel to speed up build process
     concurrent: {
@@ -380,6 +285,43 @@ module.exports = function (grunt) {
         // 'svgmin'
     },
 
+    // Compiles Sass to CSS and generates necessary files if requested
+    sass: {
+      dist: {
+        files: [{
+          expand: true,
+          cwd: '<%= config.app %>/public/styles',
+          src: ['**/*.{scss,sass}'],
+          dest: '.tmp/styles',
+          ext: '.css'
+        }]
+      },
+      server: {
+        files: [{
+          expand: true,
+          cwd: '<%= config.app %>/public/styles',
+          src: ['**/*.{scss,sass}'],
+          dest: '.tmp/styles',
+          ext: '.css'
+        }]
+      }
+    },
+
+    // Add vendor prefixed styles
+    autoprefixer: {
+      options: {
+        browsers: ['> 1%', 'last 2 versions', 'Firefox ESR', 'Opera 12.1']
+      },
+      dist: {
+        files: [{
+          expand: true,
+          cwd: '.tmp/styles/',
+          src: '**/*.css',
+          dest: '.tmp/styles/'
+        }]
+      }
+    },
+
     watch: {
       js: {
         files: ['<%= config.app %>/public/javascripts/**/*.js'],
@@ -394,20 +336,10 @@ module.exports = function (grunt) {
       },
       sass: {
         files: ['<%= config.app %>/public/styles/**/*.{scss,sass}'],
-        tasks: [
-          'clean:dist',
-          'sass:dist',
-          'useminPrepare',
-          'concat:generated',
-          'cssmin:generated',
-          'uglify:generated',
-          'copy:dist',
-          'filerev',
-          'usemin',
-        ]
+        tasks: [ 'sass:server', 'autoprefixer' ]
       },
       styles: {
-        files: ['<%= config.app %>/public/styles/{,*/}*.css'],
+        files: ['<%= config.app %>/public/styles/**/*.css'],
         tasks: ['newer:copy:styles', 'autoprefixer']
       },
       templates: {
@@ -467,18 +399,33 @@ module.exports = function (grunt) {
   //   ]);
   // });
 
-  grunt.registerTask('build', [
-    'clean:dist',
-    'jshint',
-    'sass:dist',
-    'useminPrepare',
-    'concat:generated',
-    'cssmin:generated',
-    'uglify:generated',
-    'copy:dist',
-    'filerev',
-    'usemin'
-  ]);
+  // grunt.registerTask('build', [
+  //   'clean:dist',
+  //   'jshint',
+  //   'sass:dist',
+  //   'useminPrepare',
+  //   'concat:generated',
+  //   'cssmin:generated',
+  //   'uglify:generated',
+  //   'copy:dist',
+  //   'filerev',
+  //   'usemin'
+  // ]);
+
+  // lastest working version
+  // grunt.registertask('build', [
+  //   'clean:dist',
+  //   'jshint',
+  //   'sass:dist',
+  //   'useminPrepare',
+  //   'concat:generated',
+  //   'cssmin:generated',
+  //   'uglify:generated',
+  //   'copy:dist',
+  //   'filerev',
+  //   'usemin'
+  // ]);
+
   // grunt.registerTask('build', [
   //   'clean:dist',
   //   'wiredep',
