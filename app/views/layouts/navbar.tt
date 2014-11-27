@@ -2,17 +2,57 @@
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
         <span class="sr-only">Toggle navigation</span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">HICF</a>
+      <a class="navbar-brand" href="[% request.uri_for('/') %]">HICF</a>
     </div>
+      [% IF breadcrumbs.size > 0 %]
+      <ol class="inline-list breadcrumb">
+        <li><a href="[% request.uri_for('/') %]">Home</a></li>
+        [% lastCrumb = breadcrumbs.pop;
+        FOREACH crumb IN breadcrumbs %]
+        <li><a href="[% request.uri_for( crumb.uri ) %]">[% crumb.label %]</a></li>
+        [% END # of FOREACH %]
+        <li class="active">[% lastCrumb %]</li>
+      </ol>
+      [% END # of IF %]
     <div id="navbar" class="navbar-collapse collapse">
-      <button type="button" class="btn btn-default btn-sm navbar-btn navbar-right" disabled="disabled">Sign in</button>
+      <button id="signInButton"
+              type="button"
+              class="btn btn-default btn-sm navbar-btn navbar-right"
+              data-signedin-text="Signed in"
+              data-toggle="modal"
+              data-target="#signInModal">Sign in</button>
     </div>
   </div>
 </nav>
+
+<!-- modal -->
+<div class="modal" id="signInModal" tabindex="-1" role="dialog" aria-labelledby="signInModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">&times;</span>
+          <span class="sr-only">Close</span>
+        </button>
+        <h2 class="modal-title" id="signInModalLabel">Sign in</h2>
+        <form role="form">
+          <div class="form-group">
+            <input type="text" class="form-control" id="signInUsername" placeholder="Enter username">
+          </div>
+          <div class="form-group">
+            <input type="password" class="form-control" id="signInPassword" placeholder="Password">
+          </div>
+          <button type="button" class="btn btn-success" id="signInSubmitButton">Sign in</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 

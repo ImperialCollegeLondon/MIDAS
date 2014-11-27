@@ -12,7 +12,11 @@ get '/' => sub {
 
 get '/contact' => sub {
   var controller => 'contact';
-  template 'contact', { title => 'Contact us' };
+
+  template 'contact', { 
+                        title       => 'Contact us', 
+                        breadcrumbs => [ 'Contact us' ] 
+                      };
 };
 
 true;

@@ -31,25 +31,36 @@
         UK, where it will provide information in real time on bacterial and
         viral spread and outbreaks in hospitals and the community.
       </p>
-      <!--
-      <p><a href="[% contactUsURI %]">Contact us</a></p>
-      -->
+      <p>
+        This website provides a central repository for the metadata concerning
+        the bacterial and virus genomes sequenced and deposited by all members
+        of the consortium.
+      </p>
     </div>
   </div>
   <div class="row partners">
     <div class="col-md-4 partner-info wtsi-cam">
       <p>
-        Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
+        Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus
+        ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa
+        justo sit amet risus. Etiam porta sem malesuada magna mollis euismod.
+        Donec sed odio dui.
       </p>
     </div>
     <div class="col-md-4 partner-info ucl">
       <p>
-        Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
+        Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus
+        ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa
+        justo sit amet risus. Etiam porta sem malesuada magna mollis euismod.
+        Donec sed odio dui.
       </p>
    </div>
     <div class="col-md-4 partner-info ox">
       <p>
-        Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.
+        Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas
+        eget quam. Vestibulum id ligula porta felis euismod semper. Fusce
+        dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut
+        fermentum massa justo sit amet risus.
       </p>
     </div>
   </div>

@@ -2,7 +2,6 @@
 // index.js
 // jt6 20141119 WTSI
 
-/* global    console */
 /* exported  indexPage */
 
 var indexPage = (function() {
@@ -26,10 +25,8 @@ var indexPage = (function() {
     // },
 
     wireUI: function() {
-      console.debug( "wiring in index page UI elements" );
 
       $("#signInSubmitButton").on( "click", function() {
-        console.debug( "CLICKED sign in submission button" );
         $("#signInModal").modal("hide");
         $("#signInButton").button("signedin")
                           .prop("disabled", true );

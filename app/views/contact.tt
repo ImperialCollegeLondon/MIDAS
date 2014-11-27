@@ -1,11 +1,6 @@
 
 <section class="container">
 
-  <ol class="breadcrumb">
-    <li><a href="[% request.uri_for('/') %]">Home</a></li>
-    <li class="active">Contact us</li>
-  </ol>
-
   <h1>Contact us</h1>
 
   <div class="row partners">

@@ -35,8 +35,7 @@
   <body[% ' data-controller="' _ vars.controller _ '"' IF vars.controller;
           ' data-action="'     _ vars.action     _ '"' IF vars.action %]>
 
-    [%# we don't want the navbar now, but we might later
-    PROCESS layouts/navbar.tt %]
+    [% PROCESS layouts/navbar.tt %]
 
     <main>
       [% content %]

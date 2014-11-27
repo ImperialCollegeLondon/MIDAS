@@ -8,7 +8,7 @@
 
 body {
   // if we're using a navbar, we need to move the content down to leave room for it
-  // padding-top: 60px;
+  padding-top: 60px;
   padding-bottom: 20px;
 }
 
@@ -39,6 +39,17 @@ a {
   }
 }
 
+.navbar .breadcrumb {
+  margin: 7px 0;
+}
+
+@media ( min-width: 768px ) {
+  .navbar .breadcrumb {
+    float: left;
+    margin: 16px 0;
+  }
+}
+
 footer {
   background: $gray-lighter;
   color: lighten($brand-primary, 20%);
@@ -60,15 +71,15 @@ footer {
     margin: 10px 0;;
   }
 
+  p.support {
+    float: right;
+  }
+
   a.wt-link {
-    background: url(../images/supported-by-wt-113x30.png) no-repeat left bottom;
+    background: url(../images/supported-by-wt-113x30.png) no-repeat right bottom;
     height: 30px;
     width: 113px;
     display: block;
-  }
-
-  button.sign-in {
-    float: right;
   }
 }
 

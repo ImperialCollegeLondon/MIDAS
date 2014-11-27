@@ -1,16 +1,7 @@
 
 <footer>
   <div class="container">
-    <p>
-      <button id="signInButton"
-              type="button"
-              class="sign-in btn btn-primary btn-sm"
-              data-signedin-text="Signed in"
-              data-toggle="modal"
-              data-target="#signInModal">
-        Sign in
-      </button>
-    </p>
+    <p class="support"><a class="wt-link" href="http://www.wellcome.ac.uk/"></a></p>
     <p>
       This site is hosted by the
       <a href="http://www.sanger.ac.uk/">Wellcome Trust Sanger Institute</a>
@@ -29,33 +20,6 @@
       </small>
       [%- END %]
     </p>
-    <p><a class="wt-link" href="http://www.wellcome.ac.uk/"></a></p>
   </div>
 </footer>
-
-<!-- modal -->
-<div class="modal" id="signInModal" tabindex="-1" role="dialog" aria-labelledby="signInModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-body">
-        <button type="button" class="close" data-dismiss="modal">
-          <span aria-hidden="true">&times;</span>
-          <span class="sr-only">Close</span>
-        </button>
-        <h2 class="modal-title" id="signInModalLabel">Sign in</h2>
-        <form role="form">
-          <div class="form-group">
-            <input type="text" class="form-control" id="signInUsername" placeholder="Enter username">
-          </div>
-          <div class="form-group">
-            <input type="password" class="form-control" id="signInPassword" placeholder="Password">
-          </div>
-          <button type="button" class="btn btn-success" id="signInSubmitButton">Sign in</button>
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
 

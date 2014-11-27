@@ -326,7 +326,7 @@ module.exports = function (grunt) {
               'bin/*',
               'lib/*',
               'views/**',
-              '{,*/}*.conf',
+              '**/*.conf',
               'public/*.{ico,png,txt}',
               'public/images/**',
               '!**/.*.sw?'
