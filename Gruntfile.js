@@ -234,9 +234,6 @@ module.exports = function (grunt) {
               'public/images/**',
               '!**/.*.sw?',
               'styles/fonts/**/*.*'
-              // 'images/{,*/}*.webp',
-              // '{,*/}*.html',
-              // 'styles/fonts/{,*/}*.*'
             ],
             dest: '<%= config.dist %>'
           }
@@ -251,25 +248,16 @@ module.exports = function (grunt) {
       }
     },
 
-    // Generates a custom Modernizr build that includes only the tests you
-    // reference in your app
-    // modernizr: {
-    //   dist: {
-    //     devFile: 'bower_components/modernizr/modernizr.js',
-    //     outputFile: '<%= config.dist %>/public/javascripts/vendor/modernizr.js',
-    //     files: {
-    //       src: [
-    //         '<%= config.dist %>/public/javascripts/{,*/}*.js',
-    //         '<%= config.dist %>/public/styles/{,*/}*.css',
-    //         '!<%= config.dist %>/public/javascripts/vendor/*'
-    //       ]
-    //     },
-    //     uglify: true
-    //   }
-    // },
-
     // Run some tasks in parallel to speed up build process
     concurrent: {
+      startServers: [
+        'shell:startBackend',
+        'nginx:start'
+      ],
+      stopServers: [
+        'shell:stopBackend',
+        'nginx:stop'
+      ],
       server: [
         'sass:server',
         'copy:styles'
@@ -322,6 +310,28 @@ module.exports = function (grunt) {
       }
     },
 
+    nginx: {
+      options: {
+        config: 'test_server/nginx.conf',
+        prefix: 'nginx'
+      }
+    },
+
+    shell: {
+      buildNginxConf: {
+        command: 'sed "s:__CWD__:"`pwd`":" test_server/nginx.conf.template > test_server/nginx.conf'
+      },
+      startBackend: {
+        command: 'starman --listen :8000 -E development --pid test_server/starman.pid --daemonize app/bin/app.pl'
+      },
+      restartBackend: {
+        command: 'kill -HUP `cat test_server/starman.pid`'
+      },
+      stopBackend: {
+        command: 'kill -TERM `cat test_server/starman.pid`'
+      }
+    },
+
     watch: {
       js: {
         files: ['<%= config.app %>/public/javascripts/**/*.js'],
@@ -350,34 +360,45 @@ module.exports = function (grunt) {
 
   });
 
-  grunt.registerTask('serve', 'start the server and preview your app, --allow-remote for remote access', function (target) {
-    if (grunt.option('allow-remote')) {
-      grunt.config.set('connect.options.hostname', '0.0.0.0');
-    }
-    if (target === 'dist') {
-      // return grunt.task.run(['build', 'connect:dist:keepalive']);
-      return grunt.task.run(['build']);
-    }
-
-    grunt.task.run([
-      'clean:dist',
-      'sass:dist',
-      'useminPrepare',
-      'concat:generated',
-      'cssmin:generated',
-      'uglify:generated',
-      'copy:dist',
-      'filerev',
-      'usemin',
-      'watch'
-    ]);
-      // 'clean:server',
-      // 'wiredep',
-      // 'concurrent:server',
-      // 'autoprefixer',
-      // 'watch'
-      // 'connect:livereload',
+  // starts the perl backend (starman/dancer) and the nginx frontend
+  grunt.registerTask('startServers', function() {
+    grunt.task.run(
+      'shell:buildNginxConf',
+      'concurrent:startServers'
+    );
+     grunt.log.writeln('(ii) view the server at http://128.0.0.1:8001');
   });
+
+  // stops the backend and nginx
+  grunt.registerTask('stopServers', [
+    'concurrent:stopServers'
+  ]);
+
+
+  // grunt.registerTask('serve', 'start the server and preview your app', function (target) {
+    // if (target === 'dist') {
+    //   // return grunt.task.run(['build', 'connect:dist:keepalive']);
+    //   return grunt.task.run(['build']);
+    // }
+    // grunt.task.run([
+    //   'clean:server',
+    //   'concurrent:server',
+    //   'autoprefixer',
+    //   'watch',
+    // ]);
+      // 'connect:livereload'
+    // grunt.task.run([
+    //   'clean:dist',
+    //   'sass:dist',
+    //   'useminPrepare',
+    //   'concat:generated',
+    //   'cssmin:generated',
+    //   'uglify:generated',
+    //   'copy:dist',
+    //   'filerev',
+    //   'usemin',
+    //   'watch'
+  // });
 
   // grunt.registerTask('server', function (target) {
   //   grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
