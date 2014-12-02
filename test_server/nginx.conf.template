@@ -1,0 +1,31 @@
+
+error_log   __CWD__/test_server/nginx_error.log;
+
+worker_processes  1;
+
+pid  __CWD__/test_server/nginx.pid;
+
+events {
+  worker_connections 256;
+}
+
+http {
+  include  mime.types;
+  default_type  application/octet-stream;
+  access_log  __CWD__/test_server/nginx_access.log;
+
+  server {
+    root  __CWD__;
+    server_name  0.0.0.0;
+    listen  8001;
+
+    location / {
+      try_files  $uri  /.tmp/$uri  /app/public/$uri   @backend;
+    }
+
+    location @backend {
+      proxy_pass http://localhost:8000;
+    }
+  }
+}
+
