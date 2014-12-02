@@ -18,59 +18,14 @@ module.exports = function (grunt) {
   // Load grunt tasks automatically
   require('load-grunt-tasks')(grunt);
 
-  // Configurable paths
-  var config = {
-    app: 'app',
-    dist: 'dist'
-  };
-
   // Define the configuration for all the tasks
   grunt.initConfig({
 
     // Project settings
-    config: config,
-
-    // The actual grunt server settings
-    // connect: {
-    //   options: {
-    //     port: 9000,
-    //     open: true,
-    //     livereload: 35729,
-    //     // Change this to '0.0.0.0' to access the server from outside
-    //     hostname: 'localhost'
-    //   },
-    //   livereload: {
-    //     options: {
-    //       middleware: function(connect) {
-    //         return [
-    //           connect.static('.tmp'),
-    //           connect().use('/bower_components', connect.static('./bower_components')),
-    //           connect.static(config.app)
-    //         ];
-    //       }
-    //     }
-    //   },
-    //   test: {
-    //     options: {
-    //       open: false,
-    //       port: 9001,
-    //       middleware: function(connect) {
-    //         return [
-    //           connect.static('.tmp'),
-    //           connect.static('test'),
-    //           connect().use('/bower_components', connect.static('./bower_components')),
-    //           connect.static(config.app)
-    //         ];
-    //       }
-    //     }
-    //   },
-    //   dist: {
-    //     options: {
-    //       base: '<%= config.dist %>',
-    //       livereload: false
-    //     }
-    //   }
-    // },
+    config: {
+      app: 'app',
+      dist: 'dist'
+    },
 
     // Empties folders to start fresh
     clean: {
@@ -95,7 +50,7 @@ module.exports = function (grunt) {
       },
       all: [
         'Gruntfile.js',
-        '<%= config.app %>/public/javascripts/**/*.js',
+        '<%= config.app %>/public/javascripts/{,*/}*.js',
         'test/spec/{,*/}*.js'
       ]
     },
@@ -114,8 +69,8 @@ module.exports = function (grunt) {
     filerev: {
       assets: {
         src: [
-          '<%= config.dist %>/public/javascripts/**/*.js',
-          '<%= config.dist %>/public/styles/**/*.css',
+          '<%= config.dist %>/public/javascripts/{,*/}*.js',
+          '<%= config.dist %>/public/styles/{,*/}*.css',
           '<%= config.dist %>/public/*.{ico,png}',
           '<%= config.dist %>/public/images/**/*'
         ]
@@ -191,32 +146,6 @@ module.exports = function (grunt) {
     //   }
     // },
 
-    // By default, your `index.html`'s <!-- Usemin block --> will take care
-    // of minification. These next options are pre-configured if you do not
-    // wish to use the Usemin blocks.
-    // cssmin: {
-    //   dist: {
-    //     files: {
-    //       '<%= config.dist %>/styles/main.css': [
-    //         '.tmp/styles/{,*/}*.css',
-    //         '<%= config.app %>/styles/{,*/}*.css'
-    //       ]
-    //     }
-    //   }
-    // },
-    // uglify: {
-    //   dist: {
-    //     files: {
-    //       '<%= config.dist %>/scripts/scripts.js': [
-    //         '<%= config.dist %>/scripts/scripts.js'
-    //       ]
-    //     }
-    //   }
-    // },
-    // concat: {
-    //   dist: {}
-    // },
-
     // Copies remaining files to places other tasks can use
     copy: {
       dist: {
@@ -229,11 +158,11 @@ module.exports = function (grunt) {
               'bin/*',
               'lib/*',
               'views/**',
-              '**/*.conf',
+              '{,*/}*.conf',
               'public/*.{ico,png,txt}',
               'public/images/**',
               '!**/.*.sw?',
-              'styles/fonts/**/*.*'
+              'styles/fonts/{,*/}*.*'
             ],
             dest: '<%= config.dist %>'
           }
@@ -243,34 +172,9 @@ module.exports = function (grunt) {
         expand: true,
         dot: true,
         cwd: '<%= config.app %>/public/styles',
-        src: '**/*.css',
+        src: '{,*/}*.css',
         dest: '.tmp/styles/'
       }
-    },
-
-    // Run some tasks in parallel to speed up build process
-    concurrent: {
-      startServers: [
-        'shell:startBackend',
-        'nginx:start'
-      ],
-      stopServers: [
-        'shell:stopBackend',
-        'nginx:stop'
-      ],
-      server: [
-        'sass:server',
-        'copy:styles'
-      ],
-      test: [
-        'copy:styles'
-      ],
-      dist: [
-        'sass',
-        'copy:styles',
-      ]
-        // 'imagemin',
-        // 'svgmin'
     },
 
     // Compiles Sass to CSS and generates necessary files if requested
@@ -279,7 +183,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: '<%= config.app %>/public/styles',
-          src: ['**/*.{scss,sass}'],
+          src: ['{,*/}*.{scss,sass}'],
           dest: '.tmp/styles',
           ext: '.css'
         }]
@@ -288,7 +192,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: '<%= config.app %>/public/styles',
-          src: ['**/*.{scss,sass}'],
+          src: ['{,*/}*.{scss,sass}'],
           dest: '.tmp/styles',
           ext: '.css'
         }]
@@ -304,7 +208,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: '.tmp/styles/',
-          src: '**/*.css',
+          src: '{,*/}*.css',
           dest: '.tmp/styles/'
         }]
       }
@@ -334,7 +238,7 @@ module.exports = function (grunt) {
 
     watch: {
       js: {
-        files: ['<%= config.app %>/public/javascripts/**/*.js'],
+        files: ['<%= config.app %>/public/javascripts/{,*/}*.js'],
         tasks: ['jshint']
       },
       // jstest: {
@@ -345,17 +249,51 @@ module.exports = function (grunt) {
         files: ['Gruntfile.js']
       },
       sass: {
-        files: ['<%= config.app %>/public/styles/**/*.{scss,sass}'],
-        tasks: [ 'sass:server', 'autoprefixer' ]
+        files: ['<%= config.app %>/public/styles/{,*/}*.{scss,sass}'],
+        tasks: [ 'sass:server', 'autoprefixer' ],
       },
       styles: {
-        files: ['<%= config.app %>/public/styles/**/*.css'],
+        files: ['<%= config.app %>/public/styles/{,*/}*.css'],
         tasks: ['newer:copy:styles', 'autoprefixer']
       },
       templates: {
-        files: [ '<%= config.app %>/views/**/*.tt' ],
+        files: [ '<%= config.app %>/views/{,*/}*.tt' ],
         tasks: [ 'newer:copy:dist' ]
+      },
+      livereload: {
+        options: {
+          livereload: 35729
+        },
+        files: [
+          '<%= config.app %>/views/**/*.tt',
+          '.tmp/styles/{,*/}*.css',
+          '<%= config.app %>/public/javascripts/**/*',
+          '<%= config.app %>/public/images/**/*'
+        ]
       }
+    },
+
+    // Run some tasks in parallel to speed up build process
+    concurrent: {
+      startServers: [
+        'sass:server',
+        'copy:styles',
+        'shell:startBackend',
+        'nginx:start'
+      ],
+      stopServers: [
+        'shell:stopBackend',
+        'nginx:stop'
+      ],
+      test: [
+        'copy:styles'
+      ],
+      dist: [
+        'sass',
+        'copy:styles',
+        // 'imagemin',
+        // 'svgmin'
+      ]
     }
 
   });
@@ -366,7 +304,7 @@ module.exports = function (grunt) {
       'shell:buildNginxConf',
       'concurrent:startServers'
     );
-     grunt.log.writeln('(ii) view the server at http://128.0.0.1:8001');
+    grunt.log.writeln('(ii) view the server at http://128.0.0.1:8001');
   });
 
   // stops the backend and nginx
@@ -374,6 +312,13 @@ module.exports = function (grunt) {
     'concurrent:stopServers'
   ]);
 
+  grunt.registerTask('serve', 'start the preview server', function() {
+    grunt.task.run([
+      'clean:server',
+      'concurrent:startServers',
+      'watch'
+    ]);
+  });
 
   // grunt.registerTask('serve', 'start the server and preview your app', function (target) {
     // if (target === 'dist') {
