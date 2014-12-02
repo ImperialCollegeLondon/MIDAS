@@ -1,5 +1,8 @@
-// Generated on 2014-11-11 using
-// generator-webapp 0.5.1
+// Gruntfile.js
+// jt6 20141202 WTSI
+//
+// build file for the HICF website. Based on an auto-generated grunt config
+// built using generator-webapp 0.5.1
 
 // # Globbing
 // for performance reasons we're only matching one level down:
@@ -7,28 +10,32 @@
 // If you want to recursively match all subfolders, use:
 // 'test/spec/**/*.js'
 
+// needed to make jshint happy
 /*global require, module*/
 
 module.exports = function (grunt) {
   'use strict';
 
-  // Time how long tasks take. Can help when optimizing build times
+  // time how long tasks take. Can help when optimizing build times
   require('time-grunt')(grunt);
 
-  // Load grunt tasks automatically
-  require('load-grunt-tasks')(grunt);
+  // load grunt tasks automatically (using the JIT loader)
+  require('jit-grunt')(grunt, {
+    useminPrepare: 'grunt-usemin'
+  });
 
-  // Define the configuration for all the tasks
+  // define the configuration for all the tasks
   grunt.initConfig({
 
-    // Project settings
+    // project settings
     config: {
       app: 'app',
       dist: 'dist'
     },
 
-    // Empties folders to start fresh
+    // clean up
     clean: {
+      // removes the distribution and temp dirs
       dist: {
         files: [{
           dot: true,
@@ -39,10 +46,11 @@ module.exports = function (grunt) {
           ]
         }]
       },
+      // removes just the temp space
       server: '.tmp'
     },
 
-    // Make sure code styles are up to par and there are no obvious mistakes
+    // lint all of the javascript code
     jshint: {
       options: {
         jshintrc: '.jshintrc',
@@ -65,7 +73,7 @@ module.exports = function (grunt) {
     //   }
     // },
 
-    // Renames files for browser caching purposes
+    // names assets with revision IDs
     filerev: {
       assets: {
         src: [
@@ -77,9 +85,8 @@ module.exports = function (grunt) {
       }
     },
 
-    // Reads HTML for usemin blocks to enable smart builds that automatically
-    // concat, minify and revision files. Creates configurations in memory so
-    // additional tasks can operate on them
+    // reads the main page template to find files that can be minified and
+    // renamed with version IDs
     useminPrepare: {
       options: {
         dest: '<%= config.dist %>/public'
@@ -87,7 +94,7 @@ module.exports = function (grunt) {
       html: '<%= config.app %>/views/layouts/main.tt'
     },
 
-    // Performs rewrites based on filerev and the useminPrepare configuration
+    // rewrites and renames asset files
     usemin: {
       options: {
         assetsDirs: [
@@ -102,17 +109,18 @@ module.exports = function (grunt) {
     },
 
     // The following *-min tasks produce minified files in the dist folder
-    // imagemin: {
-    //   dist: {
-    //     files: [{
-    //       expand: true,
-    //       cwd: '<%= config.app %>/public/images',
-    //       src: '{,*/}*.{gif,jpeg,jpg,png}',
-    //       dest: '<%= config.dist %>/public/images'
-    //     }]
-    //   }
-    // },
+    imagemin: {
+      dist: {
+        files: [{
+          expand: true,
+          cwd: '<%= config.app %>/public/images',
+          src: '{,*/}*.{gif,jpeg,jpg,png}',
+          dest: '<%= config.dist %>/public/images'
+        }]
+      }
+    },
 
+    // not currently used
     // svgmin: {
     //   dist: {
     //     files: [{
@@ -124,6 +132,7 @@ module.exports = function (grunt) {
     //   }
     // },
 
+    // minifies HTML, doesn't work with some TT code though
     // htmlmin: {
     //   dist: {
     //     options: {
@@ -139,9 +148,9 @@ module.exports = function (grunt) {
     //     },
     //     files: [{
     //       expand: true,
-    //       cwd: '<%= config.dist %>',
-    //       src: '{,*/}*.html',
-    //       dest: '<%= config.dist %>'
+    //       cwd: '<%= config.dist %>/views',
+    //       src: '{,*/}*.tt',
+    //       dest: '<%= config.dist %>/views'
     //     }]
     //   }
     // },
@@ -160,7 +169,6 @@ module.exports = function (grunt) {
               'views/**',
               '{,*/}*.conf',
               'public/*.{ico,png,txt}',
-              'public/images/**',
               '!**/.*.sw?',
               'styles/fonts/{,*/}*.*'
             ],
@@ -291,7 +299,7 @@ module.exports = function (grunt) {
       dist: [
         'sass',
         'copy:styles',
-        // 'imagemin',
+        'imagemin'
         // 'svgmin'
       ]
     }
@@ -300,11 +308,17 @@ module.exports = function (grunt) {
 
   // starts the perl backend (starman/dancer) and the nginx frontend
   grunt.registerTask('startServers', function() {
+
+    // avoid an error if the servers are already running
+    if ( grunt.file.exists('test_server/nginx.pid') ||
+         grunt.file.exists('test_server/starman.pid') ) {
+      grunt.log.warn( 'WARNING: servers are still running; stopping them before trying to start' );
+      grunt.task.run('concurrent:stopServers');
+    }
     grunt.task.run(
       'shell:buildNginxConf',
       'concurrent:startServers'
     );
-    grunt.log.writeln('(ii) view the server at http://128.0.0.1:8001');
   });
 
   // stops the backend and nginx
@@ -312,43 +326,15 @@ module.exports = function (grunt) {
     'concurrent:stopServers'
   ]);
 
-  grunt.registerTask('serve', 'start the preview server', function() {
+  // starts the preview server and watches for changes to source files
+  grunt.registerTask('serve', function() {
+    grunt.log.subhead('preview the site at http://128.0.0.1:8001');
     grunt.task.run([
       'clean:server',
-      'concurrent:startServers',
+      'startServers',
       'watch'
     ]);
   });
-
-  // grunt.registerTask('serve', 'start the server and preview your app', function (target) {
-    // if (target === 'dist') {
-    //   // return grunt.task.run(['build', 'connect:dist:keepalive']);
-    //   return grunt.task.run(['build']);
-    // }
-    // grunt.task.run([
-    //   'clean:server',
-    //   'concurrent:server',
-    //   'autoprefixer',
-    //   'watch',
-    // ]);
-      // 'connect:livereload'
-    // grunt.task.run([
-    //   'clean:dist',
-    //   'sass:dist',
-    //   'useminPrepare',
-    //   'concat:generated',
-    //   'cssmin:generated',
-    //   'uglify:generated',
-    //   'copy:dist',
-    //   'filerev',
-    //   'usemin',
-    //   'watch'
-  // });
-
-  // grunt.registerTask('server', function (target) {
-  //   grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
-  //   grunt.task.run([target ? ('serve:' + target) : 'serve']);
-  // });
 
   // grunt.registerTask('test', function (target) {
   //   if (target !== 'watch') {
@@ -365,53 +351,28 @@ module.exports = function (grunt) {
   //   ]);
   // });
 
-  // grunt.registerTask('build', [
-  //   'clean:dist',
-  //   'jshint',
-  //   'sass:dist',
-  //   'useminPrepare',
-  //   'concat:generated',
-  //   'cssmin:generated',
-  //   'uglify:generated',
-  //   'copy:dist',
-  //   'filerev',
-  //   'usemin'
-  // ]);
+  // builds the distribution
+  grunt.registerTask('build', [
+    'clean:dist',
+    'jshint',
+    'sass:dist',
+    'useminPrepare',
+    'concurrent:dist',
+    'autoprefixer',
+    'concat:generated',
+    'cssmin:generated',
+    'uglify:generated',
+    'copy:dist',
+    'filerev',
+    'usemin',
+  ]);
+  // this breaks with certain TT idioms
+    // 'htmlmin'
 
-  // lastest working version
-  // grunt.registertask('build', [
-  //   'clean:dist',
-  //   'jshint',
-  //   'sass:dist',
-  //   'useminPrepare',
-  //   'concat:generated',
-  //   'cssmin:generated',
-  //   'uglify:generated',
-  //   'copy:dist',
-  //   'filerev',
-  //   'usemin'
-  // ]);
-
-  // grunt.registerTask('build', [
-  //   'clean:dist',
-  //   'wiredep',
-  //   'useminPrepare',
-  //   'concurrent:dist',
-  //   'autoprefixer',
-  //   'concat:generated',
-  //   'cssmin:generated',
-  //   'uglify:generated',
-  //   'copy:dist',
-  //   'modernizr',
-  //   'filerev',
-  //   'usemin'
-  // ]);
-  // not sure we want to try minifying TT...
-  // 'htmlmin'
-
+  // set the default task
   grunt.registerTask('default', [
+    'newer:jshint',
+    // 'test',
     'build'
   ]);
-    // 'newer:jshint',
-    // 'test',
 };
