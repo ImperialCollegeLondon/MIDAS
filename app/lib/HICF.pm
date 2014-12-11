@@ -5,6 +5,8 @@ use Dancer2;
 
 our $VERSION = '0.1';
 
+set port => 8000;
+
 get '/' => sub {
   var controller => 'index';
   template 'index';
