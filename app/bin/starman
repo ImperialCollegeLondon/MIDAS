@@ -1,0 +1,48 @@
+#!/usr/bin/env perl
+#
+# a Daemon::Control script for controlling the starman backend server for the
+# MiDaS website. This script can start and stop the server process, as per a
+# standard init script. It can also generate an LSB-compliant init script using
+#
+#   starman get_init_file > /etc/init.d/starman
+#
+# jt6 20141212 WTSI
+
+use strict;
+use warnings;
+
+use Cwd;
+use Daemon::Control;
+
+my $name        = 'MiDaS starman server';
+my $sdesc       = 'Start MiDaS starman server',
+my $desc        = 'Start starman server to run the MiDaS webapp backend',
+
+my $app_home    = getcwd;
+
+my $program     = 'starman';
+my $port        = ':8000';
+my $environment = 'development';
+my $workers     = 5;
+my $app         = 'app/bin/app.pl';
+
+my $pid_file    = $app_home . '/test_server/starman.pid';
+
+Daemon::Control->new( {
+    name        => $name,
+    lsb_start   => '$nginx',
+    lsb_stop    => '$nginx',
+    lsb_sdesc   => $sdesc,
+    lsb_desc    => $desc,
+
+    # user        => 'www-data',
+    # group       => 'www-data',
+    directory   => $app_home,
+    program     => "$program --listen $port -E $environment --workers $workers $app",
+
+    pid_file    => $pid_file,
+    stderr_file => $app_home . '/starman.out',
+    stdout_file => $app_home . '/starman.out',
+
+    fork        => 2,
+} )->run;
