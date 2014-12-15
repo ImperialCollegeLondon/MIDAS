@@ -158,6 +158,9 @@ module.exports = function (grunt) {
     // Copies remaining files to places other tasks can use
     copy: {
       dist: {
+        options: {
+          mode: true,
+        },
         files: [
           {
             expand: true,
@@ -265,7 +268,7 @@ module.exports = function (grunt) {
         tasks: ['newer:copy:styles', 'autoprefixer']
       },
       templates: {
-        files: [ '<%= config.app %>/views/{,*/}*.tt' ],
+        files: [ '<%= config.app %>/views/**/*.tt' ],
         tasks: [ 'newer:copy:dist' ]
       },
       livereload: {
