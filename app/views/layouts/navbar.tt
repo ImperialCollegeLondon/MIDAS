@@ -7,7 +7,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="[% request.uri_for('/') %]">HICF</a>
+      <a class="navbar-brand" href="[% request.uri_for('/') %]">MiDaS</a>
     </div>
       [% IF breadcrumbs.defined AND breadcrumbs.size > 0 %]
       <ol class="inline-list breadcrumb">
@@ -21,6 +21,7 @@
       [% END # of IF %]
     <div id="navbar" class="navbar-collapse collapse">
       <button id="signInButton"
+              disabled="disabled"
               type="button"
               class="btn btn-default btn-sm navbar-btn navbar-right"
               data-signedin-text="Signed in"

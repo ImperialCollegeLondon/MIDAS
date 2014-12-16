@@ -6,7 +6,8 @@
       <div class="col-md-4 db-logo">
       </div>
       <div class="col-md-8">
-        <h1>HICF</h1>
+        <h2>Microbial Diagnostics and<br>
+          Surveillance (MiDaS)</h2>
         <p>
           Working to provide tools for the rapid comparison of <br>
           bacteria and virus genomes for diagnostic and public <br>
@@ -41,18 +42,39 @@
   <div class="row partners">
     <div class="col-md-4 partner-info wtsi-cam">
       <p>
-        Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus
-        ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa
-        justo sit amet risus. Etiam porta sem malesuada magna mollis euismod.
-        Donec sed odio dui.
+        The partnership utilises whole genome sequencing of a number of
+        important hospital/community acquired bacterial species to enable
+        effective surveillance. This will be used to track disease trends,
+        identify new infectious disease threats, detect serious outbreaks,
+        monitor control measures and assess antibiotic resistance to enable the
+        most effective treatment to be offered.
       </p>
     </div>
     <div class="col-md-4 partner-info ucl">
+      <!--
+        <p>
+          Infection Response through Virus Genomics (ICONIC) is a collaborative effort
+          led by UCL and involving the Wellcome Trust Sanger Institute, UCLH, PHE, Barts
+          Health, HCVRUK and the Universities of Edinburgh and Nottingham. ICONIC aims to
+          utilise next generation sequencing technology, in order to (i) stratify therapy
+          (HIV and Hepatitis C virus used as a case example), (ii) guide hospital
+          infection control responses (Norovirus), and (iii) inform surveillance and
+          epidemiological responses to community outbreaks (Measles and Influenza
+          viruses). ICONIC will advance the capacity for embedding this new technology
+          within the UK diagnostic environment, in a sustainable and cost effective
+          manner. In so doing, we aim to embed into the NHS the ability to rapidly
+          respond to new and emerging viral infections in the future.
+        </p>
+      -->
       <p>
-        Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus
-        ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa
-        justo sit amet risus. Etiam porta sem malesuada magna mollis euismod.
-        Donec sed odio dui.
+          Infection Response through Virus Genomics (ICONIC) aims to utilise
+          next generation sequencing technology to stratify therapy, guide
+          hospital infection control responses, and inform surveillance and
+          epidemiological responses to community outbreaks. ICONIC will advance
+          the capacity for embedding this new technology within the UK
+          diagnostic environment, in a sustainable and cost effective manner.
+          In so doing, we aim to embed into the NHS the ability to rapidly
+          respond to new and emerging viral infections in the future.
       </p>
    </div>
     <div class="col-md-4 partner-info ox">
