@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>HICF[% ' &middot; ' _ title IF title.defined %]</title>
+    <title>MiDaS[% ' &middot; ' _ title IF title.defined %]</title>
 
     [% # the code to sort out favicons for all for various devices is a mess.
        # We'll hide it away somewhere...
