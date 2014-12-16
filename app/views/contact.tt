@@ -6,23 +6,31 @@
   <div class="row partners">
     <div class="col-md-4 partner-info wtsi-cam">
       <address>
-        <strong>Wellcome Trust Sanger Institute</strong><br>
-        Wellcome Trust Genome Campus<br>
-        Hinxton<br>
+        <strong>WTSI/University of Cambridge</strong><br>
+        Carol Churcher<br>
+        Project Manager – Peacock Group<br>
+        University of Cambridge<br>
+        Department of Medicine<br>
+        Box 157<br>
+        Addenbrooke’s Hospital<br>
+        Hills Road<br>
         Cambridge<br>
-        CB10 1SA<br>
+        CB2 0QQ<br>
         UK<br>
-        <abbr title="Phone">P:</abbr> (123) 456-7890
+        <abbr title="Phone">P:</abbr> +44 (0)1223 336 867
       </address>
     </div>
     <div class="col-md-4 partner-info ucl">
       <address>
         <strong>University College London</strong><br>
-        Gower Street<br>
+        Dr Zisis Kozlakidis<br>
+        UCL Institute of Health Informatics<br>
+        The Farr Institute of Health Informatics Research<br>
+        222 Euston Road<br>
         London<br>
-        WC1E 6BT<br>
+        NW1 2DA<br>
         UK<br>
-        <abbr title="Phone">P:</abbr> (123) 456-7890
+        <abbr title="Phone">P:</abbr> +44 (0)203 549 5548
       </address>
     </div>
     <div class="col-md-4 partner-info ox">

@@ -26,12 +26,8 @@
 .partner-info {
   background-repeat: no-repeat;
   background-position: center top;
-  border-left: 1px solid $gray-lighter;
   padding-top: 60px;
-}
-
-.partner-info:first-child {
-  border: none;
+  font-size: 12px;
 }
 
 .wtsi-cam { background-image: url(../images/logos/wtsi-cam-300x50.png) }
