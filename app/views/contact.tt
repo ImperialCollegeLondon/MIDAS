@@ -4,7 +4,7 @@
   <h1>Contact us</h1>
 
   <div class="row partners">
-    <div class="col-md-4 partner-info wtsi-cam">
+    <div class="col-md-4 partner wtsi-cam">
       <address>
         <strong>WTSI/University of Cambridge</strong><br>
         Carol Churcher<br>
@@ -20,7 +20,7 @@
         <abbr title="Phone">P:</abbr> +44 (0)1223 336 867
       </address>
     </div>
-    <div class="col-md-4 partner-info ucl">
+    <div class="col-md-4 partner ucl">
       <address>
         <strong>University College London</strong><br>
         Dr Zisis Kozlakidis<br>
@@ -33,15 +33,17 @@
         <abbr title="Phone">P:</abbr> +44 (0)203 549 5548
       </address>
     </div>
-    <div class="col-md-4 partner-info ox">
+    <div class="col-md-4 partner ox">
       <address>
         <strong>University of Oxford</strong><br>
-        University Offices<br>
-        Wellington Square<br>
+        Helen Barker<br>
+        Nuffield Department of Clinical Medicine<br>
+        University of Oxford<br>
+        The John Radcliffe Hospital<br>
         Oxford<br>
-        OX1 2JD<br>
+        OX3 9DU <br>
         UK<br>
-        <abbr title="Phone">P:</abbr> (123) 456-7890
+        <abbr title="Email">E:</abbr> <a href="mailto:helen.barker@ndm.ox.ac.uk">helen.barker@ndm.ox.ac.uk</a>
       </address>
     </div>
   </div>
