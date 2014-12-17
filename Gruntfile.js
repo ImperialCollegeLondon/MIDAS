@@ -286,12 +286,17 @@ module.exports = function (grunt) {
 
     // Run some tasks in parallel to speed up build process
     concurrent: {
-      startServers: [
-        'sass:server',
-        'copy:styles',
-        'shell:startBackend',
-        'nginx:start'
-      ],
+      startServers: {
+        tasks: [
+          'sass:server',
+          'copy:styles',
+          'shell:startBackend',
+          'nginx:start'
+        ],
+        options: {
+          limit: 4
+        }
+      },
       stopServers: [
         'shell:stopBackend',
         'nginx:stop'
