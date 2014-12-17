@@ -76,9 +76,10 @@ footer {
   }
 
   a.wt-link {
-    background: url(../images/supported-by-wt-113x30.png) no-repeat right bottom;
-    height: 30px;
-    width: 113px;
+    /* background: url(../images/supported-by-wt-113x30.png) no-repeat right bottom; */
+    background: url(../images/wt-dh-200x50.png) no-repeat right bottom;
+    height: 50px;
+    width: 200px;
     display: block;
   }
 }
