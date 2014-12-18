@@ -3,12 +3,36 @@ HICF website
 
 Front end for the HICF pathogen genome store.
 
-1. Clone the repo
+1. Install prerequisites:
 
-  git clone git@github.com:sanger-pathogens/hicf-website.git HICF
+  * [node.js](http://nodejs.org/)
+  * [sass](http://sass-lang.com/)
 
-2. Install node packages
+2. Clone the repo
 
+  ```
+  git clone https://github.com/sanger-pathogens/MiDaS.git
+  ```
+
+3. Install node packages
+
+  ```bash
+  cd MiDaS
   npm install
+  ```
 
+  (before running "npm install" you need to configure proxies:
+
+  ```bash
+  export http_proxy=http://wwwcache.sanger.ac.uk:3128
+  export https_proxy=http://wwwcache.sanger.ac.uk:3128
+  ```
+
+  otherwise downloading packages through the firewall fails.)
+
+  You may need to install `grunt-cli` as a global package:
+
+  ```bash
+  npm install -g grunt-cli
+  ```
 
