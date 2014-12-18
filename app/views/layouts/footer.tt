@@ -1,6 +1,7 @@
 
 <footer>
   <div class="container">
+    <p class="support"><a class="dh-link" href="https://www.gov.uk/government/organisations/department-of-health"></a></p>
     <p class="support"><a class="wt-link" href="http://www.wellcome.ac.uk/"></a></p>
     <p>
       This site is hosted by the
