@@ -11,21 +11,21 @@ Front end for the HICF pathogen genome store.
 2. Clone the repo
 
   ```
-  git clone https://github.com/sanger-pathogens/MiDaS.git
+  git clone https://github.com/sanger-pathogens/MIDAS.git
   ```
 
 3. Install node packages
 
   ```bash
-  cd MiDaS
+  cd MIDAS
   npm install
   ```
 
   (before running "npm install" you need to configure proxies:
 
   ```bash
-  export http_proxy=http://wwwcache.sanger.ac.uk:3128
-  export https_proxy=http://wwwcache.sanger.ac.uk:3128
+  export http_proxy=http://<proxy host>:<proxy port>
+  export https_proxy=http://<proxy host>:<proxy port>
   ```
 
   otherwise downloading packages through the firewall fails.)
