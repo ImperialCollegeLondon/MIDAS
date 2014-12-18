@@ -84,3 +84,21 @@ footer {
   }
 }
 
+.partners {
+  margin: 30px 0;
+}
+
+.partner {
+  background-repeat: no-repeat;
+  background-position: center top;
+  padding-top: 60px;
+}
+
+.partner-info {
+  font-size: 12px;
+}
+
+.wtsi-cam { background-image: url(../images/logos/cam-wtsi-300x50.png) }
+.ucl      { background-image: url(../images/logos/ucl-wtsi-300x50.png) }
+.ox       { background-image: url(../images/logos/ox-phe-300x50.png) }
+
