@@ -18,15 +18,17 @@ my $name        = 'MIDAS starman server';
 my $sdesc       = 'Start MIDAS starman server',
 my $desc        = 'Start starman server to run the MIDAS webapp backend',
 
-my $app_home    = getcwd;
+my $app_home    = '/www/jt6/MIDAS';
 
 my $program     = 'starman';
 my $port        = ':8000';
 my $environment = 'development';
 my $workers     = 5;
-my $app         = 'app/bin/app.pl';
+my $app         = 'dist/bin/app.pl';
 
-my $pid_file    = $app_home . '/test_server/starman.pid';
+my $pid_file    = '/var/run/starman.pid';
+my $access_log  = '/var/log/starman/access.log';
+my $error_log   = '/var/log/starman/error.log';
 
 Daemon::Control->new( {
     name        => $name,
@@ -41,8 +43,8 @@ Daemon::Control->new( {
     program     => "$program --listen $port -E $environment --workers $workers $app",
 
     pid_file    => $pid_file,
-    stderr_file => $app_home . '/starman.out',
-    stdout_file => $app_home . '/starman.out',
+    stderr_file => $access_log,
+    stdout_file => $error_log,
 
     fork        => 2,
 } )->run;
