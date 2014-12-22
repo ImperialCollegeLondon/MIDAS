@@ -5,6 +5,7 @@
 
   <div class="row partners">
     <div class="col-md-4 partner wtsi-cam">
+      <p class="sprite-images-cam-wtsi-300x50"></p>
       <address>
         <strong>WTSI/University of Cambridge</strong><br>
         Carol Churcher<br>
@@ -22,6 +23,7 @@
       </address>
     </div>
     <div class="col-md-4 partner ucl">
+      <p class="sprite-images-ucl-wtsi-300x50"></p>
       <address>
         <strong>University College London</strong><br>
         Dr Zisis Kozlakidis<br>
@@ -37,6 +39,7 @@
       </address>
     </div>
     <div class="col-md-4 partner ox">
+      <p class="sprite-images-ox-phe-300x50"></p>
       <address>
         <strong>University of Oxford</strong><br>
         Helen L Barker<br>
