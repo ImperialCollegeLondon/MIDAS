@@ -13,12 +13,12 @@
 ### END INIT INFO`
 
 
-
+export PERL5LIB=/www/jt6/perl5/lib/perl5
 
 
 if [ -x /www/jt6/MIDAS/resources/init/starman ];
 then
-    /www/jt6/MIDAS/resources/init/starman $1
+   su -m www-data -c "/www/jt6/MIDAS/resources/init/starman $1"
 else
     echo "Required program /www/jt6/MIDAS/resources/init/starman not found!"
     exit 1;
