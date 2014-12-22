@@ -7,6 +7,7 @@ Front end for the HICF pathogen genome store.
 
   * [node.js](http://nodejs.org/)
   * [sass](http://sass-lang.com/)
+  * [glue](http://gluecss.com/)
 
 2. Clone the repo
 
