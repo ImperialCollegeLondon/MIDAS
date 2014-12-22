@@ -22,6 +22,7 @@
     <link href="styles/site.css" rel="stylesheet">
     <link href="styles/index.css" rel="stylesheet">
     <link href="styles/contact-us.css" rel="stylesheet">
+    <link href="styles/images.css" rel="stylesheet">
     <!-- endbuild -->
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->

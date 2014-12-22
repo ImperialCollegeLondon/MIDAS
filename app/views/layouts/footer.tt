@@ -1,8 +1,8 @@
 
 <footer>
   <div class="container">
-    <p class="support"><a class="dh-link" href="https://www.gov.uk/government/organisations/department-of-health"></a></p>
-    <p class="support"><a class="wt-link" href="http://www.wellcome.ac.uk/"></a></p>
+    <p class="support"><a class="dh-link sprite-images-dh-77x50" href="https://www.gov.uk/government/organisations/department-of-health"></a></p>
+    <p class="support"><a class="wt-link sprite-images-supported-by-wt-130x50" href="http://www.wellcome.ac.uk/"></a></p>
     <p>
       This site is hosted by the
       <a href="http://www.sanger.ac.uk/">Wellcome Trust Sanger Institute</a>

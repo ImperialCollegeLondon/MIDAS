@@ -155,6 +155,14 @@ module.exports = function (grunt) {
     //   }
     // },
 
+    // build sprites
+    glue: {
+      images: {
+        src:  '<%= config.app %>/public/images',
+        options: '--css=.tmp/styles --img=.tmp/images --cachebuster --recursive'
+      }
+    },
+
     // Copies remaining files to places other tasks can use
     copy: {
       dist: {
@@ -263,14 +271,18 @@ module.exports = function (grunt) {
         files: ['<%= config.app %>/public/styles/{,*/}*.{scss,sass}'],
         tasks: [ 'sass:server', 'autoprefixer' ],
       },
-      styles: {
-        files: ['<%= config.app %>/public/styles/{,*/}*.css'],
-        tasks: ['newer:copy:styles', 'autoprefixer']
+      images: {
+        files: [ '<%= config.app %>/public/images/**/*' ],
+        tasks: [ 'glue' ]
       },
-      templates: {
-        files: [ '<%= config.app %>/views/**/*.tt' ],
-        tasks: [ 'newer:copy:dist' ]
-      },
+      // styles: {
+      //   files: ['<%= config.app %>/public/styles/{,*/}*.css'],
+      //   tasks: ['newer:copy:styles', 'autoprefixer']
+      // },
+      // templates: {
+      //   files: [ '<%= config.app %>/views/**/*.tt' ],
+      //   tasks: [ 'newer:copy:dist' ]
+      // },
       livereload: {
         options: {
           livereload: 35729
@@ -288,6 +300,7 @@ module.exports = function (grunt) {
     concurrent: {
       startServers: [
         'sass:server',
+        'glue',
         'copy:styles',
         'shell:startBackend',
         'nginx:start'
@@ -302,6 +315,7 @@ module.exports = function (grunt) {
       dist: {
         tasks: [
           'sass',
+          'glue',
           'copy:styles',
           'imagemin'
           // 'svgmin'
@@ -376,6 +390,9 @@ module.exports = function (grunt) {
   ]);
   // this breaks with certain TT idioms
     // 'htmlmin'
+
+  // alias the "build" task
+  grunt.registerTask('dist', ['build']);
 
   // set the default task
   grunt.registerTask('default', [

@@ -75,17 +75,8 @@ footer {
     float: right;
   }
 
-  a.wt-link {
-    background: url(../images/logos/supported-by-wt-130x50.png) no-repeat right bottom;
-    height: 50px;
-    width: 130px;
-    display: block;
-  }
-
+  a.wt-link,
   a.dh-link {
-    background: url(../images/logos/dh-77x50.png) no-repeat right bottom;
-    height: 50px;
-    width: 77px;
     display: block;
   }
 }
@@ -97,14 +88,9 @@ footer {
 .partner {
   background-repeat: no-repeat;
   background-position: center top;
-  padding-top: 60px;
 }
 
 .partner-info {
   font-size: 12px;
 }
-
-.wtsi-cam { background-image: url(../images/logos/cam-wtsi-300x50.png) }
-.ucl      { background-image: url(../images/logos/ucl-wtsi-300x50.png) }
-.ox       { background-image: url(../images/logos/ox-phe-300x50.png) }
 
