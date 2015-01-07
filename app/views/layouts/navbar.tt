@@ -1,5 +1,5 @@
 
-<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+<nav class="navbar navbar-default navbar-static-top">
   <div class="container">
     <div class="navbar-header">
         <span class="sr-only">Toggle navigation</span>
@@ -10,7 +10,7 @@
       <a class="navbar-brand" href="[% request.uri_for('/') %]">MiDaS</a>
     </div>
       [% IF breadcrumbs.defined AND breadcrumbs.size > 0 %]
-      <ol class="inline-list breadcrumb">
+      <ol class="inline-list breadcrumb navbar-left">
         <li><a href="[% request.uri_for('/') %]">Home</a></li>
         [% lastCrumb = breadcrumbs.pop;
         FOREACH crumb IN breadcrumbs %]
@@ -19,15 +19,13 @@
         <li class="active">[% lastCrumb %]</li>
       </ol>
       [% END # of IF %]
-    <div id="navbar" class="navbar-collapse collapse">
-      <button id="signInButton"
+      <button class="btn btn-default btn-sm navbar-btn navbar-right"
+              id="signInButton"
               disabled="disabled"
               type="button"
-              class="btn btn-default btn-sm navbar-btn navbar-right"
               data-signedin-text="Signed in"
               data-toggle="modal"
               data-target="#signInModal">Sign in</button>
-    </div>
   </div>
 </nav>
 

@@ -3,11 +3,16 @@
 
   <h1>Contact us</h1>
 
+  <p>
+    New data submissions may be emailed to
+    <a href="mailto:&#100;&#097;&#116;&#097;&#115;&#117;&#098;&#064;&#109;&#105;&#100;&#097;&#115;&#117;&#107;&#046;&#111;&#114;&#103;">&#100;&#097;&#116;&#097;&#115;&#117;&#098;&#064;&#109;&#105;&#100;&#097;&#115;&#117;&#107;&#046;&#111;&#114;&#103;</a>.
+  </p>
+
   <div class="row partners">
     <div class="col-md-4 partner wtsi-cam">
-      <p class="sprite-images-cam-wtsi-300x50"></p>
+      <p class="sprite-images-cam-wtsi-285x50"></p>
       <address>
-        <strong>WTSI/University of Cambridge</strong><br>
+        <strong>University of Cambridge/WTSI</strong><br>
         Carol Churcher<br>
         Project Manager – Peacock Group<br>
         University of Cambridge<br>
@@ -23,7 +28,7 @@
       </address>
     </div>
     <div class="col-md-4 partner ucl">
-      <p class="sprite-images-ucl-wtsi-300x50"></p>
+      <p class="sprite-images-ucl-wtsi-285x50"></p>
       <address>
         <strong>University College London</strong><br>
         Dr Zisis Kozlakidis<br>
@@ -39,7 +44,7 @@
       </address>
     </div>
     <div class="col-md-4 partner ox">
-      <p class="sprite-images-ox-phe-300x50"></p>
+      <p class="sprite-images-ox-phe-285x50"></p>
       <address>
         <strong>University of Oxford</strong><br>
         Helen L Barker<br>

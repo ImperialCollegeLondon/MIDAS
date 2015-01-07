@@ -5,12 +5,12 @@
     <div class="row">
       <div class="col-md-4 db-logo sprite-images-cpmv-320x365">
       </div>
-      <div class="col-md-8">
-        <h2>Microbial Diagnostics and<br>
+      <div class="col-md-7">
+        <h2>Microbial Diagnostics and
           Surveillance (MiDaS)</h2>
         <p>
-          Working to provide tools for the rapid identification of<br>
-          bacterial and viral genomes for diagnostic and public<br>
+          Working to provide tools for the rapid identification of
+          bacterial and viral genomes for diagnostic and public
           health laboratories.
         </p>
         <p><a class="btn btn-primary btn-lg" href="[% contactUsURI %]" role="button">Contact us &raquo;</a></p>
@@ -41,7 +41,7 @@
   </div>
   <div class="row partners">
     <div class="col-md-4 partner partner-info">
-      <p class="sprite-images-cam-wtsi-300x50"></p>
+      <p class="sprite-images-cam-wtsi-285x50"></p>
       <p>
         The partnership utilises whole genome sequencing of a number of
         important hospital/community acquired bacterial species to enable
@@ -52,7 +52,7 @@
       </p>
     </div>
     <div class="col-md-4 partner partner-info">
-      <p class="sprite-images-ucl-wtsi-300x50"></p>
+      <p class="sprite-images-ucl-wtsi-285x50"></p>
       <p>
         Infection Response through Virus Genomics (ICONIC) uses next generation
         sequencing technology aiming to support clinical decisions for patient
@@ -65,7 +65,7 @@
       </p>
    </div>
     <div class="col-md-4 partner partner-info">
-      <p class="sprite-images-ox-phe-300x50"></p>
+      <p class="sprite-images-ox-phe-285x50"></p>
       <p>
         The Modernising Medical Microbiology (MMM) consortium are developing a
         pathogen sequencing solution for identifying, typing and tracking
