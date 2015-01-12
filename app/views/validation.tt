@@ -15,7 +15,7 @@
     <h2>Install the perl module and script</h2>
 
     <p>
-      <a href="[% request.uri_for('validator/Bio-Metadata-Validator-1.150090.tar.gz') %]">
+      <a href="[% request.uri_for('resources/validator/Bio-Metadata-Validator-1.150090.tar.gz') %]">
         Download</a> the Perl module and script.
     </p>
     <p>
@@ -119,13 +119,13 @@ shell% </pre>
     <p>
       If you are creating the CSV file using a script or similar, you can see an
       example file in the bundle containing the Perl module and README. You can
-      <a href="[% request.uri_for('validator/HICF_checklist.tar.gz') %]">download</a> a
+      <a href="[% request.uri_for('resources/validator/HICF_checklist.tar.gz') %]">download</a> a
       tar archive containing the
-      <a href="[% request.uri_for('validator/HICF_checklist/midas_manifest_v2.xlsx') %]">
+      <a href="[% request.uri_for('resources/validator/HICF_checklist/midas_manifest_v2.xlsx') %]">
         manifest template</a> and example manifests in
-      <a href="[% request.uri_for('validator/HICF_checklist/example_manifest.xlsx') %]">
+      <a href="[% request.uri_for('resources/validator/HICF_checklist/example_manifest.xlsx') %]">
         Excel</a> and
-      <a href="[% request.uri_for('validator/HICF_checklist/example_manifest.csv') %]">
+      <a href="[% request.uri_for('resources/validator/HICF_checklist/example_manifest.csv') %]">
         CSV</a> formats.
     </p>
 
@@ -136,7 +136,7 @@ shell% </pre>
 
     <p>
       Download the checklist
-      <a href="[% request.uri_for('validator/HICF_checklist/HICF_checklist.conf') %]">
+      <a href="[% request.uri_for('resources/validator/HICF_checklist/HICF_checklist.conf') %]">
         configuration file</a>. It's easiest to run <code>validate_manifest</code>
       in the directory containing the config file, your manifest, and the
       ontology files ("envo-basic.obo", "BrendaTissueOBO", "gaz.obo").
@@ -188,14 +188,14 @@ files = {
   'invalid_rows.csv' => 'invalid rows found when validating <code>broken_manifest.csv</code>',
 };
 FOREACH file IN files.keys.sort -%]
-<dt><a href="[% request.uri_for('validator/HICF_checklist/' _ file) %]">[% file %]</a></dt>
+<dt><a href="[% request.uri_for('resources/validator/HICF_checklist/' _ file) %]">[% file %]</a></dt>
 <dd>[% files.$file %]</dd>
 [% END; # of FOREACH
 END -%]
 
     <dl class="dl-horizontal">
       <dt>
-        <a href="[% request.uri_for('validator/Bio-Metadata-Validator-1.150090.tar.gz') %]">
+        <a href="[% request.uri_for('resources/validator/Bio-Metadata-Validator-1.150090.tar.gz') %]">
           Bio-Metadata-Validator-1.150090.tar.gz</a>
       </dt>
       <dd>

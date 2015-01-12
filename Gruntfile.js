@@ -180,11 +180,29 @@ module.exports = function (grunt) {
               'bin/*',
               'lib/*',
               'views/**',
+              'public/resources/**',
               '{,*/}*.conf',
               '!**/.*.sw?',
-              'styles/fonts/{,*/}*.*'
             ],
             dest: '<%= config.dist %>'
+          },
+          {
+            expand: true,
+            dot: true,
+            cwd: '<%= config.app %>/public',
+            src: [
+              '*.png',
+              'browserconfig.xml',
+              'favicon.ico',
+            ],
+            dest: '<%= config.dist %>/public'
+          },
+          {
+            expand: true,
+            dot: true,
+            cwd: '<%= config.app %>/public/resources',
+            src: '**/*',
+            dest: '<%= config.dist %>/public/resources'
           },
           {
             expand: true,
