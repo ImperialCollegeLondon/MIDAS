@@ -1,0 +1,232 @@
+[%- contactUsURI = request.uri_for("/contact") %]
+
+<article class="container">
+
+  <h1>Validating a sample manifest</h1>
+
+  <p>
+    This document explains how to use the <code>validate_manifest</code> perl
+    script to check the contents of a sample manifest before deposition with
+    the HICF sample data repository.
+  </p>
+
+  <section>
+
+    <h2>Install the perl module and script</h2>
+
+    <p>
+      <a href="[% request.uri_for('validator/Bio-Metadata-Validator-1.150090.tar.gz') %]">
+        Download</a> the Perl module and script.
+    </p>
+    <p>
+      The usual way to install a Perl module is something like this:
+    </p>
+
+    <pre>
+shell% tar zxf Bio-Metadata-Validator-1.150070.tar.gz
+shell% cd Bio-Metadata-Validator-1.150070
+shell% perl Makefile.PL
+...
+shell% make install
+...</pre>
+
+    <p>
+      However, this module has quite a number of dependencies, so it may be
+      easier to use <code>cpanm</code> (see
+      <a class="ext" href="https://github.com/miyagawa/cpanminus">
+        https://github.com/miyagawa/cpanminus</a>)
+      to install the tarball directly. <code>cpanm</code> will detect and install the
+      pre-requisites automatically:
+    </p>
+
+    <pre>
+shell% cpanm Bio-Metadata-Validator-1.150070.tar.gz
+...</pre>
+
+    <p>
+      After installation you should be able to run the script something like:
+    </p>
+
+    <pre>
+shell% validate_manifest
+validate_manifest [-chiov] [long options...] <filename>
+      -c --config           path to the configuration file that defines the
+                            checklist
+      -o --output           write the validated CSV file to this file
+      -i --write-invalid    write invalid rows only
+      -v --verbose-errors   show full field descriptions in validation
+                            error messages
+      -h --help             print usage message
+shell% </pre>
+
+    <p>
+      You can use <code>validate_manifest -h</code> to see more detailed
+      documentation.
+    </p>
+
+  </section>
+  <section>
+
+    <h2>Download the ontologies</h2>
+
+    <p>
+      The checklist requires that certain fields (e.g. location) contain ontology
+      terms. The validation script can check that values in your manifest are found in
+      the required ontologies, but you need to download the ontology files and store
+      them locally first.
+    </p>
+    <p>
+      These are the three files that are needed:
+    </p>
+
+    <ul>
+      <li>
+        <a class="ext" href="http://purl.obolibrary.org/obo/subsets/envo-basic.obo">
+          http://purl.obolibrary.org/obo/subsets/envo-basic.obo</a> (0.5Mb)
+      </li>
+      <li>
+        <a class="ext" href="http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO">
+          http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO</a>
+        (1.8Mb)
+      </li>
+      <li>
+        <a class="ext" href="http://purl.obolibrary.org/obo/gaz.obo">
+          http://purl.obolibrary.org/obo/gaz.obo</a> (180Mb)
+      </li>
+    </ul>
+
+    <p>
+      If you change the names of the files for any reason, you will need to
+      edit the checklist configuration file accordingly.
+    </p>
+
+  </section>
+  <section>
+
+    <h2>Build your manifest</h2>
+
+    <p>
+      Your sample data must be formatted as a "comma-separated values" (CSV) file. If
+      you have sample data in Excel, you can export a CSV file using:
+    </p>
+
+      <p>
+        File <i class="fa fa-long-arrow-right"></i>
+        Save As... <i class="fa fa-long-arrow-right"></i>
+        Format: Window Comma Separated (.csv)
+      </p>
+
+    <p>
+      If you are creating the CSV file using a script or similar, you can see an
+      example file in the bundle containing the Perl module and README. You can
+      <a href="[% request.uri_for('validator/HICF_checklist.tar.gz') %]">download</a> a
+      tar archive containing the
+      <a href="[% request.uri_for('validator/HICF_checklist/midas_manifest_v2.xlsx') %]">
+        manifest template</a> and example manifests in
+      <a href="[% request.uri_for('validator/HICF_checklist/example_manifest.xlsx') %]">
+        Excel</a> and
+      <a href="[% request.uri_for('validator/HICF_checklist/example_manifest.csv') %]">
+        CSV</a> formats.
+    </p>
+
+  </section>
+  <section>
+
+    <h2>Validate the manifest</h2>
+
+    <p>
+      Download the checklist
+      <a href="[% request.uri_for('validator/HICF_checklist/HICF_checklist.conf') %]">
+        configuration file</a>. It's easiest to run <code>validate_manifest</code>
+      in the directory containing the config file, your manifest, and the
+      ontology files ("envo-basic.obo", "BrendaTissueOBO", "gaz.obo").
+    </p>
+
+    <pre>
+shell% validate_manifest -c HICF_checklist.conf example_manifest.csv
+'example_manifest.csv' is valid</pre>
+
+    <p>
+      Error messages are appended to invalid rows as an extra column, so that you can
+      re-import the file into Excel and view the error messages along with the data.
+      If you find problems with your manifest, you can write out the invalid rows and
+      check the embedded error messages:
+    </p>
+
+    <pre>
+shell% validate_manifest -c HICF_checklist.conf -o invalid_rows.csv -i broken_manifest.csv
+'broken_manifest.csv' is invalid. Found 1 invalid row.
+wrote only invalid rows from validated file to 'invalid_rows.csv'.
+shell% less invalid_rows.csv
+1,1,Example description,WTSI,703339,Staphylococcus aureus 04-02981,"Tate JG, Keane J",123,05/10/2013,GAZ:00444180,yes,Homo sapiens,healthy,BTO:0000645,,I,,630,,"tetracyclin;S;40,erythromycin;R;50;Peru",,,,,, [value in field 'collection_date' is not valid]</pre>
+
+    <p>
+      Scrolling to the end of the line you can see that there was a single
+      error on a one row of the manifest. In this case the date was specified
+      in an invalid format, using the default Excel format (05/10/2013) rather
+      than the required ISO format (e.g. 2013-10-05).
+    </p>
+
+  </section>
+
+  <section>
+
+    <h2>Resources</h2>
+
+    <p>
+      These are the files that you will need to run the validator:
+    </p>
+
+[% BLOCK manifest_links;
+files = {
+  'midas_manifest_v2.xlsx' => 'manifest template in Excel format',
+  'example_manifest.csv' => 'example of a valid manifest in CSV format',
+  'example_manifest.xlsx' => 'example of a valid manifest in Excel format',
+  'HICF_checklist.conf' => 'checklist configuration file',
+  '00README.txt' => 'README containing this documentation',
+  'broken_manifest.csv' => 'example of an invalid manifest in CSV format',
+  'invalid_rows.csv' => 'invalid rows found when validating <code>broken_manifest.csv</code>',
+};
+FOREACH file IN files.keys.sort -%]
+<dt><a href="[% request.uri_for('validator/HICF_checklist/' _ file) %]">[% file %]</a></dt>
+<dd>[% files.$file %]</dd>
+[% END; # of FOREACH
+END -%]
+
+    <dl class="dl-horizontal">
+      <dt>
+        <a href="[% request.uri_for('validator/Bio-Metadata-Validator-1.150090.tar.gz') %]">
+          Bio-Metadata-Validator-1.150090.tar.gz</a>
+      </dt>
+      <dd>
+        Perl module
+      </dd>
+      [% PROCESS manifest_links %]
+      <dt>
+        <a class="ext" href="http://purl.obolibrary.org/obo/subsets/envo-basic.obo">
+          http://purl.obolibrary.org/obo/subsets/envo-basic.obo</a>
+      </dt>
+      <dd>
+        Environment ontology
+      </dd>
+      <dt>
+        <a class="ext" href="http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO">
+          http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO</a>
+        (1.8Mb)
+      </dt>
+      <dd>
+        BRENDA tissue ontology
+      </dd>
+      <dt>
+        <a class="ext" href="http://purl.obolibrary.org/obo/gaz.obo">
+          http://purl.obolibrary.org/obo/gaz.obo</a> (180Mb)
+      </dt>
+      <dd>
+        Gazetteer ontology
+      </dd>
+    </dl>
+
+  </section>
+
+</article>
+
