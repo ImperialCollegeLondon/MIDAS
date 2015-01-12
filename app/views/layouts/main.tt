@@ -23,6 +23,7 @@
     <link href="styles/site.css" rel="stylesheet">
     <link href="styles/index.css" rel="stylesheet">
     <link href="styles/contact-us.css" rel="stylesheet">
+    <link href="styles/validation.css" rel="stylesheet">
     <link href="styles/images.css" rel="stylesheet">
     <!-- endbuild -->
 
