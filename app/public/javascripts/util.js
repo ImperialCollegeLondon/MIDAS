@@ -12,7 +12,8 @@ var HICF = {
     init: function() {
       "use strict";
       // application-wide code
-      // console.debug( "common.init: application-wide init code" );
+      console.debug( "common.init: application-wide init code" );
+      login.wireButtons();
     }
   },
 
@@ -21,13 +22,12 @@ var HICF = {
       "use strict";
       // controller-wide code
       console.debug( "index.init: controller-wide init code" );
-      indexPage.wireUI();
     },
 
     someAction: function() {
       "use strict";
       // action-specific code
-      // console.debug( "index.clicked: action-specific code" );
+      console.debug( "index.clicked: action-specific code" );
     }
   }
 };
@@ -50,12 +50,14 @@ var UTIL = {
     "use strict";
 
     var body       = document.body,
-        controller = body.getAttribute( "data-controller" ),
-        action     = body.getAttribute( "data-action" );
+        controller = body.dataset.controller,
+        action     = body.dataset.action;
+        // controller = body.getAttribute( "data-controller" ),
+        // action     = body.getAttribute( "data-action" );
 
     UTIL.exec( "common" );
     UTIL.exec( controller );         // run the init method first...
-    UTIL.exec( controller, action ); // then the specified method
+    // UTIL.exec( controller, action ); // then the specified method
   }
 };
 

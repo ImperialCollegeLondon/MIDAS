@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 
   <head>
@@ -35,6 +35,8 @@
     <![endif]-->
   </head>
 
+  [%# the body attributes are used for wiring in page-specific controllers. See:
+      http://viget.com/inspire/extending-paul-irishs-comprehensive-dom-ready-execution %]
   <body[% ' data-controller="' _ vars.controller _ '"' IF vars.controller;
           ' data-action="'     _ vars.action     _ '"' IF vars.action %]>
 
@@ -54,15 +56,23 @@
       ga('create', 'UA-57793061-1', 'auto');
       ga('send', 'pageview');
     </script>
+
+    [% IF settings.disable_piwik %]
+    <!-- DEVELOPMENT: piwik disabled -->
+    [% ELSE %]
     <script type="text/javascript" src="/zxtm/piwik2.js"></script>
+    [% END -%]
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
 
     <!-- build:js({app/public,.tmp}) javascripts/app.js -->
     <script src="javascripts/util.js"></script>
+    <script src="javascripts/login.js"></script>
     <script src="javascripts/index.js"></script>
     <!-- endbuild -->
+
+    <script src="//apis.google.com/js/client:platform.js?onload=start" async defer></script>
 
   </body>
 

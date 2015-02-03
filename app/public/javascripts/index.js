@@ -24,15 +24,6 @@ var indexPage = (function() {
     //   console.debug( "the public property contains:  |" + this.publicProperty + "|" );
     // },
 
-    wireUI: function() {
-
-      $("#signInSubmitButton").on( "click", function() {
-        $("#signInModal").modal("hide");
-        $("#signInButton").button("signedin")
-                          .prop("disabled", true );
-      } );
-    }
-
   };
 
 })();
