@@ -15,7 +15,7 @@
     <h2>Install the perl module and script</h2>
 
     <p>
-      <a href="[% request.uri_for('resources/validator/Bio-Metadata-Validator-1.150090.tar.gz') %]">
+      <a href="[% request.uri_for('resources/validator/Bio-Metadata-Validator-1.150340.tar.gz') %]">
         Download</a> the Perl module and script.
     </p>
     <p>
@@ -23,8 +23,8 @@
     </p>
 
     <pre>
-shell% tar zxf Bio-Metadata-Validator-1.150070.tar.gz
-shell% cd Bio-Metadata-Validator-1.150070
+shell% tar zxf Bio-Metadata-Validator-1.150340.tar.gz
+shell% cd Bio-Metadata-Validator-1.150340
 shell% perl Makefile.PL
 ...
 shell% make install
@@ -40,7 +40,7 @@ shell% make install
     </p>
 
     <pre>
-shell% cpanm Bio-Metadata-Validator-1.150070.tar.gz
+shell% cpanm Bio-Metadata-Validator-1.150340.tar.gz
 ...</pre>
 
     <p>
@@ -158,7 +158,7 @@ shell% validate_manifest -c HICF_checklist.conf -o invalid_rows.csv -i broken_ma
 'broken_manifest.csv' is invalid. Found 1 invalid row.
 wrote only invalid rows from validated file to 'invalid_rows.csv'.
 shell% less invalid_rows.csv
-1,1,Example description,WTSI,703339,Staphylococcus aureus 04-02981,"Tate JG, Keane J",123,05/10/2013,GAZ:00444180,yes,Homo sapiens,healthy,BTO:0000645,,I,,630,,"tetracyclin;S;40,erythromycin;R;50;Peru",,,,,, [value in field 'collection_date' is not valid]</pre>
+1,1,Example description,CAMBRIDGE,703339,Staphylococcus aureus 04-02981,"Tate JG, Keane J",123,05/10/2013,GAZ:00444180,yes,Homo sapiens,healthy,BTO:0000645,inpatient,,I,,630,,"tetracyclin;S;40,erythromycin;R;50;Peru",,,,,, [value in field 'collection_date' is not valid]</pre>
 
     <p>
       Scrolling to the end of the line you can see that there was a single
@@ -179,8 +179,8 @@ shell% less invalid_rows.csv
 
     <dl class="dl-horizontal">
       <dt>
-        <a href="[% request.uri_for('resources/validator/Bio-Metadata-Validator-1.150090.tar.gz') %]">
-          Bio-Metadata-Validator-1.150090.tar.gz</a>
+        <a href="[% request.uri_for('resources/validator/Bio-Metadata-Validator-1.150340.tar.gz') %]">
+          Bio-Metadata-Validator-1.150340.tar.gz</a>
       </dt>
       <dd>
         Perl module
