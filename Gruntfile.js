@@ -272,7 +272,7 @@ module.exports = function (grunt) {
         command: 'sed "s:__CWD__:"`pwd`":" test_server/nginx.conf.template > test_server/nginx.conf'
       },
       startBackend: {
-        command: 'starman --listen :8000 -E development --pid test_server/starman.pid --daemonize app/bin/app.pl'
+        command: 'starman --listen :8000 -E development --pid test_server/starman.pid --daemonize --error_log test_server/starman.log app/bin/app.pl'
       },
       restartBackend: {
         command: 'kill -HUP `cat test_server/starman.pid`'
@@ -302,6 +302,10 @@ module.exports = function (grunt) {
         files: [ '<%= config.app %>/public/images/**/*' ],
         tasks: [ 'glue' ]
       },
+      perl: {
+        files: [ '<%= config.app %>/lib/**/*' ],
+        tasks: [ 'shell:restartBackend' ],
+      },
       // styles: {
       //   files: ['<%= config.app %>/public/styles/{,*/}*.css'],
       //   tasks: ['newer:copy:styles', 'autoprefixer']
@@ -318,20 +322,26 @@ module.exports = function (grunt) {
           '<%= config.app %>/views/**/*.tt',
           '.tmp/styles/{,*/}*.css',
           '<%= config.app %>/public/javascripts/**/*',
-          '<%= config.app %>/public/images/**/*'
+          '<%= config.app %>/public/images/**/*',
+          '<%= config.app %>/lib/**/*',
         ]
       }
     },
 
     // Run some tasks in parallel to speed up build process
     concurrent: {
-      startServers: [
-        'sass:server',
-        'glue',
-        'copy:styles',
-        'shell:startBackend',
-        'nginx:start'
-      ],
+      startServers: {
+        tasks: [
+          'sass:server',
+          'glue',
+          'copy:styles',
+          'shell:startBackend',
+          'nginx:start'
+        ],
+        options: {
+          limit: 5
+        },
+      },
       stopServers: [
         'shell:stopBackend',
         'nginx:stop'
