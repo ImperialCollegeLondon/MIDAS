@@ -28,7 +28,7 @@
           data-clientid="[% client_id %]"
           data-cookiepolicy="single_host_origin"
           data-redirecturi="postmessage"
-          data-scope="https://www.googleapis.com/auth/plus.login"
+          data-scope="https://www.googleapis.com/auth/userinfo.email"
           data-theme="light">
         </span>
       </div>

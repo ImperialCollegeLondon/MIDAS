@@ -37,19 +37,19 @@ var login = (function() {
               window.location = decodeURIComponent( returnUrl );
             }
           }
-          $('#signInButton').hide('slow');
+          $('#signInButton').hide();
           $('#signOutButton').show();
         })
         .fail(function(jqXHR, error) {
           console.error( "login.signInCallback: server-side connection failed: ", error );
-          $('#signInButton').show('slow');
+          $('#signInButton').show();
           $('#signOutButton').hide();
         });
 
       } else if (authResult["error"]) {
         console.warn( "login.signInCallback: there was an error while signing in: ",
                       authResult['error'] );
-        $('#signInButton').show('slow');
+        $('#signInButton').show();
         $('#signOutButton').hide();
       }
     },

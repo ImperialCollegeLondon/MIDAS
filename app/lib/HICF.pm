@@ -1,8 +1,10 @@
 
 package HICF;
 
+use Moo;
 use Dancer2;
 use Dancer2::Plugin::Ajax;
+use Dancer2::Plugin::DBIC qw( schema resultset );
 use Dancer2::Plugin::Auth::Tiny;
 use URI;
 use LWP::UserAgent;
@@ -19,13 +21,15 @@ our $VERSION = '0.1';
 hook before_template_render => sub {
   my $tokens = shift;
 
-  # generate a state token
+  # generate a state token for every request
   my $state = '';
   $state .= ['0'..'9','A'..'Z','a'..'z']->[rand 52] for 1..32;
 
   session state => $state;
 
-  $tokens->{state}     = $state;
+  $tokens->{state} = $state;
+
+  # shortcuts to the g+ client ID and the logger
   $tokens->{client_id} = config->{oauth2}->{google}->{web}->{client_id};
   $tokens->{logger}    = app->logger_engine;
 };
@@ -50,8 +54,17 @@ ajax [ 'post' ] => '/connect' => sub {
 
   debug 'state parameter matches session state';
 
-  # now we can go on to exchange the one-time code for an access token
-  my $tokens = _exchange_code_for_token( request->body );
+  # now we can go on to exchange the (one-time) authorization code for an
+  # access token
+  my $tokens;
+  try {
+    $tokens = _exchange_code_for_token( request->body );
+  }
+  catch ($e) {
+    warn "error response when trying to exchange authorization code for access token: $e->{error}";
+    status 401; # unauthorized
+    return $e->{error};
+  }
 
   session tokens => $tokens;
 
@@ -62,9 +75,26 @@ ajax [ 'post' ] => '/connect' => sub {
        $gplus_id eq $stored_gplus_id ) {
     info 'current user is already connected';
     return '"Current user is already connected"';
+    # (the returned message is double quoted because it's returned to the
+    # browser and interpreted as JSON. If it's not quoted, the browser's JSON
+    # parser spits the dummy)
   }
 
   session gplus_id => $gplus_id;
+
+  # retrieve profile information and confirm that the user is authorized to sign in
+  my $profile;
+  try {
+    $profile = _get_profile( $tokens->{access_token} );
+  }
+  catch ($e) {
+    warn "error response when trying to retrieve profile information: $e->{error}";
+    status 500; # internal server error
+    return $e->{error};
+  }
+
+  # TODO check the user's profile against the database to decide if they're
+  # TODO authorized to sign in
 
   return '"Successfully connected user"';
 };
@@ -81,28 +111,22 @@ sub _exchange_code_for_token {
     redirect_uri  => 'postmessage',
     code          => $code,
     grant_type    => 'authorization_code',
-    scope         => 'https://www.googleapis.com/auth/plus.login',
-    # (see https://developers.google.com/+/api/oauth#login-scopes)
+    scope         => 'https://www.googleapis.com/auth/userinfo.email',
+    # the scope here should match that in the HTML that builds the signin
+    # button, in navbar.tt
+    # (see https://developers.google.com/+/api/oauth#login-scopes for info on scopes)
   };
 
   my $ua = LWP::UserAgent->new;
   $ua->env_proxy;
   my $response = $ua->post( $client_secret->{token_uri}, $params );
 
-  if ( ! $response->is_success ) {
-    warn 'error response when trying to exchange code for access token';
-    status 401; # unauthorized
-    return '"Failed to exchange code for token"';
-  }
+  die { error => '"Failed to exchange code for token"' } unless $response->is_success;
 
   # unpack the token
   my $token = from_json $response->content;
 
-  unless ( exists $token->{access_token} ) {
-    warn 'did not receive access token';
-    status 401; # unauthorized
-    return '"Did not receive an access token"';
-  }
+  die { error => '"Did not receive an access token"' } unless exists $token->{access_token};
 
   # ACCESS TOKEN
   my $access_token = $token->{access_token};
@@ -126,50 +150,33 @@ sub _exchange_code_for_token {
     id_token => $extracted_id_token,
   };
 
-};
+}
 
-#   # unpack the token and store the user ID
-#   my $id_token = $token_hash->{id_token};
-#   my @segments = split '\.', $id_token;
-#   my $decoded_segment = urlsafe_b64decode $segments[1];
-#
-#   return from_json $decoded_segment;
-#   my $decoded_token;
-#   try {
-#     $decoded_token = _decode_token( $response->content );
-#   }
-#   catch ($e) {
-#     status 401; # unauthorized
-#     return to_json { error => 'Failed to upgrade the authorization code' };
-#   }
-#
-#   my $gplus_id = $decoded_token->{sub};
-#   my $stored_gplus_id = session('gplus_id');
-#
-#   # see if the user is already signed in
-#   if ( $stored_gplus_id and
-#        $gplus_id eq $stored_gplus_id ) {
-#     info 'current user is already connected';
-#
-#     return to_json { message => 'Current user is already connected' };
-#   }
-#
-#   session gplus_id => $gplus_id;
-#
-#   return to_json { message => 'Successfully connected user' };
-# };
-#
-# #---------------------------------------
-#
-# sub _decode_token {
-#   my $token_hash = shift;
-#
-#   my $id_token = $token_hash->{id_token};
-#   my @segments = split '\.', $id_token;
-#   my $decoded_segment = urlsafe_b64decode $segments[1];
-#
-#   return from_json $decoded_segment;
-# }
+#---------------------------------------
+
+sub _get_profile {
+  my $access_token = shift;
+
+  my $ua = LWP::UserAgent->new;
+  $ua->env_proxy;
+
+  my $credentials = config->{oauth2}->{google}->{web};
+
+  my $uri = 'https://www.googleapis.com/plus/v1/people/me';
+  my $response = $ua->get( $uri, 'Authorization', "Bearer $access_token" );
+
+  die { error => '"Failed to retrieve profile information"' }
+    unless $response->is_success;
+
+  debug 'profile: ' . $response->content;
+
+  my $gplus_profile = from_json $response->content;
+  return {
+    id    => $gplus_profile->{id},
+    name  => $gplus_profile->{displayname},
+    email => $gplus_profile->{emails}->[0]->{value},
+  };
+}
 
 #-------------------------------------------------------------------------------
 
