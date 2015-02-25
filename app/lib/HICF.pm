@@ -12,22 +12,28 @@ get '/' => sub {
   template 'index';
 };
 
-get '/validation' => sub {
+get '/validation'  => \&_validation;
+get '/validation/' => \&_validation;
+
+sub _validation {
   var controller => 'validation';
 
   template 'validation', {
                         title       => 'Validation',
                         breadcrumbs => [ 'Validation' ]
                       };
-};
+}
 
-get '/contact' => sub {
+get '/contact'  => \&_contact;
+get '/contact/' => \&_contact;
+
+sub _contact {
   var controller => 'contact';
 
   template 'contact', {
                         title       => 'Contact us',
                         breadcrumbs => [ 'Contact us' ]
                       };
-};
+}
 
 true;
