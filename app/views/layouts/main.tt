@@ -19,7 +19,7 @@
     <link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.0/flatly/bootstrap.min.css" rel="stylesheet">
 
     <!-- app CSS -->
-    <!-- build:css({app/public,.tmp}) styles/app.css -->
+    <!-- build:css({app/public,.tmp}) /styles/app.css -->
     <link href="styles/site.css" rel="stylesheet">
     <link href="styles/index.css" rel="stylesheet">
     <link href="styles/contact-us.css" rel="stylesheet">
@@ -59,7 +59,7 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
 
-    <!-- build:js({app/public,.tmp}) javascripts/app.js -->
+    <!-- build:js({app/public,.tmp}) /javascripts/app.js -->
     <script src="javascripts/util.js"></script>
     <script src="javascripts/index.js"></script>
     <!-- endbuild -->
