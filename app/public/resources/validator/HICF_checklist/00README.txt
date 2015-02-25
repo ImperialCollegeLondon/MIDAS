@@ -44,19 +44,28 @@ After installation you should be able to run the script something like:
 
 You can use validate_manifest -h to see more detailed documentation.
 
-Download the ontologies
------------------------
+Download the ontologies and taxonomy data
+-----------------------------------------
 
 The checklist requires that certain fields (e.g. location) contain ontology
-terms. The validation script can check that values in your manifest are found
-in the required ontologies, but you need to download the ontology files and
-store them locally first.
+terms and others (e.g. scientific_name) contain valid scientific names or tax
+IDs for organisms. The validation script can check that values in your manifest
+are found in the required ontologies or the taxonomy tree, but you need to
+download the data files and store them locally first. 
 
-These are the three files that are needed:
+These are the three ontology files that are needed:
 
   http://purl.obolibrary.org/obo/subsets/envo-basic.obo (0.5Mb)
   http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTissueOBO (1.8Mb)
   http://purl.obolibrary.org/obo/gaz.obo (180Mb)
+
+There is one taxonomy file, but it is only available as a tar archive:
+
+  ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz (30Mb)
+
+After downloading the tar file, you need to extract the "names.dmp" file:
+
+  shell% tar zxf taxdump.tar.gz names.dmp
 
 If you change the names of the files for any reason, you will need to edit the
 checklist configuration file accordingly.
@@ -127,7 +136,9 @@ http://www.brenda-enzymes.info/ontology/tissue/tree/update/update_files/BrendaTi
     BRENDA tissue ontology
 http://purl.obolibrary.org/obo/gaz.obo (180Mb)
     Gazetteer ontology
+ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
+    NCBI taxonomy
+ 
 
-
-jt6 20150112 WTSI
+jt6 20150225 WTSI
 
