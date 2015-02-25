@@ -1,0 +1,5 @@
+
+<p id="loginMessage" data-returnurl="[% return_url %]">
+  Please login to continue.
+</p>
+

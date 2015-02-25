@@ -1,0 +1,111 @@
+
+// site.scss
+// jt6 20111418 WTSI
+//
+// rules that are applicable to the whole site
+
+@import "flatly/variables";
+
+$link-color: #1686ba; // rgba(22, 134, 186, 1);
+
+a {
+  color: $link-color; // rgba(53, 115, 177, 1);
+
+  &:hover, &:focus {
+    color: darken($link-color, 20%);
+  }
+
+  // add a FA icon to a link to denote a URL for an external site
+  $icon-font-size: 0.6em;
+
+  &.ext {
+    position: relative;
+    padding-right: $icon-font-size;
+
+    &:before {
+      position: absolute;
+      font-family: FontAwesome;
+      vertical-align: super;
+      font-size: $icon-font-size;
+      right: 0;
+      content: "\f08e";
+    }
+  }
+}
+
+.navbar {
+  margin-bottom: 0;
+}
+
+.breadcrumb {
+  margin: 3.5px 0;
+}
+
+#signInButton {
+  margin: 3.5px 0 7px 0;
+}
+
+// set up the breadcrumbs to match the dimensions of the sign-in button
+.breadcrumb {
+  // margin-top: 13.5px;
+  // margin-bottom: 13.5px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+@media ( min-width: 768px ) {
+  .breadcrumb {
+    margin-top: 13.5px;
+    margin-bottom: 13.5px;
+  }
+  #signInButton {
+    margin: 13.5px 0 13.5px 0;
+  }
+}
+
+footer {
+  background: $gray-lighter;
+  color: lighten($brand-primary, 20%);
+  font-size: smaller;
+
+  ul {
+    list-style: none outside none;
+    margin: 1em 0;
+    padding: 0;
+  }
+
+  li {
+    list-style: none outside none;
+    display: inline-block;
+    margin-left: 2em;
+  }
+
+  p {
+    margin: 10px 0;;
+  }
+
+  p.support {
+    float: right;
+  }
+
+  a.wt-link,
+  a.dh-link {
+    display: block;
+  }
+}
+
+.partners {
+  margin: 30px 0;
+}
+
+.partner {
+  background-repeat: no-repeat;
+  background-position: center top;
+}
+
+.partner-info {
+  font-size: 12px;
+}
+

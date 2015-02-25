@@ -1,2 +1,0 @@
-raw data accession,sample accession,sample description,collected at,tax ID,scientific name,collected by,source,collection date,location,host associated,specific host,host disease status,host isolation source,isolation source,serovar,other classification,strain,isolate,antimicrobial resistance,,,,,
-1,1,Example description,CAMBRIDGE,703339,Staphylococcus aureus 04-02981,"Tate JG, Keane J",123,05-10-2013,GAZ:00444180,yes,Homo sapiens,healthy,BTO:0000645,,I,,630,,"tetracyclin;S;40,erythromycin;R;50;Peru",,,,,, [value in field 'collection_date' is not valid]

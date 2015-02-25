@@ -58,7 +58,7 @@ module.exports = function (grunt) {
       },
       all: [
         'Gruntfile.js',
-        '<%= config.app %>/public/javascripts/{,*/}*.js',
+        '<%= config.app %>/root/static/javascripts/{,*/}*.js',
         'test/spec/{,*/}*.js'
       ]
     },
@@ -77,10 +77,10 @@ module.exports = function (grunt) {
     filerev: {
       assets: {
         src: [
-          '<%= config.dist %>/public/javascripts/{,*/}*.js',
-          '<%= config.dist %>/public/styles/{,*/}*.css',
-          '<%= config.dist %>/public/*.{ico,png}',
-          '<%= config.dist %>/public/images/**/*'
+          '<%= config.dist %>/root/static/javascripts/{,*/}*.js',
+          '<%= config.dist %>/root/static/styles/{,*/}*.css',
+          '<%= config.dist %>/root/static/*.{ico,png}',
+          '<%= config.dist %>/root/static/images/**/*'
         ]
       }
     },
@@ -89,23 +89,23 @@ module.exports = function (grunt) {
     // renamed with version IDs
     useminPrepare: {
       options: {
-        dest: '<%= config.dist %>/public'
+        dest: '<%= config.dist %>/root/static'
       },
-      html: '<%= config.app %>/views/layouts/main.tt'
+      html: '<%= config.app %>/root/wrapper.tt'
     },
 
     // rewrites and renames asset files
     usemin: {
       options: {
         assetsDirs: [
-          '<%= config.dist %>/public',
-          '<%= config.dist %>/public/javascripts',
-          '<%= config.dist %>/public/images',
-          '<%= config.dist %>/public/styles'
+          '<%= config.dist %>/root/static',
+          '<%= config.dist %>/root/static/javascripts',
+          '<%= config.dist %>/root/static/images',
+          '<%= config.dist %>/root/static/styles'
         ]
       },
-      html: ['<%= config.dist %>/views/{,*/}*.tt'],
-      css: ['<%= config.dist %>/public/styles/{,*/}*.css']
+      html: ['<%= config.dist %>/root/{,*/}*.tt'],
+      css: ['<%= config.dist %>/root/static/styles/{,*/}*.css']
     },
 
     // The following *-min tasks produce minified files in the dist folder
@@ -113,9 +113,9 @@ module.exports = function (grunt) {
       dist: {
         files: [{
           expand: true,
-          cwd: '<%= config.app %>/public/images',
+          cwd: '<%= config.app %>/root/static/images',
           src: '{,*/}*.{gif,jpeg,jpg,png}',
-          dest: '<%= config.dist %>/public/images'
+          dest: '<%= config.dist %>/root/static/images'
         }]
       }
     },
@@ -158,7 +158,7 @@ module.exports = function (grunt) {
     // build sprites
     glue: {
       images: {
-        src:  '<%= config.app %>/public/images',
+        src:  '<%= config.app %>/root/static/images',
         options: '--css=.tmp/styles --img=.tmp/images --cachebuster --recursive'
       }
     },
@@ -177,11 +177,14 @@ module.exports = function (grunt) {
             dot: true,
             cwd: '<%= config.app %>',
             src: [
-              'bin/*',
+              'Changes',
+              'Makefile.PL',
+              'README',
               'lib/*',
-              'views/**',
-              'public/resources/**',
               '{,*/}*.conf',
+              'midas.psgi',
+              'root/static/resources/**',
+              'script/*',
               '!**/.*.sw?',
             ],
             dest: '<%= config.dist %>'
@@ -189,34 +192,27 @@ module.exports = function (grunt) {
           {
             expand: true,
             dot: true,
-            cwd: '<%= config.app %>/public',
+            cwd: '<%= config.app %>/root/static',
             src: [
               '*.png',
               'browserconfig.xml',
               'favicon.ico',
             ],
-            dest: '<%= config.dist %>/public'
-          },
-          {
-            expand: true,
-            dot: true,
-            cwd: '<%= config.app %>/public/resources',
-            src: '**/*',
-            dest: '<%= config.dist %>/public/resources'
+            dest: '<%= config.dist %>/root/static'
           },
           {
             expand: true,
             dot: true,
             cwd: '.tmp/images',
             src: '**/*',
-            dest: '<%= config.dist %>/public/images'
+            dest: '<%= config.dist %>/root/static/images'
           }
         ]
       },
       styles: {
         expand: true,
         dot: true,
-        cwd: '<%= config.app %>/public/styles',
+        cwd: '<%= config.app %>/root/static/styles',
         src: '{,*/}*.css',
         dest: '.tmp/styles/'
       }
@@ -228,7 +224,7 @@ module.exports = function (grunt) {
       dist: {
         files: [{
           expand: true,
-          cwd: '<%= config.app %>/public/styles',
+          cwd: '<%= config.app %>/root/static/styles',
           src: ['{,*/}*.{scss,sass}'],
           dest: '.tmp/styles',
           ext: '.css'
@@ -237,7 +233,7 @@ module.exports = function (grunt) {
       server: {
         files: [{
           expand: true,
-          cwd: '<%= config.app %>/public/styles',
+          cwd: '<%= config.app %>/root/static/styles',
           src: ['{,*/}*.{scss,sass}'],
           dest: '.tmp/styles',
           ext: '.css'
@@ -271,20 +267,33 @@ module.exports = function (grunt) {
       buildNginxConf: {
         command: 'sed "s:__CWD__:"`pwd`":" test_server/nginx.conf.template > test_server/nginx.conf'
       },
-      startBackend: {
-        command: 'starman --listen :8000 -E development --pid test_server/starman.pid --daemonize app/bin/app.pl'
+      backend: {
+        command: function(option) {
+          if ( option === 'start' ) {
+            return 'starman --pid test_server/midas.pid --listen :8000 --daemonize --access-log test_server/midas_access.log --error-log test_server/midas_error.log app/midas.psgi';
+          } else if ( option === 'stop' ) {
+            return 'kill -TERM `cat test_server/midas.pid`';
+          } else if ( option === 'restart' ) {
+            return 'kill -HUP `cat test_server/midas.pid`';
+          }
+        }
       },
-      restartBackend: {
-        command: 'kill -HUP `cat test_server/starman.pid`'
-      },
-      stopBackend: {
-        command: 'kill -TERM `cat test_server/starman.pid`'
-      }
+
+      // to run the backend under starman, listening on a socket
+      // command: 'starman --pid test_server/midas.pid --listen :8000 --daemonize --access-log test_server/midas_access.log --error-log test_server/midas_error.log app/midas.psgi',
+
+      // ideally we'd run the backend as a FastCGI process, listening on a socket, but
+      // for some reason the script doesn't create a socket for nginx to listen to.
+      // We should be running the producion server under FastCGI though.
+      // command: 'app/script/midas_fastcgi.pl --pidfile test_server/midas.pid --daemon --listen /Users/jt6/Work/HICF/modules/MIDAS/test_server/midas.socket'
+
+      // dancer setup
+      // command: 'starman --listen :8000 -E development --pid test_server/starman.pid --daemonize app/bin/app.pl'
     },
 
     watch: {
       js: {
-        files: ['<%= config.app %>/public/javascripts/{,*/}*.js'],
+        files: ['<%= config.app %>/root/static/javascripts/{,*/}*.js'],
         tasks: ['jshint']
       },
       // jstest: {
@@ -295,12 +304,16 @@ module.exports = function (grunt) {
         files: ['Gruntfile.js']
       },
       sass: {
-        files: ['<%= config.app %>/public/styles/{,*/}*.{scss,sass}'],
+        files: ['<%= config.app %>/root/static/styles/{,*/}*.{scss,sass}'],
         tasks: [ 'sass:server', 'autoprefixer' ],
       },
       images: {
-        files: [ '<%= config.app %>/public/images/**/*' ],
+        files: [ '<%= config.app %>/root/static/images/**/*' ],
         tasks: [ 'glue' ]
+      },
+      perl: {
+        files: [ '<%= config.app %>/lib/**/*.pm' ],
+        tasks: [ 'shell:backend:restart' ],
       },
       // styles: {
       //   files: ['<%= config.app %>/public/styles/{,*/}*.css'],
@@ -315,25 +328,31 @@ module.exports = function (grunt) {
           livereload: 35729
         },
         files: [
-          '<%= config.app %>/views/**/*.tt',
+          '<%= config.app %>/root/**/*.tt',
           '.tmp/styles/{,*/}*.css',
-          '<%= config.app %>/public/javascripts/**/*',
-          '<%= config.app %>/public/images/**/*'
+          '<%= config.app %>/root/static/javascripts/**/*',
+          '<%= config.app %>/root/static/images/**/*',
+          '<%= config.app %>/lib/**/*.pm'
         ]
       }
     },
 
     // Run some tasks in parallel to speed up build process
     concurrent: {
-      startServers: [
-        'sass:server',
-        'glue',
-        'copy:styles',
-        'shell:startBackend',
-        'nginx:start'
-      ],
+      startServers: {
+        tasks: [
+          'sass:server',
+          'glue',
+          'copy:styles',
+          'shell:backend:start',
+          'nginx:start'
+        ],
+        options: {
+          limit: 8
+        }
+      },
       stopServers: [
-        'shell:stopBackend',
+        'shell:backend:stop',
         'nginx:stop'
       ],
       test: [
@@ -355,12 +374,12 @@ module.exports = function (grunt) {
 
   });
 
-  // starts the perl backend (starman/dancer) and the nginx frontend
+  // starts the perl backend (fastcgi script) and the nginx frontend
   grunt.registerTask('startServers', function() {
 
     // avoid an error if the servers are already running
     if ( grunt.file.exists('test_server/nginx.pid') ||
-         grunt.file.exists('test_server/starman.pid') ) {
+         grunt.file.exists('test_server/midas.pid') ) {
       grunt.log.warn( 'WARNING: servers are still running; stopping them before trying to start' );
       grunt.task.run('concurrent:stopServers');
     }
