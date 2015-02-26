@@ -5,7 +5,8 @@ use Moose::Role;
 with 'HTML::FormHandler::Widget::Theme::Bootstrap3';
 
 sub build_update_subfields {
-  print STDERR "***************************************** build_update_subfields\n";
+  # show that we're actually trying to configure the form using this theme...
+  # print STDERR "***************************************** build_update_subfields\n";
 
   return {
     username => {

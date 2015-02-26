@@ -62,13 +62,14 @@ __PACKAGE__->config(
 
   'Plugin::Static::Simple' => {
     include_path => [
-      '.tmp',
+      '../.tmp',
       __PACKAGE__->config->{root} . '/static',
     ],
   },
 
   'Plugin::Authentication' => {
-    default => {
+    default_realm => 'db',
+    plain => {
       credential => {
         class => 'Password',
         password_field => 'password',
@@ -88,6 +89,19 @@ __PACKAGE__->config(
             roles => [ qw( user ) ]
           },
         }
+      }
+    },
+    db => {
+      credential => {
+        class => 'Password',
+        password_field => 'password',
+        password_type => 'self_check',
+      },
+      store => {
+        class => 'DBIx::Class',
+        user_model => 'HICFDB::User',
+        # role_relation => 'roles',
+        # role_field => 'rolename',
       }
     }
   }
