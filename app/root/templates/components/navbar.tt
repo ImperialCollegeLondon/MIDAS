@@ -19,15 +19,32 @@
         <li class="active">[% lastCrumb %]</li>
       </ol>
       [% END # of IF breadcrumbs.defined %]
+
+      <button class="btn btn-default btn-sm navbar-btn navbar-right"
+              id="signInButton"
+              [%- IF c.user_exists %]
+              style="display: none"
+              [%- END %]
+              type="button">Sign in</button>
+      <button class="btn btn-default btn-sm navbar-btn navbar-right"
+              id="signOutButton"
+              [%- IF NOT c.user_exists %]
+              style="display: none"
+              [%- END %]
+              type="button">Sign out</button>
+
+      [%#
       <button class="btn btn-default btn-sm navbar-btn navbar-right"
               id="signInButton"
               type="button"
               data-signedin-text="Sign out"
               data-toggle="modal"
               data-target="#signInModal">Sign in</button>
+      %]
   </div>
 </nav>
 
+[%#
 <!-- modal -->
 <div class="modal" id="signInModal" tabindex="-1" role="dialog" aria-labelledby="signInModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -52,4 +69,5 @@
     </div>
   </div>
 </div>
+%]
 

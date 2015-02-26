@@ -30,8 +30,13 @@ The root page (/)
 
 =cut
 
-sub index :Path :Args(0) {
+sub index : Path Args(0) {
   my ( $self, $c ) = @_;
+
+  if ( $c->user_exists ) {
+    $c->log->debug( 'user exists' )
+      if $c->debug;
+  }
 
   $c->stash( template => 'pages/index.tt' );
 }
@@ -44,7 +49,7 @@ The contact page.
 
 =cut
 
-sub contact :Local :Args(0) {
+sub contact : Local Args(0) {
   my ( $self, $c ) = @_;
 
   $c->stash( template => 'pages/contact.tt' );
@@ -58,10 +63,18 @@ The validation
 
 =cut
 
-sub validation :Local :Args(0) {
+sub validation : Local Args(0) {
   my ( $self, $c ) = @_;
 
   $c->stash( template => 'pages/validation.tt' );
+}
+
+#-------------------------------------------------------------------------------
+
+sub secret : Local Does('NeedsLogin') {
+  my ( $self, $c ) = @_;
+
+  $c->res->body( 'secret' );
 }
 
 #-------------------------------------------------------------------------------
@@ -72,11 +85,13 @@ Standard 404 error page
 
 =cut
 
-sub default :Path {
+sub default : Path {
     my ( $self, $c ) = @_;
     $c->response->body( 'Page not found' );
     $c->response->status(404);
 }
+
+#-------------------------------------------------------------------------------
 
 =head2 end
 
@@ -85,6 +100,8 @@ Attempt to render a view, if needed.
 =cut
 
 sub end : ActionClass('RenderView') {}
+
+#-------------------------------------------------------------------------------
 
 =head1 AUTHOR
 

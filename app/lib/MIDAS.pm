@@ -19,7 +19,11 @@ use Catalyst::Runtime 5.80;
 use Catalyst qw/
     -Debug
     ConfigLoader
+    +CatalystX::SimpleLogin
     Authentication
+    Session
+    Session::Store::File
+    Session::State::Cookie
     Static::Simple
 /;
 
@@ -62,6 +66,31 @@ __PACKAGE__->config(
       __PACKAGE__->config->{root} . '/static',
     ],
   },
+
+  'Plugin::Authentication' => {
+    default => {
+      credential => {
+        class => 'Password',
+        password_field => 'password',
+        password_type => 'clear',
+      },
+      store => {
+        class => 'Minimal',
+        users => {
+          alice => {
+            name => 'Alice',
+            password => 'alicepass',
+            roles => [ qw( admin user ) ]
+          },
+          bob => {
+            name => 'Bob',
+            password => 'bobpass',
+            roles => [ qw( user ) ]
+          },
+        }
+      }
+    }
+  }
 );
 
 # Start the application
