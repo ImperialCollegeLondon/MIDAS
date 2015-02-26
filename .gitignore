@@ -4,7 +4,7 @@
 node_modules/
 bower_components/
 dist/
-.*_local.conf
+*_local.conf
 
 # vim swap files
 .*.sw?
