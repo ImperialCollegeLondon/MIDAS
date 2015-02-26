@@ -33,11 +33,6 @@ The root page (/)
 sub index : Path Args(0) {
   my ( $self, $c ) = @_;
 
-  if ( $c->user_exists ) {
-    $c->log->debug( 'user exists' )
-      if $c->debug;
-  }
-
   $c->stash( template => 'pages/index.tt' );
 }
 
@@ -52,7 +47,11 @@ The contact page.
 sub contact : Local Args(0) {
   my ( $self, $c ) = @_;
 
-  $c->stash( template => 'pages/contact.tt' );
+  $c->stash(
+    breadcrumbs => ['Contact us'],
+    template    => 'pages/contact.tt',
+    title       => 'Contact us',
+  );
 }
 
 #-------------------------------------------------------------------------------
@@ -66,17 +65,25 @@ The validation
 sub validation : Local Args(0) {
   my ( $self, $c ) = @_;
 
-  $c->stash( template => 'pages/validation.tt' );
+  $c->stash(
+    breadcrumbs => ['Validation'],
+    template    => 'pages/validation.tt',
+    title       => 'Validation',
+  );
 }
 
+#-------------------------------------------------------------------------------
+#- protected actions -----------------------------------------------------------
 #-------------------------------------------------------------------------------
 
 sub secret : Local Does('NeedsLogin') {
   my ( $self, $c ) = @_;
 
-  $c->res->body( 'secret' );
+  $c->stash( template => 'pages/secret.tt' );
 }
 
+#-------------------------------------------------------------------------------
+#- boilerplate actions ---------------------------------------------------------
 #-------------------------------------------------------------------------------
 
 =head2 default

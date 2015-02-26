@@ -67,6 +67,10 @@ __PACKAGE__->config(
     ],
   },
 
+  'Controller::Login' => {
+    traits => ['-RenderAsTTTemplate'],
+  },
+
   'Plugin::Authentication' => {
     default_realm => 'db',
     plain => {
