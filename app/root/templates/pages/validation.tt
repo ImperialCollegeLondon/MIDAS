@@ -194,7 +194,7 @@ shell% less invalid_rows.csv
     <dl class="dl-horizontal">
       <dt>
         <a href="[% c.uri_for('resources/validator/Bio-Metadata-Validator-1.150560.tar.gz') %]">
-          Bio-Metadata-Validator-1.150340.tar.gz</a>
+          Bio-Metadata-Validator-1.150560.tar.gz</a>
       </dt>
       <dd>
         Perl module
