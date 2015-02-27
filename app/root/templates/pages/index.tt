@@ -1,0 +1,83 @@
+[%- contactUsURI = c.uri_for("/contact") %]
+
+<section class="jumbotron">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4 db-logo sprite-images-cpmv-320x365">
+      </div>
+      <div class="col-md-7">
+        <h2>Microbial Diagnostics and
+          Surveillance (MiDaS)</h2>
+        <p>
+          Working to provide tools for the rapid identification of
+          bacterial and viral genomes for diagnostic and public
+          health laboratories.
+        </p>
+        <p><a class="btn btn-primary btn-lg" href="[% contactUsURI %]" role="button">Contact us &raquo;</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container">
+  <div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+      <p>
+        This consortium will develop technological solutions that use the
+        entire genomes of viruses and bacteria to support healthcare decision
+        making. We aim to make this as straightforward as possible to perform,
+        so that the technology can be introduced into diagnostic and public
+        health laboratories across the UK, where it will provide information in
+        real time on bacterial and viral spread and outbreaks in hospitals and
+        the community.
+      </p>
+      <p>
+        This website provides a central repository for the metadata concerning
+        the bacterial and virus genomes sequenced and deposited by all members
+        of the consortium.
+      </p>
+    </div>
+  </div>
+  <div class="row partners">
+    <div class="col-md-4 partner partner-info">
+      <p class="sprite-images-cam-wtsi-285x50"></p>
+      <p>
+        The partnership utilises whole genome sequencing of a number of
+        important hospital/community acquired bacterial species to enable
+        effective surveillance. This will be used to track disease trends,
+        identify new infectious disease threats, detect serious outbreaks,
+        monitor control measures and assess antibiotic resistance to enable the
+        most effective treatment to be offered.
+      </p>
+    </div>
+    <div class="col-md-4 partner partner-info">
+      <p class="sprite-images-ucl-wtsi-285x50"></p>
+      <p>
+        Infection Response through Virus Genomics (ICONIC) uses next generation
+        sequencing technology aiming to support clinical decisions for patient
+        treatment and hospital infection control responses, and inform the
+        surveillance of viral outbreaks in the community. ICONIC is designed in
+        ways that allow this technology to be incorporated fully within the UK
+        local diagnostic labs, adding sustainable patient benefit with minimal
+        cost. In so doing, we embed into the NHS the ability to respond rapidly
+        to new and emerging viral infections in the future.
+      </p>
+   </div>
+    <div class="col-md-4 partner partner-info">
+      <p class="sprite-images-ox-phe-285x50"></p>
+      <p>
+        The Modernising Medical Microbiology (MMM) consortium are developing a
+        pathogen sequencing solution for identifying, typing and tracking
+        microbes. The project aims to show that accurate diagnosis can happen
+        in a local lab fast and cheaply enough to improve patient outcomes e.g.
+        by getting more appropriate drugs faster. The results will also allow
+        us to minimise the over-use of precious antibiotics. In turn this will
+        reduce the incidence of antibiotic resistance and multi-resistance of
+        bugs, reduce the risk of infections and provide cost savings in the
+        NHS.
+      </p>
+    </div>
+  </div>
+</section>
+

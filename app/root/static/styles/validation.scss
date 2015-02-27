@@ -1,0 +1,17 @@
+// validation.scss
+// jt6 20150112 WTSI
+//
+// rules for the validation page
+
+@import "flatly/variables";
+
+$definition-width: 280px;
+
+#resources dl.dl-horizontal dt {
+  width: $definition-width;
+}
+
+#resources dl.dl-horizontal dd {
+  margin-left: $definition-width + 20px;
+}
+
