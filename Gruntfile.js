@@ -91,7 +91,7 @@ module.exports = function (grunt) {
       options: {
         dest: '<%= config.dist %>/root/static'
       },
-      html: '<%= config.app %>/root/wrapper.tt'
+      html: '<%= config.app %>/root/templates/wrapper.tt'
     },
 
     // rewrites and renames asset files
@@ -173,8 +173,6 @@ module.exports = function (grunt) {
         },
         files: [
           {
-            expand: true,
-            dot: true,
             cwd: '<%= config.app %>',
             src: [
               'Changes',
@@ -187,25 +185,34 @@ module.exports = function (grunt) {
               'script/*',
               '!**/.*.sw?',
             ],
-            dest: '<%= config.dist %>'
+            dest: '<%= config.dist %>',
+            expand: true,
+            dot: true
           },
           {
+            cwd: '<%= config.app %>/root/templates',
+            src: '**/*.tt',
+            dest: '<%= config.dist %>/root/templates',
             expand: true,
-            dot: true,
+            dot: true
+          },
+          {
             cwd: '<%= config.app %>/root/static',
             src: [
               '*.png',
               'browserconfig.xml',
               'favicon.ico',
             ],
-            dest: '<%= config.dist %>/root/static'
+            dest: '<%= config.dist %>/root/static',
+            expand: true,
+            dot: true
           },
           {
-            expand: true,
-            dot: true,
             cwd: '.tmp/images',
             src: '**/*',
-            dest: '<%= config.dist %>/root/static/images'
+            dest: '<%= config.dist %>/root/static/images',
+            expand: true,
+            dot: true
           }
         ]
       },
@@ -272,7 +279,7 @@ module.exports = function (grunt) {
           if ( option === 'start' ) {
             return 'starman --pid test_server/midas.pid --listen :8000 --daemonize --access-log test_server/midas_access.log --error-log test_server/midas_error.log app/midas.psgi';
           } else if ( option === 'stop' ) {
-            return 'kill -TERM `cat test_server/midas.pid`';
+            return 'if [ -e test_server/midas.pid ]; then kill -TERM `cat test_server/midas.pid`; fi';
           } else if ( option === 'restart' ) {
             return 'kill -HUP `cat test_server/midas.pid`';
           }
