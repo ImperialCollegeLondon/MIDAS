@@ -50,6 +50,19 @@ __PACKAGE__->config(
   # DON'T send X-Catalyst header
   enable_catalyst_header => 0,
 
+  #-----------------------------------------------------------------------------
+  # models
+
+  'Model::HICFDB' => {
+    schema_class => 'Bio::HICF::Schema',
+    connect_info => {
+      dsn => 'dbi:SQLite:dbname=t/data/test.db'
+    },
+  },
+
+  #-----------------------------------------------------------------------------
+  # views
+
   'View::HTML' => {
     INCLUDE_PATH => [
       __PACKAGE__->path_to( 'root', 'templates' ),
