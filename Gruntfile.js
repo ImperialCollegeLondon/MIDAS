@@ -178,7 +178,7 @@ module.exports = function (grunt) {
               'Changes',
               'Makefile.PL',
               'README',
-              'lib/*',
+              'lib/**/*',
               '{,*/}*.conf',
               'midas.psgi',
               'root/static/resources/**',
