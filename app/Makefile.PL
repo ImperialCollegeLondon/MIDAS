@@ -11,8 +11,17 @@ all_from 'lib/MIDAS.pm';
 
 requires 'Catalyst::Runtime' => '5.90083';
 requires 'Catalyst::Plugin::ConfigLoader';
+requires 'Catalyst::Plugin::Authentication';
+requires 'Catalyst::Plugin::Session';
+requires 'Catalyst::Plugin::Session::Store::DBIC';
+requires 'Catalyst::Plugin::Session::State::Cookie';
 requires 'Catalyst::Plugin::Static::Simple';
+requires 'Catalyst::Model::DBIC::Schema';
+requires 'Catalyst::View::TT';
+requires 'Catalyst::Action::REST';
 requires 'Catalyst::Action::RenderView';
+requires 'Catalyst::Authentication::Store::DBIx::Class';
+requires 'CatalystX::SimpleLogin';
 requires 'Moose';
 requires 'namespace::autoclean';
 requires 'Config::General'; # This should reflect the config file format you've chosen

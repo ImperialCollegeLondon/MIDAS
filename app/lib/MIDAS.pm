@@ -27,6 +27,8 @@ use Catalyst qw/
     Static::Simple
 /;
 
+with 'CatalystX::DebugFilter';
+
 extends 'Catalyst';
 
 our $VERSION = '0.01';
@@ -39,6 +41,10 @@ our $VERSION = '0.01';
 # details given here can function as a default configuration,
 # with an external configuration file acting as an override for
 # local deployment.
+
+#-------------------------------------------------------------------------------
+#- configuration ---------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 __PACKAGE__->config(
 
@@ -69,19 +75,28 @@ __PACKAGE__->config(
     ],
   },
 
+  #-----------------------------------------------------------------------------
+  # controllers
+
+  'Controller::Login' => {
+    traits => ['-RenderAsTTTemplate'],
+  },
+
+  #-----------------------------------------------------------------------------
+  # plugins and extensions
+  
   'Plugin::ConfigLoader' => {
     file => 'midas.conf'
   },
 
+  # look for static content in the tmp directory used by lots of grunt tasks
+  # and THEN in the static content directory in the app. Necessary to allow
+  # the development server to be run under LiveReload
   'Plugin::Static::Simple' => {
     include_path => [
-      '../.tmp',
+      __PACKAGE__->config->{home} . '/../.tmp',
       __PACKAGE__->config->{root} . '/static',
     ],
-  },
-
-  'Controller::Login' => {
-    traits => ['-RenderAsTTTemplate'],
   },
 
   'Plugin::Authentication' => {
@@ -117,12 +132,20 @@ __PACKAGE__->config(
       store => {
         class => 'DBIx::Class',
         user_model => 'HICFDB::User',
+        role_field => 'roles',
+        # TODO implement a separate roles table ?
         # role_relation => 'roles',
-        # role_field => 'rolename',
       }
     }
+  },
+
+  # filter debug logs to remove passwords
+  'CatalystX::DebugFilter' => {
+    Request => { params => [ 'password' ] },
   }
 );
+
+#-------------------------------------------------------------------------------
 
 # Start the application
 __PACKAGE__->setup();

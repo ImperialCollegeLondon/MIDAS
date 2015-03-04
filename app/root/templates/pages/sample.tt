@@ -1,0 +1,14 @@
+
+<h1>Sample &quot;[% id %]&quot;</h1>
+
+<dl>
+  [% FOREACH pair IN sample.get_fields.hash.pairs %]
+  <dt>
+    [% pair.key %]
+  </dt>
+  <dd>
+    [% pair.value || "n/a" %]
+  </dd>
+  [% END %]
+</dl>
+
