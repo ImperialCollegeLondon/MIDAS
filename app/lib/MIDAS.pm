@@ -17,9 +17,7 @@ use Catalyst::Runtime 5.80;
 #                 directory
 
 use Catalyst qw/
-    -Debug
     ConfigLoader
-    +CatalystX::SimpleLogin
     Authentication
     Session
     Session::Store::File

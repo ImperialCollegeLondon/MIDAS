@@ -22,25 +22,8 @@
 
       <button class="btn btn-default btn-sm navbar-btn navbar-right"
               id="signInButton"
-              [%- IF c.user_exists %]
-              style="display: none"
-              [%- END %]
+              disabled="disabled"
               type="button">Sign in</button>
-      <button class="btn btn-default btn-sm navbar-btn navbar-right"
-              id="signOutButton"
-              [%- IF NOT c.user_exists %]
-              style="display: none"
-              [%- END %]
-              type="button">Sign out</button>
-
-      [%#
-      <button class="btn btn-default btn-sm navbar-btn navbar-right"
-              id="signInButton"
-              type="button"
-              data-signedin-text="Sign out"
-              data-toggle="modal"
-              data-target="#signInModal">Sign in</button>
-      %]
   </div>
 </nav>
 

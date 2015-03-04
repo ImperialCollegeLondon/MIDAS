@@ -12,13 +12,13 @@ var login = (function() {
     // add listeners where needed
     wireButtons: function() {
 
-      $("#signInButton").on("click", function() {
-        window.location = "/login";
-      });
-
-      $("#signOutButton").on("click", function() {
-        window.location = "/logout";
-      });
+      // $("#signInButton").on("click", function() {
+      //   window.location = "/login";
+      // });
+      //
+      // $("#signOutButton").on("click", function() {
+      //   window.location = "/logout";
+      // });
 
     }
   };
