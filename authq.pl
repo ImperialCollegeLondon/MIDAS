@@ -14,6 +14,7 @@ use HTTP::Request;
 my ( $username, $api_key );
 my $method = 'GET';
 my $content_type = 'application/json';
+my $help = 0;
 
 # get the required parameters from the command line and validate
 GetOptions(
@@ -21,7 +22,13 @@ GetOptions(
   'apikey|k=s'    => \$api_key,
   'method=s'      => \$method,
   'contenttype=s' => \$content_type,
+  'help|?'        => \$help,
 );
+
+if ( $help ) {
+  usage();
+  exit;
+}
 
 my $uri = shift;
 
@@ -57,5 +64,23 @@ if ( $res->is_success ) {
 }
 else {
   die 'ERROR: ' . $res->status_line;
+}
+
+exit;
+
+sub usage {
+  print <<EOF_usage;
+Usage:
+    $0 [options]
+
+    Options:
+      -? --help         display this help and exit
+      -u --username     use this username for authentication. Required.
+      -k --apikey       use this API key to build the HMAC. Required.
+      -m --method       HTTP method for the request (default: GET)
+      -c --contenttype  set content type header (default: application/json)
+
+EOF_usage
+
 }
 
