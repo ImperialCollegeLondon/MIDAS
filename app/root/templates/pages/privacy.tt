@@ -1,0 +1,118 @@
+
+<article class="container">
+
+  <h1>Privacy and security</h1>
+
+  <section>
+    <h2>Cookies and web analytics</h2>
+    <p>
+      Like many websites, MIDAS uses
+      <a href="https://ico.org.uk/for-the-public/online/cookies.aspx" class="ext">cookies</a>.
+      Our cookie usage is governed by the
+      <a href="http://www.sanger.ac.uk/legal/cookiespolicy.html" class="ext">cookie policy</a>
+      of the
+      <a href="http://www.sanger.ac.uk" class="ext">Wellcome Trust Sanger
+        Institute</a>, where the MIDAS website is hosted. The main use for
+      cookies in the site is to maintain user sessions, keeping track of
+      whether you are signed in and therefore able to view privileged
+      information within the site.
+    </p>
+    <p>
+      Also in common with many websites, MIDAS uses web analytics packages to
+      monitor website usage. Specifically, we use
+      <a href="http://www.google.com/analytics/" class="ext">Google Analytics</a>
+      to provide information about user behaviour and environment, such as
+      which browser they use, their operating system and screen size. This
+      information is helpful when developing websites and visualisations of
+      complex data. The Sanger Institute also uses the
+      <a href="http://piwik.org/" class="ext">Piwik</a> tool to analyse
+      server logs for all of the websites that it hosts, providing standard
+      reporting of website usage across the whole institute.
+    </p>
+    <p>
+      If you have any concerns about cookie usage or data analytics on the
+      MIDAS website, or please
+      <a href="mailto:&#99;&#111;&#110;&#116;&#97;&#99;&#116;&#64;&#109;&#105;&#100;&#97;&#115;&#117;&#107;&#46;&#111;&#114;&#103;">
+        contact us</a>.
+    </p>
+  </section>
+
+  <section>
+    <h2>User data</h2>
+    <p>
+      Members of the HICF consortium may be given accounts on the MIDAS
+      website, so that they are able to browse, search and download sample
+      metadata from this site. If you have a user account on the site, we
+      store the following items of personally identifiable data about you:
+    </p>
+    <ul>
+      <li>Name</li>
+      <li>Username</li>
+      <li>Email</li>
+      <li>Password</li>
+      <li>API key</li>
+    </ul>
+    <p>
+      When your account is set up, a password and an API key will be issued to
+      you. We strongly recommend that you reset your password using the
+      <a href="[% c.uri_for('resetpassword') %]">password reset page</a>,
+      and that you use a
+      <a href="https://support.google.com/accounts/answer/32040?hl=en" class="ext">
+        strong, unique password</a>.
+    </p>
+    <p>
+      Since your API key can be used to make requests for privileged
+      information using the MIDAS RESTful API, please treat this key as you
+      would your password. It is important that you do not allow other people
+      to use your key. If your API key is compromised, you can generate a new
+      one on our
+      <a href="[% c.uri_for('resetapikey') %]">API key reset page</a>.
+    </p>
+
+  </section>
+
+  <section>
+    <h2>Logging and auditing</h2>
+    <p>
+      All web servers keep detailed logs of their activity. In order to provide
+      an audit log for the MIDAS resource, we archive these server logs for the
+      website and RESTful interface. The logs include details of all requests
+      made to the site, including, for privileged data, the username of the
+      user making each request, either when signed in to the website or using
+      their API key via a script or similar.
+    </p>
+    <p>
+      If you have any concerns about our logging policy, please
+      <a href="mailto:&#99;&#111;&#110;&#116;&#97;&#99;&#116;&#64;&#109;&#105;&#100;&#97;&#115;&#117;&#107;&#46;&#111;&#114;&#103;">
+        contact us</a>.
+    </p>
+  </section>
+
+  <section>
+    <h2>Data security</h2>
+    <p>
+      The MIDAS website uses
+      <a href="http://en.wikipedia.org/wiki/HTTPS" class="ext">HTTPS</a>,
+      meaning all data sent between our servers and your browser (or client
+      script) is encrypted. As such, it should be impossible or extremely
+      difficult for a third party to intercept and read privileged information
+      while in transit across the wider network.
+    </p>
+    <p>
+      Sample data within the Sanger Institute is <strong>not</strong>
+      encrypted, but is protected by user access controls and account
+      management procedures. All data is accessible to systems and database
+      administrators, but access for other users is restricted to those members
+      of the Sanger Pathogens Informatics team who are responsible for managing
+      the website and database.
+    </p>
+    <p>
+      If you have any concerns or questions about the storage of MIDAS sample
+      metadata, please
+      <a href="mailto:&#99;&#111;&#110;&#116;&#97;&#99;&#116;&#64;&#109;&#105;&#100;&#97;&#115;&#117;&#107;&#46;&#111;&#114;&#103;">
+        contact us</a>.
+    </p>
+  </section>
+
+</article>
+

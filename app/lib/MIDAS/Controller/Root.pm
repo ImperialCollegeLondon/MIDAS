@@ -36,7 +36,8 @@ The root page (/)
 sub index : Path Args(0) {
   my ( $self, $c ) = @_;
 
-  $c->stash( template => 'pages/index.tt' );
+  $c->stash( template      => 'pages/index.tt',
+             image_credits => 1 );
 }
 
 #-------------------------------------------------------------------------------
@@ -54,6 +55,24 @@ sub contact : Local Args(0) {
     breadcrumbs => ['Contact us'],
     template    => 'pages/contact.tt',
     title       => 'Contact us',
+  );
+}
+
+#-------------------------------------------------------------------------------
+
+=head2 privacy
+
+The privacy page.
+
+=cut
+
+sub privacy : Local Args(0) {
+  my ( $self, $c ) = @_;
+
+  $c->stash(
+    breadcrumbs => ['Privacy'],
+    template    => 'pages/privacy.tt',
+    title       => 'Privacy',
   );
 }
 
