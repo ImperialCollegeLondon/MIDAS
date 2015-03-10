@@ -1,5 +1,5 @@
 
-package MIDAS::Controller::Sample;
+package MIDAS::Controller::Manifest;
 
 use Moose;
 use namespace::autoclean;
@@ -10,11 +10,11 @@ BEGIN { extends 'MIDAS::Base::Controller::Restful' }
 
 =head1 NAME
 
-MIDAS::Controller::Sample - Catalyst Controller to handle sample data
+MIDAS::Controller::Manifest - Catalyst Controller to handle manifest data
 
 =head1 DESCRIPTION
 
-This is a L<Catalyst::Controller> to handle HICF sample data.
+Catalyst Controller.
 
 =cut
 
@@ -22,65 +22,36 @@ This is a L<Catalyst::Controller> to handle HICF sample data.
 
 =head1 METHODS
 
-=head2 begin
+=head2 manifests : Chained('/') Args(0) Does('NeedsAuth') ActionClass('REST::ForBrowsers')
 
-=cut
-
-# sub begin : Private {
-#   my ( $self, $c ) = @_;
-#
-#   # at this point we're unauthenticated
-#
-#   $c->log->debug( 'begin: in begin method' )
-#     if $c->debug;
-# }
-
-#-------------------------------------------------------------------------------
-
-# sub auto : Private {
-#   my ( $self, $c ) = @_;
-#
-#   # at this point we're unauthenticated
-#
-#   $c->log->debug( 'auto: in auto method' )
-#     if $c->debug;
-#
-#   return 1;
-# }
-
-#-------------------------------------------------------------------------------
-
-=head2 samples : Chained('/') Args(0) Does('NeedsAuth') ActionClass('REST::ForBrowsers')
-
-Returns information for all samples.
+Returns information for all manifests.
 
 Requires login (for requests from a browser) or HMAC authentication (for
 REST calls).
 
 =cut
 
-sub samples : Chained('/')
-              Args(0)
-              Does('NeedsAuth')
-              ActionClass('REST::ForBrowsers') {
+sub manifests : Chained('/')
+                Args(0)
+                Does('NeedsAuth')
+                ActionClass('REST::ForBrowsers') {
   my ( $self, $c ) = @_;
-
-  $c->stash( samples  => [ $c->model('HICFDB::Sample')->all ] );
+  $c->stash( manifests  => $c->model('HICFDB::Manifest')->all_manifests );
 }
 
 #---------------------------------------
 
-sub samples_GET {
+sub manifests_GET {
   my ( $self, $c ) = @_;
 
   my $samples = [];
 
-  foreach my $sample ( @{ $c->stash->{samples} } ) {
+  while ( my $sample = $samples->next ) {
     push @$samples,
     {
       sample_id   => $sample->sample_id,
       manifest_id => $sample->manifest_id,
-      created     => $sample->created_at . '', # (force stringification of DateTime object)
+      created     => $sample->created_at
     };
   }
 
@@ -93,14 +64,14 @@ sub samples_GET {
 
 #---------------------------------------
 
-sub samples_GET_html {
+sub manifests_GET_html {
   my ( $self, $c ) = @_;
   $c->stash( template => 'pages/samples.tt' );
 }
 
 #-------------------------------------------------------------------------------
 
-=head2 sample : Chained('/') Args(1) Does('NeedsAuth') ActionClass('REST::ForBrowsers')
+=head2 manifest : Chained('/') Args(1) Does('NeedsAuth') ActionClass('REST::ForBrowsers')
 
 Returns sample information. Captures a single argument, the ID of the sample.
 
@@ -109,14 +80,14 @@ REST calls).
 
 =cut
 
-sub sample : Chained('/')
+sub manifest : Chained('/')
              Args(1)
              Does('NeedsAuth')
              ActionClass('REST::ForBrowsers') {}
 
 #---------------------------------------
 
-before sample => sub {
+before manifest => sub {
   my ( $self, $c, $id ) = @_;
 
   $c->log->debug( "before sample: AUTHENTICATED; retrieving sample data for '$id'" )
@@ -146,7 +117,7 @@ before sample => sub {
 
 # return sample data to a browser
 
-sub sample_GET_html {
+sub manifest_GET_html {
   my ( $self, $c, $id ) = @_;
 
   $c->log->debug( "sample_GET_html: request for sample '$id' came from a browser" )
@@ -159,7 +130,7 @@ sub sample_GET_html {
 
 # return sample data to a non-browser client
 
-sub sample_GET {
+sub manifest_GET {
   my ( $self, $c, $id ) = @_;
 
   $c->log->debug( "sample_GET: request for sample '$id' did not come from a browser" )
@@ -168,7 +139,7 @@ sub sample_GET {
   if ( defined $c->stash->{sample} ) {
     $self->status_ok(
       $c,
-      entity => $c->stash->{sample}->fields
+      entity => $c->stash->{sample}->get_fields
     );
   }
   else {

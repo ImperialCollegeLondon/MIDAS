@@ -11,9 +11,9 @@
         cookie policy</a> and
       <a href="http://www.sanger.ac.uk/legal/">
         terms & conditions</a>&nbsp;&middot;&nbsp;
-      <a href="[% request.uri_for('/contact') %]">Contact us</a>
+      <a href="[% c.uri_for('/contact') %]">Contact us</a>
       <br>
-      [%- IF vars.controller == "index" %]
+      [%- IF image_credits %]
       <small>
         Virus <a href="http://commons.wikimedia.org/wiki/File:CowpeaMosaicVirus3D.png">image</a>
         by <a href="http://commons.wikimedia.org/wiki/User:Splette">Thomas Splettstoesser</a>

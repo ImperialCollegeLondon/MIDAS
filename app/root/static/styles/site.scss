@@ -41,14 +41,12 @@ a {
   margin: 3.5px 0;
 }
 
-#signInButton {
-  margin: 3.5px 0 7px 0;
+#navTools {
+  margin-top: 4px;
 }
 
 // set up the breadcrumbs to match the dimensions of the sign-in button
 .breadcrumb {
-  // margin-top: 13.5px;
-  // margin-bottom: 13.5px;
   padding-top: 7px;
   padding-bottom: 7px;
   font-size: 13px;
@@ -59,9 +57,6 @@ a {
   .breadcrumb {
     margin-top: 13.5px;
     margin-bottom: 13.5px;
-  }
-  #signInButton {
-    margin: 13.5px 0 13.5px 0;
   }
 }
 
