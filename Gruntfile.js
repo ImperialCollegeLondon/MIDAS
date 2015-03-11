@@ -298,6 +298,7 @@ module.exports = function (grunt) {
       // command: 'starman --listen :8000 -E development --pid test_server/starman.pid --daemonize app/bin/app.pl'
     },
 
+    // watch for changes to the static content, such as templates or images
     watch: {
       js: {
         files: ['<%= config.app %>/root/static/javascripts/{,*/}*.js'],
@@ -318,10 +319,6 @@ module.exports = function (grunt) {
         files: [ '<%= config.app %>/root/static/images/**/*' ],
         tasks: [ 'glue' ]
       },
-      perl: {
-        files: [ '<%= config.app %>/lib/**/*.pm' ],
-        tasks: [ 'shell:backend:restart' ],
-      },
       // styles: {
       //   files: ['<%= config.app %>/public/styles/{,*/}*.css'],
       //   tasks: ['newer:copy:styles', 'autoprefixer']
@@ -338,7 +335,22 @@ module.exports = function (grunt) {
           '<%= config.app %>/root/**/*.tt',
           '.tmp/styles/{,*/}*.css',
           '<%= config.app %>/root/static/javascripts/**/*',
-          '<%= config.app %>/root/static/images/**/*',
+          '<%= config.app %>/root/static/images/**/*'
+        ]
+      }
+    },
+
+    // watch for changes to the perl modules that generate dynamic content
+    watchPerl: {
+      perl: {
+        files: [ '<%= config.app %>/lib/**/*.pm' ],
+        tasks: [ 'shell:backend:restart' ],
+      },
+      livereload: {
+        options: {
+          livereload: 35729
+        },
+        files: [
           '<%= config.app %>/lib/**/*.pm'
         ]
       }
