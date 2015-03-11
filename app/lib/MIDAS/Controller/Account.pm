@@ -51,6 +51,7 @@ sub account_page : Chained('account')
   my ( $self, $c ) = @_;
 
   $c->stash(
+    breadcrumbs => ['Account'],
     jscontroller => 'account',
     template     => 'pages/reset.tt',
     title        => 'Account management'

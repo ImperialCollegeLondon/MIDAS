@@ -54,9 +54,9 @@
     </ul>
     <p>
       When your account is set up, a password and an API key will be issued to
-      you. We strongly recommend that you reset your password using the
-      <a href="[% c.uri_for('resetpassword') %]">password reset page</a>,
-      and that you use a
+      you. We strongly recommend that you 
+      <a href="[% c.uri_for('/account') %]">reset your password</a>
+      immediately, and that you use a
       <a href="https://support.google.com/accounts/answer/32040?hl=en" class="ext">
         strong, unique password</a>.
     </p>
@@ -64,9 +64,8 @@
       Since your API key can be used to make requests for privileged
       information using the MIDAS RESTful API, please treat this key as you
       would your password. It is important that you do not allow other people
-      to use your key. If your API key is compromised, you can generate a new
-      one on our
-      <a href="[% c.uri_for('resetapikey') %]">API key reset page</a>.
+      to use your key. If your API key is compromised, you can 
+      <a href="[% c.uri_for('/account') %]">generate a new one</a>.
     </p>
 
   </section>
