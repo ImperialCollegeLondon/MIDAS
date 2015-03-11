@@ -38,8 +38,10 @@ The root page (/)
 sub index : Path Args(0) {
   my ( $self, $c ) = @_;
 
-  $c->stash( template      => 'pages/index.tt',
-             image_credits => 1 );
+  $c->stash(
+    template      => 'pages/index.tt',
+    image_credits => 1
+  );
 }
 
 #-------------------------------------------------------------------------------

@@ -33,7 +33,7 @@ var account = (function() {
 
       $.ajax({
         type: "POST",
-        url: "/resetpassword",
+        url: "/account/resetpassword",
         data: $("#reset-password-form").serialize()
       })
       .done( function(data) {
@@ -57,7 +57,7 @@ var account = (function() {
 
       $.ajax({
         type: "POST",
-        url:  "/resetkey",
+        url:  "/account/resetkey",
         data: $("#reset-key-form").serialize()
       })
       .done( function(data) {

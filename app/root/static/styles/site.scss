@@ -7,12 +7,13 @@
 @import "flatly/variables";
 
 $link-color: #1686ba; // rgba(22, 134, 186, 1);
+$link-hover-color: darken($link-color, 20%);
 
 a {
   color: $link-color; // rgba(53, 115, 177, 1);
 
   &:hover, &:focus {
-    color: darken($link-color, 20%);
+    color: $link-hover-color;
   }
 
   // add a FA icon to a link to denote a URL for an external site
@@ -35,13 +36,33 @@ a {
 
 .navbar {
   margin-bottom: 0;
+
+  .navbar-brand {
+    height: 72px;
+    line-height: 22px;
+    font-size: 28px;
+  }
+
+  a {
+    &:hover, &:focus {
+      color: darken(#FFF, 20%) !important;
+      text-decoration: underline;
+    }
+  }
+
+  span.signed-in {
+    color: #FFF;
+    a {
+      text-decoration: underline;
+    }
+  }
 }
 
 .breadcrumb {
   margin: 3.5px 0;
 }
 
-#navTools {
+#nav-tools {
   margin-top: 4px;
 }
 

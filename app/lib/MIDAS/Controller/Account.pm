@@ -26,44 +26,44 @@ such as password reset, etc.
 
 =head2 account
 
-Action providing the start of a chain for all actions in this controller.
-Enforces authentication using C<NeedsAuth>.
+Stub for chains related to user accounts.
+
+Enforces authentication by 'doing' C<NeedsLogin>.
 
 =cut
 
 sub account : Chained('/')
-              PathPart('')
-              CaptureArgs(0) {
-  my ( $self, $c ) = @_;
-
-  if ( not $c->user ) {
-    # hand off to the controller that we get from CatalystX::SimpleLogin
-    $c->log->debug( 'Account::account: browser user requires login; redirect to login form' )
-      if $c->debug;
-    $c->controller('Login')->login_redirect( $c, 'You must login to view this page' );
-    $c->detach;
-  }
-
-}
+              PathPart('account')
+              CaptureArgs(0)
+              Does('NeedsLogin') { }
 
 #-------------------------------------------------------------------------------
 
-=head2 reset_page
+=head2 account
 
-Password/API key reset page.
+Page showing forms for resetting password and API key.
 
 =cut
 
-sub reset_page : Chained('account')
-                 PathPart('reset')
-                 Args(0) {
+sub account_page : Chained('account')
+                   PathPart('')
+                   Args(0) {
   my ( $self, $c ) = @_;
 
-  $c->stash( jscontroller => 'account',
-             template     => 'pages/reset.tt' );
+  $c->stash(
+    jscontroller => 'account',
+    template     => 'pages/reset.tt',
+    title        => 'Account management'
+  );
 }
 
 #-------------------------------------------------------------------------------
+
+=head2 reset_password
+
+Reset the password to the given value for the currently signed-in user.
+
+=cut
 
 sub reset_password : Chained('account')
                      PathPart('resetpassword')
@@ -111,6 +111,12 @@ sub reset_password : Chained('account')
   $c->log->debug( 'Account::reset_password: new passwords match' )
     if $c->debug;
 
+  unless ( length $new_pass1 > 7 ) {
+    $c->stash( json_data => { error => 'New password must be at least 8 characters long' } );
+    $c->res->status(400); # Bad request
+    return;
+  }
+
   try {
     $user->set_passphrase($new_pass1);
   } catch ($e) {
@@ -122,10 +128,16 @@ sub reset_password : Chained('account')
   $c->log->debug( 'Account::reset_password: successfully changed password' )
     if $c->debug;
 
-  $c->stash( json_data => { message => 'Password changed' } );
+  $c->stash( json_data => { message => 'Your password has been changed' } );
 }
 
 #-------------------------------------------------------------------------------
+
+=head2 reset_key
+
+Reset the API key (generate a new one) for the currently signed-in user.
+
+=cut
 
 sub reset_key : Chained('account')
                 PathPart('resetkey')
@@ -172,7 +184,9 @@ sub reset_key : Chained('account')
   $c->log->debug( 'Account::reset_key: successfully changed API key' )
     if $c->debug;
 
-  $c->stash( json_data => { message => 'API key reset', key => $new_key } );
+  $c->stash(
+    json_data => { message => 'Your API key has been reset', key => $new_key }
+  );
 }
 
 #-------------------------------------------------------------------------------

@@ -8,7 +8,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="[% c.uri_for('/') %]">MiDaS</a>
+      <a class="navbar-brand" href="[% c.uri_for('/') %]">MIDAS</a>
     </div>
 
     <div class="collapse navbar-collapse" id="navbar-collapse">
@@ -24,8 +24,9 @@
       [% END # of IF breadcrumbs.defined %]
 
       <form class="navbar-form" role="search">
-        <div id="navTools" class="col-md-5 navbar-right">
+        <div id="nav-tools" class="col-md-5 navbar-right">
           [% IF c.user_exists %]
+          <div class="row">
             <div class="col-md-10 input-group input-group-sm">
               <input type="text" class="form-control" placeholder="Search">
               <span class="input-group-btn">
@@ -37,12 +38,24 @@
                       class="btn btn-default btn-sm"
                       type="button">Sign out</button>
             </div>
+          </div>
+          <div class="row">
+            <div class="navbar-right">
+              <span class="signed-in">
+                Signed in as
+                <a href="[% c.uri_for_action('/account/account_page') %]">
+                  [% c.user.id %]</a>
+              </span>
+            </div>
+          </div>
           [% ELSE %]
+          <div class="row">
             <div class="navbar-right">
               <button id="signInButton"
                       class="btn btn-default btn-sm"
                       type="button">Sign in</button>
             </div>
+          </div>
           [% END %]
         </div>
       </form>

@@ -5,6 +5,11 @@
 
   <section>
     <h2>Reset your password</h2>
+    <p>
+      This form allows you to reset your account password. You can set your
+      password to a value of your choosing, but it must be a minimum of 8
+      characters long.
+    </p>
     <form id="reset-password-form" class="form-horizontal">
       <div class="form-group">
         <label for="oldpass" class="col-md-2 control-label">Old password</label>
@@ -46,6 +51,11 @@
 
   <section>
     <h2>Generate a new API key</h2>
+    <p>
+      You cannot choose your own API key, but you can generate a new one using
+      the form below. If you re-generate your key, please take note of the new
+      value; you cannot display the new key after you leave this page.
+    </p>
     <form id="reset-key-form" class="form-horizontal">
       <div class="form-group">
         <label for="password" class="col-md-2 control-label">Enter password</label>
