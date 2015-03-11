@@ -1,10 +1,10 @@
 
-// login.js
-// jt6 20150212 WTSI
+// account.js
+// jt6 20150310 WTSI
 
-/* exported  login*/
+/* exported  account*/
 
-var login = (function() {
+var account = (function() {
   "use strict";
 
   return {
@@ -12,14 +12,70 @@ var login = (function() {
     // add listeners where needed
     wireButtons: function() {
 
-      $("#signInButton").on("click", function() {
-        window.location = "/login";
+      console.debug( "connecting password/key reset buttons" );
+
+      $("#reset-password-button").on("click", function(e) {
+        e.preventDefault();
+        $("#reset-password-result").hide();
+        account.resetPassword();
       });
 
-      $("#signOutButton").on("click", function() {
-        window.location = "/logout";
+      $("#reset-key-button").on("click", function(e) {
+        e.preventDefault();
+        $("#reset-key-result").hide();
+        account.resetKey();
       });
 
+    },
+
+    resetPassword: function() {
+      console.debug( "resetting password" );
+
+      $.ajax({
+        type: "POST",
+        url: "/resetpassword",
+        data: $("#reset-password-form").serialize()
+      })
+      .done( function(data) {
+        $("#reset-password-result-message").html(data.message);
+        $("#reset-password-result").removeClass("alert-danger")
+                                   .addClass("alert-success")
+                                   .show();
+        $("#reset-password-form")[0].reset();
+      })
+      .fail( function(jqXHR) {
+        var data = jqXHR.responseJSON;
+        $("#reset-password-result-message").html(data.error);
+        $("#reset-password-result").removeClass("alert-success")
+                                   .addClass("alert-danger")
+                                   .show();
+      });
+    },
+
+    resetKey: function() {
+      console.debug( "resetting API key" );
+
+      $.ajax({
+        type: "POST",
+        url:  "/resetkey",
+        data: $("#reset-key-form").serialize()
+      })
+      .done( function(data) {
+        $("#apikey").val(data.key);
+        $("#reset-key-result-message").html(data.message);
+        $("#reset-key-result").removeClass("alert-danger")
+                              .addClass("alert-success")
+                              .show();
+        $("#reset-password-form")[0].reset();
+      })
+      .fail ( function(jqXHR) {
+        var data = jqXHR.responseJSON;
+        $("#apikey").val("");
+        $("#reset-key-result-message").html(data.error);
+        $("#reset-key-result").removeClass("alert-success")
+                              .addClass("alert-danger")
+                              .show();
+      });
     }
   };
 

@@ -4,7 +4,7 @@
 //
 // see http://viget.com/inspire/extending-paul-irishs-comprehensive-dom-ready-execution
 
-/* global login */
+/* global login,account */
 /* exported HICF */
 
 var HICF = {
@@ -17,11 +17,12 @@ var HICF = {
     }
   },
 
-  index: {
+  account: {
     init: function() {
       "use strict";
       // controller-wide code
-      console.debug( "index.init: controller-wide init code" );
+      console.debug( "account.init: init code specific to the account page" );
+      account.wireButtons();
     },
 
     someAction: function() {
@@ -30,6 +31,7 @@ var HICF = {
       console.debug( "index.clicked: action-specific code" );
     }
   }
+
 };
 
 var UTIL = {
@@ -52,6 +54,8 @@ var UTIL = {
     var body       = document.body,
         controller = body.dataset.controller;
         // action     = body.dataset.action;
+
+        // old-style calls to get data-* attribute values:
         // controller = body.getAttribute( "data-controller" ),
         // action     = body.getAttribute( "data-action" );
 

@@ -50,6 +50,8 @@ __PACKAGE__->config(
 
   name => 'MIDAS',
 
+  default_view => 'HTML',
+
   # disable deprecated behavior needed by old applications
   disable_component_resolution_regex_fallback => 1,
 
@@ -75,6 +77,10 @@ __PACKAGE__->config(
     ],
   },
 
+  'View::JSON' => {
+    expose_stash => 'json_data'
+  },
+
   #-----------------------------------------------------------------------------
   # controllers
 
@@ -84,7 +90,7 @@ __PACKAGE__->config(
 
   #-----------------------------------------------------------------------------
   # plugins and extensions
-  
+
   'Plugin::ConfigLoader' => {
     file => 'midas.conf'
   },
@@ -141,7 +147,7 @@ __PACKAGE__->config(
 
   # filter debug logs to remove passwords
   'CatalystX::DebugFilter' => {
-    Request => { params => [ 'password' ] },
+    Request => { params => [ qw( password oldpass newpass1 newpass2 ) ] },
   }
 );
 

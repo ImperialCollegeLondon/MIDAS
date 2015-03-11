@@ -68,7 +68,7 @@ around execute => sub {
                   : 'You need to login to view this page';
 
       # hand off to the controller that we get from CatalystX::SimpleLogin
-      $c->log->debug( 'around execute: browser user required login; redirect to login form' )
+      $c->log->debug( 'around execute: browser user requires login; redirect to login form' )
         if $c->debug;
       $c->controller('Login')->login_redirect( $c, $message, @args );
       $c->detach;
@@ -98,7 +98,7 @@ around execute => sub {
     if ( not $c->stash->{hmac_validated} ) {
       $c->log->debug( "around execute: haven't validated HMAC yet..." )
         if $c->debug;
-      $c->forward('/validate_hmac');
+      $c->controller('Account')->validate_hmac($c);
     }
   }
 

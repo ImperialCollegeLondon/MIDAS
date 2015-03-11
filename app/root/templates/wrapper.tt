@@ -24,6 +24,7 @@
     <link href="/styles/index.css" rel="stylesheet">
     <link href="/styles/contact-us.css" rel="stylesheet">
     <link href="/styles/validation.css" rel="stylesheet">
+    <link href="/styles/reset.css" rel="stylesheet">
     <link href="/styles/images.css" rel="stylesheet">
     <!-- endbuild -->
 
@@ -37,8 +38,8 @@
 
   [%# the body attributes are used for wiring in page-specific controllers. See:
       http://viget.com/inspire/extending-paul-irishs-comprehensive-dom-ready-execution %]
-  <body[% ' data-controller="' _ vars.controller _ '"' IF vars.controller;
-          ' data-action="'     _ vars.action     _ '"' IF vars.action %]>
+  <body[% ' data-controller="' _ jscontroller _ '"' IF jscontroller;
+          ' data-action="'     _ jsaction     _ '"' IF jsaction %]>
 
     [% PROCESS components/navbar.tt %]
 
@@ -70,7 +71,8 @@
     <!-- build:js({app/root/static,.tmp}) /javascripts/app.js -->
     <script src="/javascripts/util.js"></script>
     <script src="/javascripts/login.js"></script>
-    <script src="/javascripts/index.js"></script>
+    <script src="/javascripts/account.js"></script>
+    [%# not used yet: <script src="/javascripts/index.js"></script> %]
     <!-- endbuild -->
 
   </body>
