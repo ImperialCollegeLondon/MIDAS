@@ -1,0 +1,21 @@
+
+<section class="container">
+
+  <h1>Page not found</h1>
+
+  <p>
+    We couldn't find the page that you were looking for.
+  </p>
+  <p>
+    You could try:
+  </p>
+  <ul>
+    <li>going <a href="#" id="backLink">back</a> and looking for a different link</li>
+    <li>going to the <a href="[% c.uri_for('/') %]">home page</a> and starting again</li>
+    <li><a href="[% c.uri_for_action('/contact') %]">contact us</a> and
+      we'll see what we can do</li>
+  </ul>
+
+
+</section>
+

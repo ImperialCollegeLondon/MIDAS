@@ -17,6 +17,12 @@ var HICF = {
     }
   },
 
+  fourohfour: {
+    init: function() {
+      fourohfour.wireButtons();
+    }
+  },
+
   account: {
     init: function() {
       "use strict";

@@ -108,9 +108,12 @@ Standard 404 error page
 =cut
 
 sub default : Path {
-    my ( $self, $c ) = @_;
-    $c->response->body( 'Page not found' );
-    $c->response->status(404);
+  my ( $self, $c ) = @_;
+
+  $c->stash(
+    template     => 'pages/fourohfour.tt',
+    jscontroller => 'fourohfour',
+  );
 }
 
 #-------------------------------------------------------------------------------
