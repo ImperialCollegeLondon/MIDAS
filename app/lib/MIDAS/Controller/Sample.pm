@@ -4,8 +4,6 @@ package MIDAS::Controller::Sample;
 use Moose;
 use namespace::autoclean;
 
-use TryCatch;
-
 BEGIN { extends 'MIDAS::Base::Controller::Restful' }
 
 =head1 NAME

@@ -4,7 +4,7 @@ package MIDAS::Controller::Account;
 use Moose;
 use namespace::autoclean;
 
-use TryCatch;
+use Try::Tiny;
 
 BEGIN { extends 'Catalyst::Controller' }
 
@@ -120,14 +120,17 @@ sub reset_password : Chained('account')
 
   try {
     $user->set_passphrase($new_pass1);
-  } catch ($e) {
+  } catch {
     $c->stash( json_data => { error => 'We could not set your new password' } );
     $c->res->status(500); # Internal server error
     return;
-  }
+  };
 
   $c->log->debug( 'Account::reset_password: successfully changed password' )
     if $c->debug;
+
+  # store updated user information
+  $c->persist_user;
 
   $c->stash( json_data => { message => 'Your password has been changed' } );
 }
@@ -176,14 +179,17 @@ sub reset_key : Chained('account')
   my $new_key;
   try {
     $new_key = $user->reset_api_key;
-  } catch ($e) {
+  } catch {
     $c->stash( json_data => { error => 'We could not reset your API key' } );
     $c->res->status(500); # Internal server error
     return;
-  }
+  };
 
   $c->log->debug( 'Account::reset_key: successfully changed API key' )
     if $c->debug;
+
+  # store updated user information
+  $c->persist_user;
 
   $c->stash(
     json_data => { message => 'Your API key has been reset', key => $new_key }
@@ -278,14 +284,14 @@ sub validate_hmac : Private {
   my $calculated_digest;
   try {
     $calculated_digest = hmac_b64( 'SHA256', $api_key, "${method}+${uri}" );
-  } catch ($e) {
+  } catch {
     $c->log->error( 'validate_hmac: exception when generating HMAC' )
       if $c->debug;
     $c->res->status(401); # Unauthorized
     $c->res->body('Unauthorized');
     $c->detach;
     return;
-  }
+  };
 
   # and, finally, check the user's digest against our own
   unless ( $submitted_digest eq $calculated_digest ) {

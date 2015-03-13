@@ -4,7 +4,6 @@ package MIDAS::Controller::Root;
 use Moose;
 use namespace::autoclean;
 
-use TryCatch;
 use Crypt::Mac::HMAC qw(hmac_b64);
 
 BEGIN { extends 'Catalyst::Controller' }
