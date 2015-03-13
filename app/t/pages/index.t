@@ -5,7 +5,18 @@ use warnings;
 
 use Test::More;
 
-BEGIN { use_ok("Test::WWW::Mechanize::Catalyst" => 'MIDAS') }
+BEGIN {
+  $ENV{CATALYST_CONFIG_LOCAL_SUFFIX} = 'testing';
+  use_ok("Test::WWW::Mechanize::Catalyst" => 'MIDAS');
+}
+
+# the DSN here has to match that specified in "midas_testing.conf"
+use Test::DBIx::Class {
+  connect_info => [ 'dbi:SQLite:dbname=testing.db', '', '' ],
+}, qw( :resultsets );
+
+# load the pre-requisite data and THEN turn on foreign keys
+fixtures_ok 'main', 'installed fixtures';
 
 my $mech = Test::WWW::Mechanize::Catalyst->new;
 
@@ -33,7 +44,7 @@ $mech->content_lacks('You are already signed in', 'check we are not yet logged i
 
 $mech->submit_form(
   with_fields => {
-    username => 'jtate',
+    username => 'testuser',
     password => 'password',
   }
 );
