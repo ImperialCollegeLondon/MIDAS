@@ -6,5 +6,5 @@ use Test::More;
 use Catalyst::Test 'MIDAS';
 use MIDAS::Controller::Sample;
 
-ok( request('/sample')->is_success, 'Request should succeed' );
+ok( request('/samples')->is_success, 'samples request succeeded' );
 done_testing();
