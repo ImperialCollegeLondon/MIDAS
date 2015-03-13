@@ -42,6 +42,7 @@ var account = (function() {
                                    .addClass("alert-success")
                                    .show();
         $("#reset-password-form")[0].reset();
+        $("#newpass2")[0].blur();
       })
       .fail( function(jqXHR) {
         var data = jqXHR.responseJSON;

@@ -8,7 +8,13 @@
 
   <div class="col-sm-offset-2 col-sm-10">
 
-    <h2>Sign in</h2>
+    <h2>
+      Sign in
+      [% IF c.user %]
+      <small>
+        (You are already signed in as <strong>[% c.user.id %]</strong>)
+      [% END %]
+    </h2>
 
     <p>
       Access to MIDAS data is currently restricted. Please
@@ -20,7 +26,7 @@
       auditing and accounting purposes.
     </p>
 
-    <form class="form-horizontal">
+    <form name="signin-form" class="form-horizontal" method="post">
       <div class="form-group">
         <label for="username" class="col-md-2 control-label">Email</label>
         <div class="col-md-6">
@@ -34,10 +40,12 @@
         </div>
       </div>
       [%- FOREACH error IN p.errors %]
-      <div class="form-group">
-        <div class="alert alert-danger col-md-offset-2 col-md-6" role="alert">
-          <span class="sr-only">Error:</span>
-          [% error %]
+      <div class="form-group slim">
+        <div class="col-md-offset-2 col-md-6">
+          <div class="alert alert-danger" role="alert">
+            <span class="sr-only">Error:</span>
+            [% error %]
+          </div>
         </div>
       </div>
       [%- END -%]

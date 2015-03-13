@@ -38,8 +38,8 @@ a {
   margin-bottom: 0;
 
   .navbar-brand {
-    height: 72px;
-    line-height: 22px;
+    height: 78px;
+    line-height: 32px;
     font-size: 28px;
   }
 
@@ -52,6 +52,7 @@ a {
 
   span.signed-in {
     color: #FFF;
+    font-size: small;
     a {
       text-decoration: underline;
     }
@@ -63,7 +64,7 @@ a {
 }
 
 #nav-tools {
-  margin-top: 4px;
+  margin-top: 12px;
 }
 
 // set up the breadcrumbs to match the dimensions of the sign-in button

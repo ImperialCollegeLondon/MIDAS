@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="google-site-verification" content="FfZTd2CeldiqwCqFEUrM_rxbqHjthF5pKVER63XXm6Y">
 
-    <title>MiDaS[% ' &middot; ' _ title IF title.defined %]</title>
+    <title>MIDAS[% ' &middot; ' _ title IF title.defined %]</title>
 
     [% # the code to sort out favicons for all for various devices is a mess.
        # We'll hide it away somewhere...
