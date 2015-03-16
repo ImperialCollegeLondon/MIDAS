@@ -13,11 +13,8 @@ ok( request('/privacy')->is_success, 'privacy page succeeds' );
 ok( request('/login')->is_success, 'login page succeeds' );
 ok( action_notfound('/nosuchpage'), 'non-existent page not found');
 
-TODO: {
-  local $TODO = 'put in a proper 404 page';
-  my $content = get('/nosuchpage');
-  like( $content, qr/no such page/, '404 page looks sensible' );
-}
+my $content = get('/nosuchpage');
+like( $content, qr/We couldn't find the page that you were looking for/, '404 page looks sensible' );
 
 done_testing();
 
