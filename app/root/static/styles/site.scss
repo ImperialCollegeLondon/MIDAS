@@ -57,29 +57,26 @@ a {
       text-decoration: underline;
     }
   }
-}
 
-.breadcrumb {
-  margin: 3.5px 0;
+  // set up the breadcrumbs to match the dimensions of the sign-in button
+  .breadcrumb {
+    padding-top: 7px;
+    padding-bottom: 7px;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 3.5px 0;
+  }
+
+  @media ( min-width: 768px ) {
+    .breadcrumb {
+      margin-top: 20px;
+    }
+  }
+
 }
 
 #nav-tools {
   margin-top: 12px;
-}
-
-// set up the breadcrumbs to match the dimensions of the sign-in button
-.breadcrumb {
-  padding-top: 7px;
-  padding-bottom: 7px;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-@media ( min-width: 768px ) {
-  .breadcrumb {
-    margin-top: 13.5px;
-    margin-bottom: 13.5px;
-  }
 }
 
 footer {

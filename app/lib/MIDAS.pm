@@ -109,40 +109,46 @@ __PACKAGE__->config(
     default_realm => 'db',
     plain => {
       credential => {
-        class => 'Password',
+        class          => 'Password',
         password_field => 'password',
-        password_type => 'clear',
+        password_type  => 'clear',
       },
       store => {
         class => 'Minimal',
         users => {
           alice => {
-            name => 'Alice',
+            name     => 'Alice',
             password => 'alicepass',
-            roles => [ qw( admin user ) ]
+            roles    => [qw( admin user )]
           },
           bob => {
-            name => 'Bob',
+            name     => 'Bob',
             password => 'bobpass',
-            roles => [ qw( user ) ]
+            roles    => [qw( user )]
           },
         }
       }
     },
     db => {
       credential => {
-        class => 'Password',
+        class          => 'Password',
         password_field => 'password',
-        password_type => 'self_check',
+        password_type  => 'self_check',
       },
       store => {
-        class => 'DBIx::Class',
+        class      => 'DBIx::Class',
         user_model => 'HICFDB::User',
         role_field => 'roles',
+
         # TODO implement a separate roles table ?
         # role_relation => 'roles',
       }
     }
+  },
+
+  'Plugin::Session' => {
+    cookie_secure   => 1,
+    cookie_httponly => 1,    # this is the default but let's make it explicit
   },
 
   # filter debug logs to remove passwords
