@@ -16,13 +16,11 @@ var account = (function() {
 
       $("#reset-password-button").on("click", function(e) {
         e.preventDefault();
-        $("#reset-password-result").hide();
         account.resetPassword();
       });
 
       $("#reset-key-button").on("click", function(e) {
         e.preventDefault();
-        $("#reset-key-result").hide();
         account.resetKey();
       });
 
@@ -30,6 +28,8 @@ var account = (function() {
 
     resetPassword: function() {
       console.debug( "resetting password" );
+
+      $("#reset-password-result").hide();
 
       $.ajax({
         type: "POST",
@@ -55,6 +55,8 @@ var account = (function() {
 
     resetKey: function() {
       console.debug( "resetting API key" );
+
+      $("#reset-key-result").hide();
 
       $.ajax({
         type: "POST",

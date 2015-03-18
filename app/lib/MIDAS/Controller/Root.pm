@@ -110,6 +110,7 @@ Standard 404 error page
 sub default : Path {
   my ( $self, $c ) = @_;
 
+  $c->res->status(404); # Not found
   $c->stash(
     template     => 'pages/fourohfour.tt',
     jscontroller => 'fourohfour',

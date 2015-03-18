@@ -14,6 +14,11 @@ var HICF = {
       // application-wide code
       console.debug( "common.init: application-wide init code" );
       login.wireButtons();
+
+      // TODO could inline the trivial functions like "wireButtons" here,
+      // TODO rather than having a separate controller for them, but it's
+      // TODO probably worth having a full blown controller when the code
+      // TODO gets more complex.
     }
   },
 

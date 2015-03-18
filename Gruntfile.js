@@ -272,30 +272,54 @@ module.exports = function (grunt) {
 
     shell: {
       buildNginxConf: {
-        command: 'sed "s:__CWD__:"`pwd`":" test_server/nginx.conf.template > test_server/nginx.conf'
+        command: 'sed "s:__CWD__:"`pwd`":" test_server/nginx.conf.template > test_server/nginx.conf',
+        options: {
+          execOptions: {
+            cwd: '<%= config.app %>/..'
+          }
+        }
+      },
+      buildTestDB: {
+        command: 'sqlite3 -batch testing.db < app/t/data/create_test_db.sql',
+        options: {
+          execOptions: {
+            cwd: '<%= config.app %>/..'
+          }
+        }
       },
       backend: {
         command: function(option) {
           if ( option === 'start' ) {
-            return 'starman --pid test_server/midas.pid --listen :8000 --daemonize --access-log test_server/midas_access.log --error-log test_server/midas_error.log app/midas.psgi';
+            return '../../perl5/bin/starman --pid test_server/midas.pid --listen :8000 --daemonize --access-log test_server/midas_access.log --error-log test_server/midas_error.log app/midas.psgi';
           } else if ( option === 'stop' ) {
             return 'if [ -e test_server/midas.pid ]; then kill -TERM `cat test_server/midas.pid`; fi';
           } else if ( option === 'restart' ) {
             return 'kill -HUP `cat test_server/midas.pid`';
           }
+        },
+        options: {
+          execOptions: {
+            cwd: '<%= config.app %>/..',
+            env: {
+              PERL5LIB: '../../perl5/lib/perl5:../Bio-Metadata-Validator/lib:../Bio-HICF-Schema/lib:app/lib',
+              CATALYST_CONFIG: '<%= config.app %>/midas.conf',
+              CATALYST_CONFIG_LOCAL_SUFFIX: 'testing'
+            }
+          }
         }
-      },
+      }
 
       // to run the backend under starman, listening on a socket
       // command: 'starman --pid test_server/midas.pid --listen :8000 --daemonize --access-log test_server/midas_access.log --error-log test_server/midas_error.log app/midas.psgi',
 
       // ideally we'd run the backend as a FastCGI process, listening on a socket, but
       // for some reason the script doesn't create a socket for nginx to listen to.
-      // We should be running the producion server under FastCGI though.
+      // We should be running the production server under FastCGI though.
       // command: 'app/script/midas_fastcgi.pl --pidfile test_server/midas.pid --daemon --listen /Users/jt6/Work/HICF/modules/MIDAS/test_server/midas.socket'
 
       // dancer setup
       // command: 'starman --listen :8000 -E development --pid test_server/starman.pid --daemonize app/bin/app.pl'
+
     },
 
     // watch for changes to the static content, such as templates or images
@@ -389,9 +413,36 @@ module.exports = function (grunt) {
           limit: 4
         }
       }
-    }
+    },
+
+    // run tests using casper.
+    // casper: {
+    //   test: {
+    //     src: [ 'test/*.js' ],
+    //     options: {
+    //       test: true,
+    //       verbose: true,
+    //       'fail-fast': true
+    //     }
+    //   }
+    // }
 
   });
+
+  // 1. create the test database with the default user credentials
+  // 2. start the test server, pointing it at that test DB
+  // 3. wait for the server to start
+  // 4. run javascript tests that update user login credentials
+  // 5. stop test server
+  // 6. delete test DB
+
+  // grunt.registerTask('testLogin', function() {
+  //   grunt.task.run('shell:buildTestDB');
+  //   grunt.task.run('shell:backend:start');
+  //
+  //   grunt.task.run('shell:backend:stop');
+  //   grunt.file.delete('testing.db');
+  // });
 
   // starts the perl backend (fastcgi script) and the nginx frontend
   grunt.registerTask('startServers', function() {
