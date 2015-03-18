@@ -4,7 +4,7 @@
 //
 // see http://viget.com/inspire/extending-paul-irishs-comprehensive-dom-ready-execution
 
-/* global login,account */
+/* global fourohfour,login,account */
 /* exported HICF */
 
 var HICF = {
@@ -14,11 +14,17 @@ var HICF = {
       // application-wide code
       console.debug( "common.init: application-wide init code" );
       login.wireButtons();
+
+      // TODO could inline the trivial functions like "wireButtons" here,
+      // TODO rather than having a separate controller for them, but it's
+      // TODO probably worth having a full blown controller when the code
+      // TODO gets more complex.
     }
   },
 
   fourohfour: {
     init: function() {
+      "use strict";
       fourohfour.wireButtons();
     }
   },
