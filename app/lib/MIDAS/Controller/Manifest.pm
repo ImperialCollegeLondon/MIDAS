@@ -34,7 +34,8 @@ sub manifests : Chained('/')
                 Does('NeedsAuth')
                 ActionClass('REST::ForBrowsers') {
   my ( $self, $c ) = @_;
-  $c->stash( manifests  => $c->model('HICFDB::Manifest')->all_manifests );
+
+  $c->stash( manifests => [ $c->model('HICFDB::Manifest')->all ] );
 }
 
 #---------------------------------------
@@ -42,29 +43,27 @@ sub manifests : Chained('/')
 sub manifests_GET {
   my ( $self, $c ) = @_;
 
-  my $samples = [];
+  my $manifests = [];
 
-  while ( my $sample = $samples->next ) {
-    push @$samples,
+  foreach my $manifest ( @{ $c->stash->{manifests} } ) {
+    push @$manifests,
     {
-      sample_id   => $sample->sample_id,
-      manifest_id => $sample->manifest_id,
-      created     => $sample->created_at
+      manifest_id => $manifest->manifest_id,
+      created     => $manifest->created_at
     };
   }
 
   $self->status_ok(
     $c,
-    entity => $samples
+    entity => $manifests
   );
-
 }
 
 #---------------------------------------
 
 sub manifests_GET_html {
   my ( $self, $c ) = @_;
-  $c->stash( template => 'pages/samples.tt' );
+  $c->stash( template => 'pages/manifests.tt' );
 }
 
 #-------------------------------------------------------------------------------
@@ -79,35 +78,35 @@ REST calls).
 =cut
 
 sub manifest : Chained('/')
-             Args(1)
-             Does('NeedsAuth')
-             ActionClass('REST::ForBrowsers') {}
+               Args(1)
+               Does('NeedsAuth')
+               ActionClass('REST::ForBrowsers') {}
 
 #---------------------------------------
 
 before manifest => sub {
   my ( $self, $c, $id ) = @_;
 
-  $c->log->debug( "before sample: AUTHENTICATED; retrieving sample data for '$id'" )
+  $c->log->debug( "before manifest AUTHENTICATED; retrieving sample data for '$id'" )
     if $c->debug;
 
   # at this point the user is authenticated, either via login or session if the
   # request came from a browser, or via an HMAC in the "Authorization" header
 
-  my $sample = $c->model('HICFDB::Sample')
-                 ->find( { sample_id => $id } );
+  my $manifest = $c->model('HICFDB::Manifest')
+                   ->find( { manifest_id => $id } );
 
-  if ( defined $sample ) {
-    $c->log->debug( 'before sample: stashing sample row' )
+  if ( defined $manifest ) {
+    $c->log->debug( 'before manifest: stashing manifest row' )
       if $c->debug;
-    $c->stash( id     => $id,
-               sample => $sample );
+    $c->stash( id       => $id,
+               manifest => $manifest );
   }
   else {
-    $c->log->warn( 'before sample: no such sample; stashing error message' )
+    $c->log->warn( 'before manifest: no such manifest; stashing error message' )
       if $c->debug;
     $c->stash( id    => $id,
-               error => 'no such sample' );
+               error => 'no such manifest' );
   }
 };
 
@@ -118,10 +117,10 @@ before manifest => sub {
 sub manifest_GET_html {
   my ( $self, $c, $id ) = @_;
 
-  $c->log->debug( "sample_GET_html: request for sample '$id' came from a browser" )
+  $c->log->debug( "manifest_GET_html: request for manifest '$id' came from a browser" )
     if $c->debug;
 
-  $c->stash( template => 'pages/sample.tt' );
+  $c->stash( template => 'pages/manifest.tt' );
 }
 
 #---------------------------------------
@@ -131,13 +130,13 @@ sub manifest_GET_html {
 sub manifest_GET {
   my ( $self, $c, $id ) = @_;
 
-  $c->log->debug( "sample_GET: request for sample '$id' did not come from a browser" )
+  $c->log->debug( "manifest_GET: request for manifest '$id' did not come from a browser" )
     if $c->debug;
 
-  if ( defined $c->stash->{sample} ) {
+  if ( defined $c->stash->{manifest} ) {
     $self->status_ok(
       $c,
-      entity => $c->stash->{sample}->get_fields
+      entity => $c->stash->{manifest}->get_fields
     );
   }
   else {

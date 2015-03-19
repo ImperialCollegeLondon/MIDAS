@@ -1,7 +1,7 @@
 
 <section class="container">
 
-  <h1>Sample &quot;[% id %]&quot;</h1>
+  <h2>Manifest &quot;[% id %]&quot;</h2>
 
   <table class="table table-striped table-condensed">
     <thead>
@@ -11,8 +11,8 @@
       </tr>
     </thead>
     <tbody>
-      [% fields = sample.fields;
-      FOREACH field IN sample.field_names %]
+      [% fields = manifest.fields;
+      FOREACH field IN manifest.field_names %]
       <tr>
         <td>[% field %]</td>
         <td>
