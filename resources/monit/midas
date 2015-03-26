@@ -1,0 +1,21 @@
+# template monit config for monitoring the MIDAS webapp process
+# jt6 20150326 WTSI
+
+check process midas with pidfile /var/run/midas.pid
+  group www
+  start program = "/var/www/MIDAS/resources/init/midas.sh start"
+  stop program  = "/var/www/MIDAS/resources/init/midas.sh stop"
+
+  # Empty FastCGI request
+  #if failed port 8000
+  if failed unix /var/run/midas.socket
+    # Send FastCGI packet: version 1 (0x01), cmd FCGI_GET_VALUES (0x09)
+    # padding 8 bytes (0x08), followed by 8xNULLs padding
+    send "\0x01\0x09\0x00\0x00\0x00\0x00\0x08\0x00\0x00\0x00\0x00\0x00\0x00\0x00\0x00\0x00"
+    # Expect FastCGI packet: version 1 (0x01), resp FCGI_GET_VALUES_RESULT (0x0A)
+    expect "\0x01\0x0A"
+    timeout 5 seconds
+  then restart
+
+  if 5 restarts with 5 cycles then timeout
+

@@ -18,7 +18,7 @@ my $name        = 'MIDAS FastCGI daemon';
 my $sdesc       = 'Start MIDAS FastCGI daemon',
 my $desc        = 'Start the daemon that runs the MIDAS webapp backend',
 
-my $app_home    = '/www/jt6/MIDAS';
+my $app_home    = '/var/www/MIDAS';
 
 my $program     = "$app_home/dist/script/midas_fastcgi.pl";
 my $socket      = "$app_home/run/midas.socket";
@@ -30,13 +30,16 @@ my $error_log   = "$app_home/run/midas_error.log";
 
 Daemon::Control->new( {
     name        => $name,
+
+    init_config => "$app_home/live/midas_env.sh",
+
     lsb_start   => '$nginx',
     lsb_stop    => '$nginx',
     lsb_sdesc   => $sdesc,
     lsb_desc    => $desc,
 
-    # user        => 'www-data',
-    # group       => 'www-data',
+    user        => 'www-data',
+    group       => 'www-data',
     directory   => $app_home,
     program     => "$program --listen $socket --nproc $workers --pidfile $pid_file",
 

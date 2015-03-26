@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Generated at Wed Mar  4 17:08:26 2015 with Daemon::Control 0.001006
+# Generated at Thu Mar  5 14:33:50 2015 with Daemon::Control 0.001006
 
 ### BEGIN INIT INFO
 # Provides:          MIDAS FastCGI daemon
@@ -12,14 +12,12 @@
 # Description:       Start the daemon that runs the MIDAS webapp backend
 ### END INIT INFO`
 
+[ -r /var/www/MIDAS/live/midas_env.sh ] && . /var/www/MIDAS/live/midas_env.sh
 
-export PERL5LIB=/www/jt6/perl5/lib/perl5:/www/jt6/MIDAS/dist/lib
-
-
-if [ -x /www/jt6/MIDAS/resources/init/midas ];
+if [ -x /var/www/MIDAS/live/midas ];
 then
-    /www/jt6/MIDAS/resources/init/midas $1
+    /var/www/MIDAS/live/midas $1
 else
-    echo "Required program /www/jt6/MIDAS/resources/init/midas not found!"
+    echo "Required program /var/www/MIDAS/live/midas not found!"
     exit 1;
 fi
