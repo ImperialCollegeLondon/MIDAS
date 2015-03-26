@@ -15,7 +15,7 @@
     <h2>Install the perl module and script</h2>
 
     <p>
-      <a href="[% c.uri_for('resources/validator/Bio-Metadata-Validator-1.150560.tar.gz') %]">
+      <a href="[% c.uri_for('resources/validator/Bio-Metadata-Validator-1.150850.tar.gz') %]">
         Download</a> the Perl module and script.
     </p>
     <p>
@@ -23,8 +23,8 @@
     </p>
 
     <pre>
-shell% tar zxf Bio-Metadata-Validator-1.150560.tar.gz
-shell% cd Bio-Metadata-Validator-1.150560
+shell% tar zxf Bio-Metadata-Validator-1.150850.tar.gz
+shell% cd Bio-Metadata-Validator-1.150850
 shell% perl Makefile.PL
 ...
 shell% make install
@@ -40,7 +40,7 @@ shell% make install
     </p>
 
     <pre>
-shell% cpanm Bio-Metadata-Validator-1.150560.tar.gz
+shell% cpanm Bio-Metadata-Validator-1.150850.tar.gz
 ...</pre>
 
     <p>
@@ -135,7 +135,7 @@ shell% tar zxf taxdump.tar.gz names.dmp</pre>
       example file in the bundle containing the Perl module and README. You can
       <a href="[% c.uri_for('resources/validator/HICF_checklist.tar.gz') %]">download</a> a
       tar archive containing the
-      <a href="[% c.uri_for('resources/validator/HICF_checklist/midas_manifest_v2.xlsx') %]">
+      <a href="[% c.uri_for('resources/validator/HICF_checklist/midas_manifest_v3.xlsx') %]">
         manifest template</a> and example manifests in
       <a href="[% c.uri_for('resources/validator/HICF_checklist/example_manifest.xlsx') %]">
         Excel</a> and
@@ -193,8 +193,8 @@ shell% less invalid_rows.csv
 
     <dl class="dl-horizontal">
       <dt>
-        <a href="[% c.uri_for('resources/validator/Bio-Metadata-Validator-1.150560.tar.gz') %]">
-          Bio-Metadata-Validator-1.150560.tar.gz</a>
+        <a href="[% c.uri_for('resources/validator/Bio-Metadata-Validator-1.150850.tar.gz') %]">
+          Bio-Metadata-Validator-1.150850.tar.gz</a>
       </dt>
       <dd>
         Perl module
@@ -210,7 +210,7 @@ shell% less invalid_rows.csv
 
 [% BLOCK manifest_links;
 files = {
-  'midas_manifest_v2.xlsx' => 'manifest template in Excel format',
+  'midas_manifest_v3.xlsx' => 'manifest template in Excel format',
   'example_manifest.csv' => 'example of a valid manifest in CSV format',
   'example_manifest.xlsx' => 'example of a valid manifest in Excel format',
   'HICF_checklist.conf' => 'checklist configuration file',
