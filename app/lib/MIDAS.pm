@@ -54,6 +54,10 @@ __PACKAGE__->config(
   # DON'T send X-Catalyst header
   enable_catalyst_header => 0,
 
+  # default to saying we're running behind a proxy; disable in the config file
+  # if that's not true, e.g. for dev/testing
+  using_frontend_proxy => 1,
+
   #-----------------------------------------------------------------------------
   # models
 
