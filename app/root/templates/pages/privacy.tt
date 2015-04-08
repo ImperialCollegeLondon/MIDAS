@@ -21,10 +21,10 @@
       Also in common with many websites, MIDAS uses web analytics packages to
       monitor website usage. Specifically, we use
       <a href="http://www.google.com/analytics/" class="ext">Google Analytics</a>
-      to provide information about user behaviour and environment, such as
-      which browser they use, their operating system and screen size. This
-      information is helpful when developing websites and visualisations of
-      complex data. The Sanger Institute also uses the
+      to provide aggregate data on user behaviour and environment, such as
+      which browsers, operating systems and screen sizes are being used when
+      viewing the site. This information is helpful when developing websites
+      and visualisations of complex data. The Sanger Institute also uses the
       <a href="http://piwik.org/" class="ext">Piwik</a> tool to analyse
       server logs for all of the websites that it hosts, providing standard
       reporting of website usage across the whole institute.
@@ -48,13 +48,13 @@
     <ul>
       <li>Name</li>
       <li>Username</li>
-      <li>Email</li>
+      <li>Email address</li>
       <li>Password</li>
       <li>API key</li>
     </ul>
     <p>
       When your account is set up, a password and an API key will be issued to
-      you. We strongly recommend that you 
+      you. We strongly recommend that you
       <a href="[% c.uri_for('/account') %]">reset your password</a>
       immediately, and that you use a
       <a href="https://support.google.com/accounts/answer/32040?hl=en" class="ext">
@@ -64,7 +64,7 @@
       Since your API key can be used to make requests for privileged
       information using the MIDAS RESTful API, please treat this key as you
       would your password. It is important that you do not allow other people
-      to use your key. If your API key is compromised, you can 
+      to use your key. If your API key is compromised, you can
       <a href="[% c.uri_for('/account') %]">generate a new one</a>.
     </p>
 
@@ -102,8 +102,8 @@
       encrypted, but is protected by user access controls and account
       management procedures. All data is accessible to systems and database
       administrators, but access for other users is restricted to those members
-      of the Sanger Pathogens Informatics team who are responsible for managing
-      the website and database.
+      of the Sanger Pathogens Informatics team who are directly responsible for
+      managing the website and database.
     </p>
     <p>
       If you have any concerns or questions about the storage of MIDAS sample

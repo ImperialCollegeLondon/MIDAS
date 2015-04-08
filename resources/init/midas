@@ -1,0 +1,51 @@
+#!/usr/bin/env perl
+#
+# a Daemon::Control script for controlling the FastCGI backend server for the
+# MIDAS website. This script can start and stop the server process, as per a
+# standard init script. It can also generate an LSB-compliant init script using
+#
+#   midas get_init_file > /etc/init.d/midas
+#
+# jt6 20150304 WTSI
+
+use strict;
+use warnings;
+
+use Cwd;
+use Daemon::Control;
+
+my $name        = 'MIDAS FastCGI daemon';
+my $sdesc       = 'Start MIDAS FastCGI daemon',
+my $desc        = 'Start the daemon that runs the MIDAS webapp backend',
+
+my $app_home    = '/var/www/MIDAS';
+
+my $program     = "$app_home/dist/script/midas_fastcgi.pl";
+my $socket      = "$app_home/run/midas.socket";
+my $workers     = 5;
+
+my $pid_file    = "$app_home/run/midas.pid";
+my $access_log  = "$app_home/run/midas_access.log";
+my $error_log   = "$app_home/run/midas_error.log";
+
+Daemon::Control->new( {
+    name        => $name,
+
+    init_config => "$app_home/live/midas_env.sh",
+
+    lsb_start   => '$nginx',
+    lsb_stop    => '$nginx',
+    lsb_sdesc   => $sdesc,
+    lsb_desc    => $desc,
+
+    user        => 'www-data',
+    group       => 'www-data',
+    directory   => $app_home,
+    program     => "$program --listen $socket --nproc $workers --pidfile $pid_file",
+
+    pid_file    => $pid_file,
+    stdout_file => $access_log,
+    stderr_file => $error_log,
+
+    fork        => 2,
+} )->run;

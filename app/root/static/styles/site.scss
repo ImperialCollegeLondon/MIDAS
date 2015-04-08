@@ -8,6 +8,7 @@
 
 $link-color: #1686ba; // rgba(22, 134, 186, 1);
 $link-hover-color: darken($link-color, 20%);
+$reverse-link-hover-color: darken(#FFF, 20%);
 
 a {
   color: $link-color; // rgba(53, 115, 177, 1);
@@ -37,17 +38,21 @@ a {
 .navbar {
   margin-bottom: 0;
 
-  .navbar-brand {
-    height: 78px;
-    line-height: 32px;
-    font-size: 28px;
-  }
+  // .navbar-brand {
+  //   height: 78px;
+  //   line-height: 32px;
+  //   font-size: 28px;
+  // }
 
   a {
     &:hover, &:focus {
-      color: darken(#FFF, 20%) !important;
+      color: $reverse-link-hover-color !important;
       text-decoration: underline;
     }
+  }
+
+  #signInButton {
+    margin: 3.5px 0 7px 0;
   }
 
   span.signed-in {
@@ -69,12 +74,20 @@ a {
 
   @media ( min-width: 768px ) {
     .breadcrumb {
-      margin-top: 20px;
+      margin-top: 13.5px;
+      margin-bottom: 13.5px;
+    }
+    #signInButton {
+      margin: 13.5px 0 13.5px 0;
     }
   }
 
   #nav-tools {
-    margin-top: 12px;
+    margin-right: 0px;
+  }
+
+  .navbar-form {
+    margin: 0;
   }
 
 }
