@@ -8,11 +8,20 @@
 
   <div class="col-sm-offset-2 col-sm-10">
 
+    [% IF c.config.disable_signin %]
+
+    <h2>
+      Sign in disabled
+    </h2>
+
+    [% ELSE %]
+
     <h2>
       Sign in
       [% IF c.user %]
       <small>
         (You are already signed in as <strong>[% c.user.id %]</strong>)
+      </small>
       [% END %]
     </h2>
 
@@ -55,6 +64,8 @@
         </div>
       </div>
     </form>
+
+    [% END # of "IF signin disabled" %]
 
   </div><!-- /container -->
 </div><!-- /container -->
