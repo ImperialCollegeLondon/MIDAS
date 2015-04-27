@@ -1,0 +1,107 @@
+format-version: 1.2
+data-version: releases/2014-09-16
+date: 07:07:2014 11:45
+saved-by: pbuttigieg
+auto-generated-by: OBO-Edit 2.2
+subsetdef: abnormal_slim "Abnormal/normal slim"
+subsetdef: absent_slim "Absent/present slim"
+subsetdef: attribute_slim "Attribute slim"
+subsetdef: cell_quality "cell_quality"
+subsetdef: disposition_slim "Disposition slim"
+subsetdef: EnvO-Lite-GSC "Lite category for GSC community"
+subsetdef: mpath_slim "Pathology slim"
+subsetdef: relational_slim "Relational slim: types of quality that require an additional entity in order to exist"
+subsetdef: scalar_slim "Scalar slim"
+subsetdef: value_slim "Value slim"
+synonymtypedef: BRAND_NAME "BRAND NAME"
+synonymtypedef: FORMULA "FORMULA"
+synonymtypedef: InChI "InChI"
+synonymtypedef: InChIKey "InChIKey"
+synonymtypedef: INN "INN"
+synonymtypedef: IUPAC_NAME "IUPAC NAME"
+synonymtypedef: PLURAL "plural term"
+synonymtypedef: SMILES "SMILES"
+default-namespace: ENVO
+remark: Comments to Norman Morrison
+ontology: envo
+
+[Term]
+id: ENVO:00000000
+name: geographic feature
+comment: May appear on a map.
+synonym: "macroscopic spatial feature" EXACT []
+xref: Wikipedia:Geographic_feature
+is_a: ENVO:00002297 ! environmental feature
+
+[Typedef]
+id: ENVO:2100001
+name: determined by
+
+[Typedef]
+id: adjacent_to
+name: adjacent_to
+xref: RO:0002220
+is_symmetric: true
+
+[Typedef]
+id: derives_from
+name: derives_from
+xref: RO:0001000
+
+[Typedef]
+id: disconnected_from
+name: disconnected_from
+def: "A is disconnected_from B if they have no parts in common." [SO:cjm]
+synonym: "non_overlapping_with" EXACT []
+expand_assertion_to: "Class: <http://www.w3.org/2002/07/owl#Nothing> EquivalentTo: (BFO_0000050 some ?X) and (BFO_0000050 some ?Y)" []
+is_metadata_tag: true
+is_class_level: true
+
+[Typedef]
+id: distributary_of
+name: distributary_of
+xref: RO:0002377
+
+[Typedef]
+id: has_condition
+name: has_condition
+comment: Experimental relation used in EnvO. A condition defines a restricted range of a given quality or combination of qualities. If an environment class, E, has_condition C, then all qualities listed in C are restricted to the ranges defined in C in E. This is not intended as a logical conditional.
+creation_date: 2013-05-08T07:33:05Z
+
+[Typedef]
+id: has_increased_levels_of
+name: has_increased_levels_of
+is_a: has_part ! has_part
+
+[Typedef]
+id: has_part
+name: has_part
+xref: BFO:0000051
+is_transitive: true
+
+[Typedef]
+id: has_quality
+name: has_quality
+
+[Typedef]
+id: located_in
+name: located_in
+xref: RO:0001025
+is_transitive: true
+
+[Typedef]
+id: part_of
+name: part_of
+xref: BFO:0000050
+is_transitive: true
+
+[Typedef]
+id: surrounded_by
+name: surrounded_by
+xref: RO:0002219
+
+[Typedef]
+id: tributary_of
+name: tributary_of
+xref: RO:0002376
+

@@ -4,7 +4,7 @@
 //
 // see http://viget.com/inspire/extending-paul-irishs-comprehensive-dom-ready-execution
 
-/* global fourohfour,login,account */
+/* global validation,fourohfour,login,account */
 /* exported HICF */
 
 var HICF = {
@@ -19,6 +19,13 @@ var HICF = {
       // TODO rather than having a separate controller for them, but it's
       // TODO probably worth having a full blown controller when the code
       // TODO gets more complex.
+    }
+  },
+
+  validation: {
+    init: function() {
+      "use strict";
+      validation.addFormListener();
     }
   },
 

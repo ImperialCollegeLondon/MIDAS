@@ -73,7 +73,7 @@
     <script src="/javascripts/login.js"></script>
     <script src="/javascripts/account.js"></script>
     <script src="/javascripts/fourohfour.js"></script>
-    [%# not used yet: <script src="/javascripts/index.js"></script> %]
+    <script src="/javascripts/validation.js"></script>
     <!-- endbuild -->
 
   </body>

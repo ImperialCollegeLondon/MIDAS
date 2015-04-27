@@ -5,7 +5,55 @@
   <h1>Validating a sample manifest</h1>
 
   <p>
-    This document explains how to use the <code>validate_manifest</code> perl
+    You can use this form to upload a sample manifest and validate it
+    against the <a href="[% c.uri_for('/resources/validator/HICF_checklist/HICF_checklist.conf') %]">
+      HICF checklist</a>.
+  </p>
+  <p class="small">
+    <strong>Note:</strong> your uploaded file is not stored on disk unless
+    errors are found. If validation errors are found, we store an edited
+    version of the file on temporary disk, adding error messages to any invalid
+    lines in the CSV file. You can then download a copy of this validated file
+    using a link that will appear below. Validated files are stored for one
+    hour and then deleted.
+  </p>
+
+  <form id="validation-form" action="/validate" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+      <input type="file" name="csv" id="csv">
+    </div>
+    <button type="submit" class="btn btn-default btn-sm">Validate</button>
+  </form>
+
+  <div id="validation-result">
+    <div id="validation-success" class="panel panel-success" style="display: none">
+      <div class="panel-heading">Valid</div>
+      <div class="panel-body">
+        Your input file has been successfully validated.
+      </div>
+    </div>
+    <div id="validation-fail" class="panel panel-danger" style="display: none">
+      <div class="panel-heading">Invalid</div>
+      <div class="panel-body">
+        Your input file is <strong>not</strong> valid according to the
+        <a href="[% c.uri_for('/resources/validator/HICF_checklist/HICF_checklist.conf') %]">
+          HICF checklist</a>. You can download a copy of your file with
+        validation error messages <a id="invalid-download" href="#">here</a>.
+      </div>
+    </div>
+    <div id="validation-error" class="panel panel-warning" style="display: none">
+      <div class="panel-heading">Validation error</div>
+      <div class="panel-body">
+        There was a problem validating your file:
+        <span id="validation-error-message"></span>
+      </div>
+    </div>
+  </div>
+
+  <h1>Validating a manifest locally</h1>
+
+  <p>
+    This section explains how to use the <code>validate_manifest</code> perl
     script to check the contents of a sample manifest before deposition with
     the HICF sample data repository.
   </p>

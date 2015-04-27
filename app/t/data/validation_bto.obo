@@ -1,0 +1,35 @@
+format-version: 1.2
+date: 22:10:2014 18:45
+saved-by: Marion
+auto-generated-by: OBO-Edit 2.3-beta5
+synonymtypedef: GE "LANGUAGE GERMAN"
+synonymtypedef: SCI "SCIENTIFIC NAME"
+default-namespace: 
+
+[Term]
+id: BTO:0000000
+name: tissues, cell types and enzyme sources
+namespace: BrendaTissueOBO
+def: "A structured controlled vocabulary for the source of an enzyme. It comprises terms of tissues, cell lines, cell types and cell cultures from uni- and multicellular organisms." [curators:mgr]
+
+[Typedef]
+id: develops_from
+name: derives from/develops from
+namespace: BrendaTissueOBO
+
+[Typedef]
+id: is_a
+name: is a
+namespace: BrendaTissueOBO
+
+[Typedef]
+id: part_of
+name: part of
+namespace: BrendaTissueOBO
+
+[Typedef]
+id: related_to
+name: related to
+namespace: BrendaTissueOBO
+
+
