@@ -12,7 +12,7 @@ var HICF = {
     init: function() {
       "use strict";
       // application-wide code
-      console.debug( "common.init: application-wide init code" );
+      // console.debug( "common.init: application-wide init code" );
       login.wireButtons();
 
       // TODO could inline the trivial functions like "wireButtons" here,
@@ -40,14 +40,14 @@ var HICF = {
     init: function() {
       "use strict";
       // controller-wide code
-      console.debug( "account.init: init code specific to the account page" );
+      // console.debug( "account.init: init code specific to the account page" );
       account.wireButtons();
     },
 
     someAction: function() {
       "use strict";
       // action-specific code
-      console.debug( "index.clicked: action-specific code" );
+      // console.debug( "index.clicked: action-specific code" );
     }
   }
 

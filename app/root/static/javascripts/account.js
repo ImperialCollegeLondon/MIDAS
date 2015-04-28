@@ -12,7 +12,7 @@ var account = (function() {
     // add listeners where needed
     wireButtons: function() {
 
-      console.debug( "connecting password/key reset buttons" );
+      // console.debug( "connecting password/key reset buttons" );
 
       $("#reset-password-button").on("click", function(e) {
         e.preventDefault();
@@ -27,7 +27,7 @@ var account = (function() {
     },
 
     resetPassword: function() {
-      console.debug( "resetting password" );
+      // console.debug( "resetting password" );
 
       $("#reset-password-result").hide();
 
@@ -54,7 +54,7 @@ var account = (function() {
     },
 
     resetKey: function() {
-      console.debug( "resetting API key" );
+      // console.debug( "resetting API key" );
 
       $("#reset-key-result").hide();
 
