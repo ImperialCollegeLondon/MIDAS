@@ -19,6 +19,8 @@ var validation = (function() {
         $("#validation-fail").hide();
         $("#validation-error").hide();
 
+        $("#validation-spinner").show();
+
         var formEl = document.forms.namedItem("validation-form"),
             action = formEl.action,
             formData = new FormData(formEl);
@@ -43,6 +45,9 @@ var validation = (function() {
           $("#validation-fail").hide();
           $("#validation-error-message").html(data.responseText);
           $("#validation-error").show();
+        })
+        .complete(function() {
+          $("#validation-spinner").hide();
         });
 
         event.preventDefault();
