@@ -10,8 +10,8 @@
       &#99;&#111;&#110;&#116;&#97;&#99;&#116;&#64;&#109;&#105;&#100;&#97;&#115;&#117;&#107;&#46;&#111;&#114;&#103;</a>.
     New data submissions may be emailed to
     <a href="mailto:&#100;&#097;&#116;&#097;&#115;&#117;&#098;&#064;&#109;&#105;&#100;&#097;&#115;&#117;&#107;&#046;&#111;&#114;&#103;">&#100;&#097;&#116;&#097;&#115;&#117;&#098;&#064;&#109;&#105;&#100;&#097;&#115;&#117;&#107;&#046;&#111;&#114;&#103;</a>.
-    Before submission you can check your manifests using our
-    <a href="[% c.uri_for('/validation') %]">validation script</a>.
+    Before submission you can
+    <a href="[% c.uri_for('/validation') %]">validate</a> your manifests.
   </p>
 
   <div class="row partners">

@@ -4,8 +4,6 @@ package MIDAS::Controller::Root;
 use Moose;
 use namespace::autoclean;
 
-use Crypt::Mac::HMAC qw(hmac_b64);
-
 BEGIN { extends 'Catalyst::Controller' }
 
 # Sets the actions in this controller to be registered with no prefix
@@ -76,24 +74,6 @@ sub privacy : Local Args(0) {
     breadcrumbs => ['Privacy'],
     template    => 'pages/privacy.tt',
     title       => 'Privacy',
-  );
-}
-
-#-------------------------------------------------------------------------------
-
-=head2 validation
-
-The validation
-
-=cut
-
-sub validation : Local Args(0) {
-  my ( $self, $c ) = @_;
-
-  $c->stash(
-    breadcrumbs => ['Validation'],
-    template    => 'pages/validation.tt',
-    title       => 'Validation',
   );
 }
 

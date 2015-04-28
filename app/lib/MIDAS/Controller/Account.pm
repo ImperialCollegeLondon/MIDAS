@@ -5,6 +5,7 @@ use Moose;
 use namespace::autoclean;
 
 use Try::Tiny;
+use Crypt::Mac::HMAC qw(hmac_b64);
 
 BEGIN { extends 'Catalyst::Controller' }
 

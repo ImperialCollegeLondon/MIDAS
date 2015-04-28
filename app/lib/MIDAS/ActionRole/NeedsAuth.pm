@@ -59,6 +59,10 @@ around execute => sub {
   $c->log->debug( 'around execute: action needs authentication' )
     if $c->debug;
 
+  # make sure it's not possible to sign in. Just unceremoniously dump the
+  # request.
+  return if $c->config->{disable_signin};
+
   # require user login for browsers
   if ( $c->req->looks_like_browser ) {
 

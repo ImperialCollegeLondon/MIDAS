@@ -1,0 +1,3 @@
+raw data accession,sample accession,sample description,collected at,tax ID,scientific name,collected by,source,collection date,location,host associated,specific host,host disease status,host isolation source,patient location,isolation source,serovar,other classification,strain,isolate,antimicrobial resistance
+ERS111111,data1,sample1,CAMBRIDGE,77643,Mycobacterium tuberculosis complex,,,2015-01-01,GAZ:00444180,yes,not applicable,carriage,temporarily obscured,inpatient,,not available: not collected,,A12345,,
+ERS222222,data1,sample2,NOTVALID,77643,Mycobacterium tuberculosis complex,,,2015-01-01,GAZ:00444180,yes,not applicable,carriage,temporarily obscured,inpatient,,not available: not collected,,A12345,,

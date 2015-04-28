@@ -52,7 +52,7 @@
           <div class="row">
             <div class="navbar-right">
               <button id="signInButton"
-                      class="btn btn-default btn-sm"
+                      class="btn btn-default btn-sm[% IF c.config.disable_signin %] disabled[% END %]"
                       type="button">Sign in</button>
             </div>
           </div>
