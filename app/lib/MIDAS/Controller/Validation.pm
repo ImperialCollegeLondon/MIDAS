@@ -8,6 +8,7 @@ use File::Path qw(make_path);
 use File::Find::Rule;
 use File::Basename;
 use Data::UUID;
+use Try::Tiny;
 
 use Bio::Metadata::Checklist;
 use Bio::Metadata::Reader;
@@ -122,8 +123,9 @@ sub validate_upload : Chained('/') PathPart('validate') Args(0) {
     # identify the file using a UUID
     my $uuid = Data::UUID->new->create_str;
 
-    my $file_dir    = $self->{download_dir} . "/$uuid";
-    my $output_file = "${file_dir}/" . $upload->filename;
+    my $file_dir       = $self->{download_dir} . "/$uuid";
+    my $validated_file = "${file_dir}/uploaded_file";
+    my $metadata_file  = "${file_dir}/metadata";
 
     # make sure there's a temp dir where we can write the validated file
     if ( ! -d $file_dir ) {
@@ -136,12 +138,35 @@ sub validate_upload : Chained('/') PathPart('validate') Args(0) {
       }
     }
 
+    # write the file metadata
+    open ( my $md, '>', $metadata_file );
+    unless ( $md ) {
+      $c->log->error("Couldn't open metadata file for write: $!");
+      $c->res->status(500); # internal server error
+      $c->res->body('There was a problem storing the file metadata');
+      return;
+    }
+    print $md $upload->filename;
+    close $md;
+
+    $c->log->debug( "wrote metadata file to '$metadata_file'" )
+      if $c->debug;
+
     # TODO set up a cron job to clean up /var/tmp (or wherever that config
     # TODO variable is pointing
 
-    $manifest->write_csv($output_file);
+    # write the validated manifest
+    try {
+      $manifest->write_csv($validated_file);
+    }
+    catch {
+      $c->log->error("Couldn't write validated file: $_");
+      $c->res->status(500); # internal server error
+      $c->res->body('There was a problem storing the validated file');
+      return;
+    };
 
-    $c->log->debug( "wrote validated file to '$output_file'" )
+    $c->log->debug( "wrote validated file to '$validated_file'" )
       if $c->debug;
 
     # return the URI for the CSV file
@@ -170,35 +195,55 @@ Given a UUID, this action returns the associated validated CSV file.
 sub return_validated_file : Chained('/') PathPart('validate') Args(1) {
   my ( $self, $c, $uuid ) = @_;
 
-  # look in the temp dir for a directory matching the UUID
-  my $file_dir = $self->{download_dir} . "/$uuid";
-  my @files = File::Find::Rule->file->in( $file_dir );
-
-  unless ( scalar @files == 1 ) {
-    $c->log->error("Couldn't find validated file n '$file_dir': $!");
+  # de-taint the UUID...
+  unless ( $uuid =~ m/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/i ) {
+    $c->log->error('not a valid UUID');
     $c->res->status(500); # internal server error
-    $c->res->body('There was a problem finding the validated file');
+    $c->res->body('There was a problem reading the validated file');
+    return;
   }
 
-  # and now we have the filename
-  my $validated_file = $files[0];
+  # look in the temp dir for a directory matching the UUID, the validated file
+  # and its metadata
+  my $file_dir       = $self->{download_dir} . "/$uuid";
+  my $validated_file = "${file_dir}/uploaded_file";
+  my $metadata_file  = "${file_dir}/metadata";
+
+  unless ( -f $validated_file and -f $metadata_file ) {
+    $c->log->error("Couldn't find either validated file or metadata in '$file_dir'");
+    $c->res->status(500); # internal server error
+    $c->res->body('We could not find your validated file');
+    return;
+  }
+
+  # find the actual name of the uploaded file
+  open ( my $md, '<', $metadata_file );
+  unless ( $md ) {
+    $c->log->error("Couldn't open metadata file '$metadata_file' for read: $!");
+    $c->res->status(500); # internal server error
+    $c->res->body('We could not open your validated file');
+    return;
+  }
+  my $validated_filename = <$md>;
+  close $md;
+
+  $validated_filename = "validated_$validated_filename";
 
   $c->log->debug("serving validated file '$validated_file'")
     if $c->debug;
 
-  open(my $fh, '<:raw', $validated_file);
+  open( my $fh, '<:raw', $validated_file );
   unless ( $fh ) {
     $c->log->error("Couldn't open validated file '$validated_file' for read: $!");
     $c->res->status(500); # internal server error
     $c->res->body('There was a problem reading the validated file');
+    return;
   }
 
-  # work out the actual filename and make the browser save it with that name
-  my ( $filename, $path, $suffix ) = fileparse($validated_file, '.csv');
-  my $actual_filename = "validated_${filename}${suffix}";
-
+  # return the contents of the validated file, giving the browser the actual
+  # filename to save it as
   $c->res->content_type('text/csv');
-  $c->res->header( 'Content-Disposition' => qq(attachment; filename="$actual_filename") );
+  $c->res->header( 'Content-Disposition' => qq(attachment; filename="$validated_filename") );
   $c->res->body($fh);
 }
 
