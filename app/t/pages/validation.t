@@ -24,7 +24,7 @@ use Test::DBIx::Class {
 fixtures_ok 'main', 'installed fixtures';
 
 # make sure the DB looks sensible before we start
-is Taxonomy->count, 21, 'taxonomy table has 21 rows';
+is Taxonomy->count, 3, 'taxonomy table has 3 rows';
 
 # check the basic page contents
 my $mech = Test::WWW::Mechanize::Catalyst->new;
@@ -52,7 +52,7 @@ my $response_data = from_json $res->decoded_content;
 is $response_data->{status}, 'valid', 'upload is valid';
 
 # and an invalid file
-my $req = POST(
+$req = POST(
   'http://localhost/validate',
   'Content-Type' => 'form-data',
   'Content' => [

@@ -263,6 +263,7 @@
         [ qw( tax_id name lft rgt parent_tax_id ) ],
         [ 9606, 'Homo sapiens', 1, 1, 1 ],
         [ 63221, 'Homo sapiens neanderthalensis', 1, 1, 1 ],
+        [ 77643, "Mycobacterium tuberculosis complex", 965062, 971157, 1763 ],
       ],
     ],
   },
