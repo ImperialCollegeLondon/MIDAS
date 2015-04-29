@@ -20,6 +20,7 @@ var validation = (function() {
         $("#validation-error").hide();
 
         $("#validation-spinner").show();
+        $("#validation-form button[type=submit]").prop("disabled", true);
 
         var formEl = document.forms.namedItem("validation-form"),
             action = formEl.action,
@@ -48,6 +49,7 @@ var validation = (function() {
         })
         .complete(function() {
           $("#validation-spinner").hide();
+          $("#validation-form button[type=submit]").prop("disabled", false);
         });
 
         event.preventDefault();
