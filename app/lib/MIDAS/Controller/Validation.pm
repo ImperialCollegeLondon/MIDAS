@@ -4,7 +4,7 @@ package MIDAS::Controller::Validation;
 use Moose;
 use namespace::autoclean;
 
-use File::Path qw(make_path);
+use File::Path qw(make_path remove_tree);
 use File::Find::Rule;
 use File::Basename;
 use Data::UUID;
@@ -123,7 +123,7 @@ sub validate_upload : Chained('/') PathPart('validate') Args(0) {
     # identify the file using a UUID
     my $uuid = Data::UUID->new->create_str;
 
-    my $file_dir       = $self->{download_dir} . "/$uuid";
+    my $file_dir       = $self->{upload_dir} . "/$uuid";
     my $validated_file = "${file_dir}/uploaded_file";
     my $metadata_file  = "${file_dir}/metadata";
 
@@ -205,7 +205,7 @@ sub return_validated_file : Chained('/') PathPart('validate') Args(1) {
 
   # look in the temp dir for a directory matching the UUID, the validated file
   # and its metadata
-  my $file_dir       = $self->{download_dir} . "/$uuid";
+  my $file_dir       = $self->{upload_dir} . "/$uuid";
   my $validated_file = "${file_dir}/uploaded_file";
   my $metadata_file  = "${file_dir}/metadata";
 
@@ -245,6 +245,59 @@ sub return_validated_file : Chained('/') PathPart('validate') Args(1) {
   $c->res->content_type('text/csv');
   $c->res->header( 'Content-Disposition' => qq(attachment; filename="$validated_filename") );
   $c->res->body($fh);
+}
+
+#-------------------------------------------------------------------------------
+#- private actions -------------------------------------------------------------
+#-------------------------------------------------------------------------------
+
+# this is a private action for use under Catalyst::Plugin::Scheduler. It is
+# intended to be used to remove old upload files in response to a request that
+# can be submitted via cron, e.g.
+#
+# 5/* * * *   curl -s http://127.0.0.1/?schedule_trigger=clear_uploads
+# (not a valid crontab line !)
+
+sub clear_uploads : Private {
+  my ( $self, $c ) = @_;
+
+  $c->log->debug( 'clearing uploads' )
+    if $c->debug;
+
+  # just to be safe...
+  die 'scheduled clearance of uploads is not configured'
+    unless ( $self->{upload_dir} and $self->{upload_file_lifetime} );
+
+  # delete files older than "upload_file_lifetime" seconds
+  my $mtime = time() - $self->{upload_file_lifetime};
+
+  my @files = File::Find::Rule->mindepth(1)
+                              ->mtime( "<=$mtime" )
+                              ->in( $self->{upload_dir} );
+  unless ( @files ) {
+    $c->log->debug(
+      "no upload files/directories older than " . $self->{upload_file_lifetime} .
+      "s to be removed from '" . $self->{upload_dir} . "'"
+    ) if $c->debug;
+    $c->res->status(204); # no content
+    $c->res->body('No files to remove');
+    return;
+  }
+
+  my $num_dirs = scalar @files;
+  $c->log->debug( "found $num_dirs directories to remove" )
+    if $c->debug;
+
+  my $num_removed_dirs = remove_tree( @files );
+
+  $c->log->debug( "removed $num_removed_dirs files and directories" )
+    if $c->debug;
+
+  $c->log->warning('failed to remove all of the old upload files/directories')
+    unless $num_dirs = $num_removed_dirs;
+
+  $c->res->status(204); # no content
+  $c->res->body('Old files removed');
 }
 
 #-------------------------------------------------------------------------------

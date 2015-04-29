@@ -25,6 +25,7 @@ use Catalyst qw/
     Session::Store::File
     Session::State::Cookie
     Static::Simple
+    Scheduler
 /;
 
 with 'CatalystX::DebugFilter';
@@ -86,6 +87,11 @@ __PACKAGE__->config(
 
   'Controller::Login' => {
     traits => ['-RenderAsTTTemplate'],
+  },
+
+  'Controller::Validation' => {
+    download_dir         => '/var/tmp/MIDAS',
+    upload_file_lifetime => 3600,
   },
 
   #-----------------------------------------------------------------------------
@@ -158,9 +164,22 @@ __PACKAGE__->config(
 );
 
 #-------------------------------------------------------------------------------
+#- start the application -------------------------------------------------------
+#-------------------------------------------------------------------------------
 
-# Start the application
 __PACKAGE__->setup();
+
+#-------------------------------------------------------------------------------
+#- scheduled actions -----------------------------------------------------------
+#-------------------------------------------------------------------------------
+
+# remove old files uploaded for validation
+__PACKAGE__->schedule(
+  trigger => 'clear_uploads',
+  event   => '/validation/clear_uploads',
+);
+
+#-------------------------------------------------------------------------------
 
 =encoding utf8
 

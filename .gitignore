@@ -6,6 +6,7 @@ bower_components/
 dist/
 midas_*.conf
 testing.db
+scheduler.state
 
 # vim swap files
 .*.sw?
