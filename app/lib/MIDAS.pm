@@ -20,12 +20,12 @@ use Catalyst qw/
     -Debug
     ConfigLoader
     +CatalystX::SimpleLogin
+    Cache
     Authentication
     Session
     Session::Store::File
     Session::State::Cookie
     Static::Simple
-    Scheduler
 /;
 
 with 'CatalystX::DebugFilter';
@@ -68,6 +68,7 @@ __PACKAGE__->config(
       dsn => 'dbi:SQLite:dbname=t/data/test.db'
     },
   },
+  # TODO add caching to DBIC; see http://www.catalystframework.org/calendar/2010/3
 
   #-----------------------------------------------------------------------------
   # views
@@ -160,7 +161,14 @@ __PACKAGE__->config(
   # filter debug logs to remove passwords
   'CatalystX::DebugFilter' => {
     Request => { params => [ qw( password oldpass newpass1 newpass2 ) ] },
-  }
+  },
+
+  'Plugin::Cache' => {
+    backend => {
+      namespace => 'MIDAS:',
+      class     => 'Cache::FastMmap',
+    },
+  },
 );
 
 #-------------------------------------------------------------------------------
@@ -168,16 +176,6 @@ __PACKAGE__->config(
 #-------------------------------------------------------------------------------
 
 __PACKAGE__->setup();
-
-#-------------------------------------------------------------------------------
-#- scheduled actions -----------------------------------------------------------
-#-------------------------------------------------------------------------------
-
-# remove old files uploaded for validation
-__PACKAGE__->schedule(
-  trigger => 'clear_uploads',
-  event   => '/validation/clear_uploads',
-);
 
 #-------------------------------------------------------------------------------
 
