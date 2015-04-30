@@ -116,55 +116,24 @@ sub validate_upload : Chained('/') PathPart('validate') Args(0) {
   }
   else {
     # file was invalid; write it to disk and return a URL where the client
-    # can retrieve the validated file
+    # can retrieve the validated file. Identify the file using a UUID
     $c->log->debug( 'file was INvalid' )
       if $c->debug;
 
-    # identify the file using a UUID
-    my $uuid = Data::UUID->new->create_str;
+    my $uuid;
+    try {
+      $uuid = $self->_write_invalid_file($manifest, $upload->filename);
+    }
+    catch {
+      $c->log->error("Couldn't write invalid file: $_");
+      $c->res->status(500); # internal server error
+      $c->res->body($_);
+      return;
+    };
 
     my $file_dir       = $self->{upload_dir} . "/$uuid";
     my $validated_file = "${file_dir}/uploaded_file";
     my $metadata_file  = "${file_dir}/metadata";
-
-    # make sure there's a temp dir where we can write the validated file
-    if ( ! -d $file_dir ) {
-      my $made_dir = make_path $file_dir;
-      unless ( $made_dir ) {
-        $c->log->error("Couldn't make temp dir '$made_dir': $!");
-        $c->res->status(500); # internal server error
-        $c->res->body('There was a problem handling the validated file');
-        return;
-      }
-    }
-
-    # write the file metadata
-    open ( my $md, '>', $metadata_file );
-    unless ( $md ) {
-      $c->log->error("Couldn't open metadata file for write: $!");
-      $c->res->status(500); # internal server error
-      $c->res->body('There was a problem storing the file metadata');
-      return;
-    }
-    print $md $upload->filename;
-    close $md;
-
-    $c->log->debug( "wrote metadata file to '$metadata_file'" )
-      if $c->debug;
-
-    # TODO set up a cron job to clean up /var/tmp (or wherever that config
-    # TODO variable is pointing
-
-    # write the validated manifest
-    try {
-      $manifest->write_csv($validated_file);
-    }
-    catch {
-      $c->log->error("Couldn't write validated file: $_");
-      $c->res->status(500); # internal server error
-      $c->res->body('There was a problem storing the validated file');
-      return;
-    };
 
     $c->log->debug( "wrote validated file to '$validated_file'" )
       if $c->debug;
@@ -298,6 +267,43 @@ sub clear_uploads : Private {
 
   $c->res->status(204); # no content
   $c->res->body('Old files removed');
+}
+
+#-------------------------------------------------------------------------------
+#- private methods ------------------------------------------------------------
+#-------------------------------------------------------------------------------
+
+sub _write_invalid_file {
+  my ( $self, $manifest, $filename ) = @_;
+
+  # identify the file using a UUID
+  my $uuid = Data::UUID->new->create_str;
+
+  my $file_dir       = $self->{upload_dir} . "/$uuid";
+  my $validated_file = "${file_dir}/uploaded_file";
+  my $metadata_file  = "${file_dir}/metadata";
+
+  # make sure there's a temp dir where we can write the validated file
+  if ( ! -d $file_dir ) {
+    make_path $file_dir
+      or die 'There was a problem handling the validated file';
+  }
+
+  # write the file metadata
+  open ( my $md, '>', $metadata_file )
+    or die 'There was a problem storing the file metadata';
+  print $md $filename;
+  close $md;
+
+  # write the validated manifest
+  try {
+    $manifest->write_csv($validated_file);
+  }
+  catch {
+    die 'There was a problem storing the validated file';
+  };
+
+  return $uuid;
 }
 
 #-------------------------------------------------------------------------------
