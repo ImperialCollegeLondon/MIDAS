@@ -164,7 +164,7 @@ sub validate_upload : Chained('/') PathPart('validate') Args(0) {
     $c->log->debug( 'file was INvalid' )
       if $c->debug;
 
-    my $file_contents = read_file($upload->tempname, err_mode => 'quiet');
+    my $file_contents = join "\n", $manifest->get_csv_rows;
     unless ( $file_contents ) {
       $c->log->error("Couldn't read uploaded file: $!");
       $c->res->status(500); # internal server error
@@ -201,7 +201,7 @@ sub validate_upload : Chained('/') PathPart('validate') Args(0) {
 
 #-------------------------------------------------------------------------------
 
-=head2 return_validated_file : Chained('/') PathPart('validate') Args(0)
+=head2 return_validated_file : Chained('/') PathPart('validate') Args(1)
 
 Given a UUID, this action returns the associated validated CSV file.
 
