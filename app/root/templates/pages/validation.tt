@@ -66,7 +66,7 @@
     <h2>Install the perl module and script</h2>
 
     <p>
-      <a href="[% c.uri_for('resources/validator/Bio-Metadata-Validator-1.150850.tar.gz') %]">
+      <a href="[% c.uri_for('resources/validator/Bio-Metadata-Validator-1.151210.tar.gz') %]">
         Download</a> the Perl module and script.
     </p>
     <p>
@@ -74,8 +74,8 @@
     </p>
 
     <pre>
-shell% tar zxf Bio-Metadata-Validator-1.150850.tar.gz
-shell% cd Bio-Metadata-Validator-1.150850
+shell% tar zxf Bio-Metadata-Validator-1.151210.tar.gz
+shell% cd Bio-Metadata-Validator-1.151210
 shell% perl Makefile.PL
 ...
 shell% make install
@@ -91,7 +91,7 @@ shell% make install
     </p>
 
     <pre>
-shell% cpanm Bio-Metadata-Validator-1.150850.tar.gz
+shell% cpanm Bio-Metadata-Validator-1.151210.tar.gz
 ...</pre>
 
     <p>
@@ -244,8 +244,8 @@ shell% less invalid_rows.csv
 
     <dl class="dl-horizontal">
       <dt>
-        <a href="[% c.uri_for('resources/validator/Bio-Metadata-Validator-1.150850.tar.gz') %]">
-          Bio-Metadata-Validator-1.150850.tar.gz</a>
+        <a href="[% c.uri_for('resources/validator/Bio-Metadata-Validator-1.151210.tar.gz') %]">
+          Bio-Metadata-Validator-1.151210.tar.gz</a>
       </dt>
       <dd>
         Perl module
