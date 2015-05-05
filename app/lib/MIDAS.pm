@@ -20,6 +20,7 @@ use Catalyst qw/
     -Debug
     ConfigLoader
     +CatalystX::SimpleLogin
+    Cache
     Authentication
     Session
     Session::Store::File
@@ -67,6 +68,7 @@ __PACKAGE__->config(
       dsn => 'dbi:SQLite:dbname=t/data/test.db'
     },
   },
+  # TODO add caching to DBIC; see http://www.catalystframework.org/calendar/2010/3
 
   #-----------------------------------------------------------------------------
   # views
@@ -86,6 +88,11 @@ __PACKAGE__->config(
 
   'Controller::Login' => {
     traits => ['-RenderAsTTTemplate'],
+  },
+
+  'Controller::Validation' => {
+    download_dir         => '/var/tmp/MIDAS',
+    upload_file_lifetime => 3600,
   },
 
   #-----------------------------------------------------------------------------
@@ -154,13 +161,23 @@ __PACKAGE__->config(
   # filter debug logs to remove passwords
   'CatalystX::DebugFilter' => {
     Request => { params => [ qw( password oldpass newpass1 newpass2 ) ] },
-  }
+  },
+
+  'Plugin::Cache' => {
+    backend => {
+      namespace => 'MIDAS:',
+      class     => 'Cache::FastMmap',
+    },
+  },
 );
 
 #-------------------------------------------------------------------------------
+#- start the application -------------------------------------------------------
+#-------------------------------------------------------------------------------
 
-# Start the application
 __PACKAGE__->setup();
+
+#-------------------------------------------------------------------------------
 
 =encoding utf8
 

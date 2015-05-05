@@ -55,7 +55,11 @@
     <p>
       When your account is set up, a password and an API key will be issued to
       you. We strongly recommend that you
+      [% IF c.config.disable_signin %]
+      reset your password
+      [% ELSE %]
       <a href="[% c.uri_for('/account') %]">reset your password</a>
+      [% END %]
       immediately, and that you use a
       <a href="https://support.google.com/accounts/answer/32040?hl=en" class="ext">
         strong, unique password</a>.
@@ -65,7 +69,11 @@
       information using the MIDAS RESTful API, please treat this key as you
       would your password. It is important that you do not allow other people
       to use your key. If your API key is compromised, you can
+      [% IF c.config.disable_signin %]
+      generate a new one
+      [% ELSE %]
       <a href="[% c.uri_for('/account') %]">generate a new one</a>.
+      [% END %]
     </p>
 
   </section>

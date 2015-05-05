@@ -73,6 +73,7 @@ $req = GET($validated_file_url);
 ok $res = request($req), 'sent download request';
 ok $res->is_success, 'response successful';
 is $res->content_type, 'text/csv', 'got CSV response';
+like $res->content, qr/errors found on row 2/, 'found errors in validated file';
 
 $DB::single = 1;
 

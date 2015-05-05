@@ -91,7 +91,12 @@ module.exports = function (grunt) {
       options: {
         dest: '<%= config.dist %>/root/static'
       },
-      html: '<%= config.app %>/root/templates/wrapper.tt'
+      all: {
+        src: [ '<%= config.app %>/root/templates/wrapper.tt',
+               '<%= config.app %>/root/templates/components/favicon.tt' ]
+      }
+      // html: '<%= config.app %>/root/templates/wrapper.tt'
+      // html: '<%= config.app %>/root/templates/components/favicon.tt'
     },
 
     // rewrites and renames asset files
@@ -102,9 +107,30 @@ module.exports = function (grunt) {
           '<%= config.dist %>/root/static/javascripts',
           '<%= config.dist %>/root/static/images',
           '<%= config.dist %>/root/static/styles'
-        ]
+        ],
+        blockReplacements: {
+          ati: function(block) {
+            grunt.log.debug('found an ati');
+            var re = block.dest.match( /-(\d+x\d+)\./ );
+            return '<link rel="apple-touch-icon" sizes="'+re[1]+'" href="'+block.dest+'">';
+                 // <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+          },
+          icon: function(block) {
+            grunt.log.debug('found an icon');
+            var re = block.dest.match( /-(\d+x\d+)\./ );
+            return '<link rel="icon" type="image/png" href="'+block.dest+'" sizes="'+re[1]+'">';
+                 // <link rel="icon" type="image/png" href="/favicon-192x192.png" sizes="192x192">
+          },
+          tile: function(block) {
+            grunt.log.debug('found a tile');
+            return '<meta name="msapplication-TileImage" content="'+block.dest+'">';
+                 // <meta name="msapplication-TileImage" content="/mstile-144x144.png">
+          }
+        }
       },
-      html: ['<%= config.dist %>/root/{,*/}*.tt'],
+      // html: ['<%= config.dist %>/root/{,*/}*.tt',
+      html: ['<%= config.dist %>/root/templates/wrapper.tt',
+             '<%= config.dist %>/root/templates/components/favicon.tt'],
       css: ['<%= config.dist %>/root/static/styles/{,*/}*.css']
     },
 

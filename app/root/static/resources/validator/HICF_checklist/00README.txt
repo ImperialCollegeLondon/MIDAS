@@ -11,12 +11,12 @@ Install the perl module and script
 
 Download the Perl module and script:
 
-  https://www.midasuk.org/validator/Bio-Metadata-Validator-1.150850.tar.gz
+  https://www.midasuk.org/validator/Bio-Metadata-Validator-1.151210.tar.gz
 
 The usual way to install a Perl module is something like this:
 
-  shell% tar zxf Bio-Metadata-Validator-1.150850.tar.gz
-  shell% cd Bio-Metadata-Validator-1.150850
+  shell% tar zxf Bio-Metadata-Validator-1.151210.tar.gz
+  shell% cd Bio-Metadata-Validator-1.151210
   shell% perl Makefile.PL
   ...
   shell% make install
@@ -26,7 +26,7 @@ However, this module has quite a number of dependencies, so it may be easier to
 use cpanm (see https://github.com/miyagawa/cpanminus) to install the tarball
 directly. cpanm will detect and install the pre-requisites automatically:
 
-  shell% cpanm Bio-Metadata-Validator-1.150850.tar.gz
+  shell% cpanm Bio-Metadata-Validator-1.151210.tar.gz
   ...
 
 After installation you should be able to run the script something like:
@@ -114,7 +114,7 @@ Resources
 
 These are the files that you will need to run the validator:
 
-https://www.midasuk.org/validator/Bio-Metadata-Validator-1.150850.tar.gz
+https://www.midasuk.org/validator/Bio-Metadata-Validator-1.151210.tar.gz
     Perl module
 https://www.midasuk.org/validator/HICF_checklist/00README.txt
     README containing this documentation
@@ -138,7 +138,7 @@ http://purl.obolibrary.org/obo/gaz.obo (180Mb)
     Gazetteer ontology
 ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
     NCBI taxonomy
- 
+
 
 jt6 20150326 WTSI
 
