@@ -4,12 +4,8 @@ package MIDAS::Controller::Validation;
 use Moose;
 use namespace::autoclean;
 
-# use File::Path qw(make_path remove_tree);
-# use File::Find::Rule;
-# use File::Basename;
 use Data::UUID;
 use Try::Tiny;
-use File::Slurp;
 
 use Bio::Metadata::Checklist;
 use Bio::Metadata::Reader;
