@@ -168,7 +168,7 @@ sub validate_upload : Chained('/') PathPart('validate') Args(0) {
     unless ( $file_contents ) {
       $c->log->error("Couldn't read uploaded file: $!");
       $c->res->status(500); # internal server error
-      $c->res->body($_);
+      $c->res->body("Couldn't read your CSV file");
       return;
     }
 
