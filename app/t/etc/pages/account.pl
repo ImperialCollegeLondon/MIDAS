@@ -8,7 +8,7 @@
     main => [
       User => [
         [ qw( username passphrase displayname email roles api_key ) ],
-        [ 'testuser', 'password', 'Test User', 'testuser@sanger.ac.uk', 'user', 'HrZIg2JG53r236okEhHpBrCRa9U1L4fm' ],
+        [ 'testuser', 'password', 'Test User', 'testuser@sanger.ac.uk', 'user', '2566ZD3k4SVdJfGkdXJQUj6B4aPoq2Rf' ],
       ],
     ],
   },
