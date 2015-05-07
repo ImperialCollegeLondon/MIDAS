@@ -48,7 +48,7 @@ This is a L<Catalyst::Controller> to handle HICF sample data.
 
 #-------------------------------------------------------------------------------
 
-=head2 samples : Chained('/') Args(0) Does('NeedsAuth') ActionClass('REST::ForBrowsers')
+=head2 samples : Chained('/') Args(0) Does('~NeedsAuth') ActionClass('REST::ForBrowsers')
 
 Returns information for all samples.
 
@@ -59,7 +59,7 @@ REST calls).
 
 sub samples : Chained('/')
               Args(0)
-              Does('NeedsAuth')
+              Does('~NeedsAuth')
               ActionClass('REST::ForBrowsers') {
   my ( $self, $c ) = @_;
 
@@ -98,7 +98,7 @@ sub samples_GET_html {
 
 #-------------------------------------------------------------------------------
 
-=head2 sample : Chained('/') Args(1) Does('NeedsAuth') ActionClass('REST::ForBrowsers')
+=head2 sample : Chained('/') Args(1) Does('~NeedsAuth') ActionClass('REST::ForBrowsers')
 
 Returns sample information. Captures a single argument, the ID of the sample.
 
@@ -109,7 +109,7 @@ REST calls).
 
 sub sample : Chained('/')
              Args(1)
-             Does('NeedsAuth')
+             Does('~NeedsAuth')
              ActionClass('REST::ForBrowsers') {}
 
 #---------------------------------------

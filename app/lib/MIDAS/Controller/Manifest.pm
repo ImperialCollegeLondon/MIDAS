@@ -20,7 +20,7 @@ Catalyst Controller.
 
 =head1 METHODS
 
-=head2 manifests : Chained('/') Args(0) Does('NeedsAuth') ActionClass('REST::ForBrowsers')
+=head2 manifests : Chained('/') Args(0) Does('~NeedsAuth') ActionClass('REST::ForBrowsers')
 
 Returns information for all manifests.
 
@@ -31,7 +31,7 @@ REST calls).
 
 sub manifests : Chained('/')
                 Args(0)
-                Does('NeedsAuth')
+                Does('~NeedsAuth')
                 ActionClass('REST::ForBrowsers') {
   my ( $self, $c ) = @_;
 
@@ -68,7 +68,7 @@ sub manifests_GET_html {
 
 #-------------------------------------------------------------------------------
 
-=head2 manifest : Chained('/') Args(1) Does('NeedsAuth') ActionClass('REST::ForBrowsers')
+=head2 manifest : Chained('/') Args(1) Does('~NeedsAuth') ActionClass('REST::ForBrowsers')
 
 Returns sample information. Captures a single argument, the ID of the sample.
 
@@ -79,7 +79,7 @@ REST calls).
 
 sub manifest : Chained('/')
                Args(1)
-               Does('NeedsAuth')
+               Does('~NeedsAuth')
                ActionClass('REST::ForBrowsers') {}
 
 #---------------------------------------

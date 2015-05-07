@@ -5,7 +5,6 @@ use Moose;
 use namespace::autoclean;
 
 use Try::Tiny;
-use Crypt::Mac::HMAC qw(hmac_b64);
 
 BEGIN { extends 'Catalyst::Controller' }
 
@@ -25,7 +24,7 @@ such as password reset, etc.
 
 =head1 METHODS
 
-=head2 account
+=head2 account : Chained('/') PathPart('account') Does('~NeedsAuth') CaptureArgs(0)
 
 Stub for chains related to user accounts.
 
@@ -35,12 +34,12 @@ Enforces authentication by 'doing' C<NeedsLogin>.
 
 sub account : Chained('/')
               PathPart('account')
-              CaptureArgs(0)
-              Does('NeedsLogin') { }
+              Does('~NeedsAuth')
+              CaptureArgs(0) { }
 
 #-------------------------------------------------------------------------------
 
-=head2 account
+=head2 account_page : Chained('account') PathPart('') Args(0)
 
 Page showing forms for resetting password and API key.
 
@@ -61,7 +60,7 @@ sub account_page : Chained('account')
 
 #-------------------------------------------------------------------------------
 
-=head2 reset_password
+=head2 reset_password : Chained('account') PathPart('resetpassword') Args(0)
 
 Reset the password to the given value for the currently signed-in user.
 
@@ -138,7 +137,7 @@ sub reset_password : Chained('account')
 
 #-------------------------------------------------------------------------------
 
-=head2 reset_key
+=head2 reset_key : Chained('account') PathPart('resetkey') Args(0)
 
 Reset the API key (generate a new one) for the currently signed-in user.
 
@@ -199,118 +198,13 @@ sub reset_key : Chained('account')
 
 #-------------------------------------------------------------------------------
 
-=head2 end
+=head2 end : ActionClass('RenderView')
 
 Attempt to render a view, if needed.
 
 =cut
 
 sub end : ActionClass('RenderView') {}
-
-#-------------------------------------------------------------------------------
-#- private actions -------------------------------------------------------------
-#-------------------------------------------------------------------------------
-
-=head2 validate_hmac
-
-Retrieves an HMAC from the C<Authorization> header of a RESTful request and
-validates it.
-
-=cut
-
-sub validate_hmac : Private {
-  my ( $self, $c ) = @_;
-
-  $c->log->debug( 'validate_hmac: looking for an HMAC in the Authorization header' )
-    if $c->debug;
-
-  # first, we must have an Authorization header
-  my $auth_header = $c->req->header('Authorization');
-
-  if ( not defined $auth_header ) {
-    $c->log->error( 'validate_hmac: no authorization header' )
-      if $c->debug;
-    $c->res->status(401); # Unauthorized
-    $c->res->body('Must supply HMAC via "Authorization" header');
-    $c->detach;
-    return;
-  }
-
-  # next, the header should look like:
-  # Authorization: hmac <username>:[digest]
-  unless ( $auth_header =~ m/^hmac (\w+)\:(.*?)$/ ) {
-    $c->log->error( 'validate_hmac: malformed authorization header' )
-      if $c->debug;
-    $c->res->status(401); # Unauthorized
-    $c->res->body('Must supply HMAC via "Authorization" header');
-    $c->detach;
-    return;
-  }
-
-  my $username         = $1;
-  my $submitted_digest = $2;
-
-  # finally, the user must exist in the database
-  my $user = $c->model('HICFDB::User')->find($username);
-
-  unless ( defined $user ) {
-    $c->log->error( 'validate_hmac: no such user' )
-      if $c->debug;
-    $c->res->status(401); # Unauthorized
-    $c->res->body('Unauthorized');
-    $c->detach;
-    return;
-  }
-
-  # the digest is calculated as
-  # b64encode( hmac( 'sha256', '<API key>', '<VERB>+<URI>' ))
-
-  my $method  = $c->req->method;
-  my $uri     = $c->req->uri;
-  my $api_key = $user->api_key;
-
-  # this shouldn't happen in production, since we'll give every user an API key
-  # when we set up their account, but at least for testing it will stop some
-  # ugly error messages
-  unless ( defined $api_key ) {
-    $c->log->warn( 'validate_hmac: no API key for user' )
-      if $c->debug;
-    $c->res->status(401); # Unauthorized
-    $c->res->body('Unauthorized');
-    $c->detach;
-    return;
-  }
-
-  # just to tidy things up still more...
-  my $calculated_digest;
-  try {
-    $calculated_digest = hmac_b64( 'SHA256', $api_key, "${method}+${uri}" );
-  } catch {
-    $c->log->error( 'validate_hmac: exception when generating HMAC' )
-      if $c->debug;
-    $c->res->status(401); # Unauthorized
-    $c->res->body('Unauthorized');
-    $c->detach;
-    return;
-  };
-
-  # and, finally, check the user's digest against our own
-  unless ( $submitted_digest eq $calculated_digest ) {
-    $c->log->error( 'validate_hmac: submitted digest does not match calculated digest' )
-      if $c->debug;
-    $c->res->status(401); # Unauthorized
-    $c->res->body('Unauthorized');
-    $c->detach;
-    return;
-  }
-
-  $c->log->debug( 'validate_hmac: found a valid digest; serving URL' )
-    if $c->debug;
-
-  # flag this request as having a valid HMAC, so that we can avoid validating
-  # twice with RESTful actions
-  $c->stash( hmac_validated => 1 );
-}
 
 #-------------------------------------------------------------------------------
 
