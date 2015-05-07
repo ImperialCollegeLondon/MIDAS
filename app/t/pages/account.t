@@ -90,7 +90,7 @@ ok( $user->check_password('newpassword'), 'password changed');
 
 is( User->count, 1, 'still one user after testing' );
 
-my $old_key = $user->api_key;
+my $old_key_hash = $user->api_key;
 
 $mech->post('http://localhost/account/resetkey', {});
 
@@ -115,9 +115,12 @@ is($response_data->{message}, 'Your API key has been reset', 'message is as expe
 
 $user = undef;
 $user = Schema->resultset('User')->find('testuser');
-my $new_key = $user->api_key;
-ok( $new_key ne $old_key, 'key has been changed');
+my $new_key_hash = $user->api_key;
+ok( $new_key_hash ne $old_key_hash, 'key has been changed');
+
+my $new_key = $response_data->{key};
 like( $new_key, qr/^[A-Za-z0-9]{32}/, 'new key looks sensible');
+ok $user->check_api_key($response_data->{key}), 'new key checks out against hash in DB';
 
 $DB::single = 1;
 

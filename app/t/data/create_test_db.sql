@@ -14,6 +14,7 @@ CREATE TABLE antimicrobial_resistance (
   antimicrobial_name varchar(100) NOT NULL,
   susceptibility enum NOT NULL,
   mic varchar(45) NOT NULL,
+  equality enum NOT NULL DEFAULT 'eq',
   diagnostic_centre varchar(45),
   created_at datetime NOT NULL,
   updated_at datetime,
@@ -22,7 +23,7 @@ CREATE TABLE antimicrobial_resistance (
   FOREIGN KEY (antimicrobial_name) REFERENCES antimicrobial(name) ON DELETE NO ACTION ON UPDATE NO ACTION,
   FOREIGN KEY (sample_id) REFERENCES sample(sample_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
-INSERT INTO "antimicrobial_resistance" VALUES(1,'am1','S','50','WTSI','2014-12-02T16:55:00',NULL,NULL);
+INSERT INTO "antimicrobial_resistance" VALUES(1,'am1','S','50','eq','WTSI','2014-12-02T16:55:00',NULL,NULL);
 CREATE TABLE brenda (
   id varchar(15) NOT NULL,
   description varchar(45),
@@ -155,9 +156,12 @@ CREATE TABLE user (
   email varchar(128) NOT NULL,
   roles varchar(128) DEFAULT 'user',
   api_key char(32),
+  created_at datetime NOT NULL,
+  deleted_at datetime,
   PRIMARY KEY (username)
 );
-INSERT INTO "user" VALUES('testuser','{SSHA}lWIeBZcOIiXSwd/GdaxpEoEqgFfG5JCdau/gqjPQ6y96JM+RrT0khQ==','Test User','testuser@sanger.ac.uk','user','HrZIg2JG53r236okEhHpBrCRa9U1L4fm');
+-- API key hash corresponds to key "2566ZD3k4SVdJfGkdXJQUj6B4aPoq2Rf"
+INSERT INTO "user" VALUES('testuser','{SSHA}lWIeBZcOIiXSwd/GdaxpEoEqgFfG5JCdau/gqjPQ6y96JM+RrT0khQ==','Test User','testuser@sanger.ac.uk','user','{SSHA}G6DXGyWZIP4fUJVK9wclh81+2O3Y44KckvdDpH6fkAwE7jhSyV+qjg==','2014-12-02T16:55:00',NULL);
 CREATE INDEX antimicrobial_resistance_idx_antimicrobial_name ON antimicrobial_resistance (antimicrobial_name);
 CREATE INDEX antimicrobial_resistance_idx_sample_id ON antimicrobial_resistance (sample_id);
 CREATE INDEX file_idx_run_id ON file (run_id);

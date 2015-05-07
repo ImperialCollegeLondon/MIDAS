@@ -1,4 +1,4 @@
-# database definition used by t/pages/account.t
+# database definition used by t/rest_authentication.t
 {
   schema_class => 'Bio::HICF::Schema',
   resultsets => [ qw(
