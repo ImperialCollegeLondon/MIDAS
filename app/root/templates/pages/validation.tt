@@ -10,12 +10,11 @@
       HICF checklist</a>.
   </p>
   <p class="small">
-    <strong>Note:</strong> your uploaded file is not stored on disk unless
-    errors are found. If validation errors are found, we store an edited
-    version of the file on temporary disk, adding error messages to any invalid
-    lines in the CSV file. You can then download a copy of this validated file
-    using a link that will appear below. Validated files are stored for one
-    hour and then deleted.
+    <strong>Note:</strong> your uploaded file is not stored unless errors are
+    found. If validation errors are found, we cache an edited version of the
+    file, adding error messages to any invalid lines in the CSV file. You can
+    then download a copy of this validated file using a link that will appear
+    below. Validated files are cached for one hour and then deleted.
   </p>
 
   <form id="validation-form" action="/validate" method="post" enctype="multipart/form-data">
