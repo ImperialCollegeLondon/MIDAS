@@ -64,7 +64,7 @@ has '_audit_log_config' => (
 # this point. The workaround is to set an attribute on the role every time we
 # need to write a log message, so that we can then lazily instantiate the log
 # writer.
-has '_log' => (
+has '_audit_logger' => (
   is      => 'ro',
   lazy    => 1,
   default => sub {
@@ -246,11 +246,7 @@ around execute => sub {
 
 =head2 _log_request($c, @user_details)
 
-Write an audit log for the request. The log message looks like:
-
- <UTC date/time> <semi-colon concatenated user_details>;<user IP address>;<HTTP method>;<URI>
-
-The user details are currently:
+Write an audit log entry for the request. The fields are:
 
 =over
 
@@ -259,6 +255,12 @@ The user details are currently:
 =item email address
 
 =item request method, either C<browser> or C<REST>
+
+=item user IP address
+
+=item HTTP method, e.g. GET or POST
+
+=item requested URI
 
 =back
 
@@ -283,7 +285,7 @@ sub _log_request {
   $self->_audit_log_config($c->config->{audit_log});
 
   try {
-    $self->_log->write("$log_string\n");
+    $self->_audit_logger->write("$log_string\n");
   }
   catch {
     $c->log->error( "failed to write log message: $_" );
