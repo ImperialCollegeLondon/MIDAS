@@ -8,6 +8,8 @@ use MooseX::MethodAttributes::Role;
 use namespace::autoclean;
 
 use DateTime;
+use Try::Tiny;
+use File::Write::Rotate;
 
 =head1 NAME
 
@@ -40,10 +42,36 @@ valid HMAC.  See L<MIDAS::Root::validate_hmac>.
 #- private attributes ----------------------------------------------------------
 #-------------------------------------------------------------------------------
 
+# in order to avoid doing authentication twice for REST requests, keep track
+# of the request object
 has '_previous_request' => (
   is      => 'rw',
   isa     => 'Object',
   default => sub { bless {}, 'Object' },
+);
+
+# store a reference to the configuration for the audit log writer. This is
+# set when we're processing a request, at which point we can pull the config
+# out of the context object, $c.
+has '_audit_log_config' => (
+  is      => 'rw',
+  isa     => 'HashRef',
+  default => sub { {} },
+);
+
+# I can't find a way to make parameters from the config available in this
+# "default" method. They're not accessible via $self and we don't have $c at
+# this point. The workaround is to set an attribute on the role every time we
+# need to write a log message, so that we can then lazily instantiate the log
+# writer.
+has '_log' => (
+  is      => 'ro',
+  lazy    => 1,
+  default => sub {
+    my $self = shift;
+    my $al   = $self->_audit_log_config;
+    return File::Write::Rotate->new(%$al);
+  },
 );
 
 #-------------------------------------------------------------------------------
@@ -105,7 +133,7 @@ around execute => sub {
   # second case we end up with a Bio::HICF::Schema::Result::User, essentially a
   # row from the "user" table. We need to generate a message for the audit log
   # in both of those situations:
-  my ( $log_name, $log_email );
+  my ( $log_name, $log_email, $log_req_type );
 
   # if Catalyst has supplied a user, we're already authenticated through the
   # browser
@@ -114,8 +142,9 @@ around execute => sub {
       if $c->debug;
 
     # user details come from $c->user...
-    $log_name  = $c->user->get('username');
-    $log_email = $c->user->get('email');
+    $log_name     = $c->user->get('username');
+    $log_email    = $c->user->get('email');
+    $log_req_type = 'browser';
   }
   else {
     $c->log->debug( 'around execute: not authenticated; authenticating...' )
@@ -152,18 +181,18 @@ around execute => sub {
         $c->log->error( 'around execute: no authorization header' )
           if $c->debug;
         $c->res->status(401); # Unauthorized
-        $c->res->body('Unauthorized');
+        $c->res->body('Must supply username and API key in the "Authorization" header');
         $c->detach;
         return;
       }
 
       # there should be an authorization header which looks like:
       # Authorization: <username>:<api_key>
-      unless ( $auth_header =~ m/([^:]+):([A-Za-z0-9]+)$/ ) {
+      unless ( $auth_header =~ m/^([^:]+):([A-Za-z0-9]+)$/ ) {
         $c->log->error( 'around execute: malformed authorization header' )
           if $c->debug;
         $c->res->status(401); # Unauthorized
-        $c->res->body('Unauthorized');
+        $c->res->body('Malformed "Authorization" header; must be "username:api_key"');
         $c->detach;
         return;
       }
@@ -178,7 +207,7 @@ around execute => sub {
         $c->log->error( 'around execute: no such user' )
           if $c->debug;
         $c->res->status(401); # Unauthorized
-        $c->res->body('Unauthorized');
+        $c->res->body('Bad username/API key');
         $c->detach;
         return;
       }
@@ -187,14 +216,15 @@ around execute => sub {
         $c->log->error( "around execute: API key does not match user's key" )
           if $c->debug;
         $c->res->status(401); # Unauthorized
-        $c->res->body('Unauthorized');
+        $c->res->body('Bad username/API key');
         $c->detach;
         return;
       }
 
       # user details come from Bio::HICF::Schema::Result::User...
-      $log_name  = $user->username;
-      $log_email = $user->email;
+      $log_name     = $user->username;
+      $log_email    = $user->email;
+      $log_req_type = 'REST';
     }
   }
 
@@ -202,7 +232,7 @@ around execute => sub {
   # the Authorization header
 
   # write details of this request to the audit log
-  $self->_log_request($c, $log_name, $log_email);
+  $self->_log_request($c, $log_name, $log_email, $log_req_type);
 
   $self->_previous_request($c->req);
 
@@ -218,23 +248,47 @@ around execute => sub {
 
 Write an audit log for the request. The log message looks like:
 
- <UTC date/time> <semi-colon concatenated user_details>;<HTTP method>;<URI>
+ <UTC date/time> <semi-colon concatenated user_details>;<user IP address>;<HTTP method>;<URI>
+
+The user details are currently:
+
+=over
+
+=item username
+
+=item email address
+
+=item request method, either C<browser> or C<REST>
+
+=back
 
 =cut
 
 sub _log_request {
   my ( $self, $c, @user_details ) = @_;
 
+  # decorate the user details with extra useful information
   my $log_string = DateTime->now . ' ';
 
   $log_string .= join ';', @user_details,
+                           $c->req->address,
                            $c->req->method,
                            $c->req->uri;
 
   $c->log->debug( "_log_request: |$log_string|"  )
     if $c->debug;
 
-  # TODO properly log the audit message to file
+  # pull the log writer config out of the context object and store it for use
+  # by the "default" method that instantiates the log writer. Really ugly.
+  $self->_audit_log_config($c->config->{audit_log});
+
+  try {
+    $self->_log->write("$log_string\n");
+  }
+  catch {
+    $c->log->error( "failed to write log message: $_" );
+    $c->log->error( "unwritten log entry: $log_string" );
+  };
 }
 
 #-------------------------------------------------------------------------------

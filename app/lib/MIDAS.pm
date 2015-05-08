@@ -59,6 +59,14 @@ __PACKAGE__->config(
   # DON'T send X-Catalyst header
   enable_catalyst_header => 0,
 
+  # configure audit logging
+  audit_log => {
+    dir    => '/var/log',
+    prefix => 'midas',
+    suffix => '.log',
+    size   => 10 * 1024 * 1024,    # 10Mb
+  },
+
   #-----------------------------------------------------------------------------
   # models
 
