@@ -73,16 +73,6 @@ module.exports = function (grunt) {
     //   }
     // },
 
-    // inject Bower components into the main template file
-    wiredep: {
-      task: {
-        src: [
-          '<%= config.app %>/root/templates/wrapper.tt',
-          '<%= config.app %>/root/static/styles/{,*/}*.{scss,sass}'
-        ]
-      }
-    },
-
     // names assets with revision IDs
     filerev: {
       assets: {
@@ -264,9 +254,6 @@ module.exports = function (grunt) {
 
     // Compiles Sass to CSS and generates necessary files if requested
     sass: {
-      options: {
-        loadPath: 'bower_components'
-      },
       dist: {
         files: [{
           expand: true,
@@ -363,10 +350,6 @@ module.exports = function (grunt) {
 
     // watch for changes to the static content, such as templates or images
     watch: {
-      bower: {
-        files: [ 'bower.json' ],
-        tasks: [ 'wiredep' ]
-      },
       js: {
         files: ['<%= config.app %>/root/static/javascripts/{,*/}*.js'],
         tasks: ['jshint']
@@ -535,7 +518,6 @@ module.exports = function (grunt) {
   // builds the distribution
   grunt.registerTask('build', [
     'clean:dist',
-    'wiredep',
     'jshint',
     'sass:dist',
     'glue',
