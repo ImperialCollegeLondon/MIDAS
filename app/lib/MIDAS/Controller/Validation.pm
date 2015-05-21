@@ -160,7 +160,7 @@ sub validate_upload : Chained('/') PathPart('validate') Args(0) {
     $c->log->debug( 'file was INvalid' )
       if $c->debug;
 
-    my $file_contents = join "\n", $manifest->get_csv_rows;
+    my $file_contents = $manifest->get_csv;
     unless ( $file_contents ) {
       $c->log->error("Couldn't read uploaded file: $!");
       $c->res->status(500); # internal server error
