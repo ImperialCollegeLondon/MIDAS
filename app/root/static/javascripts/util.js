@@ -4,7 +4,7 @@
 //
 // see http://viget.com/inspire/extending-paul-irishs-comprehensive-dom-ready-execution
 
-/* global validation,fourohfour,login,account */
+/* global validation,fourohfour,login,account,samples */
 /* exported HICF */
 
 var HICF = {
@@ -49,7 +49,32 @@ var HICF = {
       // action-specific code
       // console.debug( "index.clicked: action-specific code" );
     }
+  },
+
+  samples: {
+    init: function() {
+      "use strict";
+      $("#samples").DataTable( {
+        dom: 'T<"clear">lfrtip'
+      } );
+    }
   }
+
+  // ADDING NEW PAGES
+  // if we add a new page to the site and that page uses javascript, we also
+  // need to add a new javascript controller, a JS function that fires when a
+  // page loads and handles setting up the JS code for that page. The steps
+  // are:
+  //   1. either:
+  //        - create a new ".js" file for the page (if there's a lot of code)
+  //      or
+  //        - add a new method to the HICF object above (if there's not much code)
+  //   2. set the "jscontroller" key in the stash to point at the file/method
+  //      that we just created
+  //
+  // If we create a new JS file, it has to be included in the <script> tags in
+  // "wrapper.tt" for it to be loaded and, later, to be concatenated into
+  // "site.js"
 
 };
 

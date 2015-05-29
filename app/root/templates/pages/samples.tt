@@ -1,24 +1,36 @@
 
 <section class="container">
 
-  <h1>All samples</h1>
+  <h1>HICF samples</h1>
 
-  <table class="table table-striped table-condensed">
+  <table id="samples" class="table table-striped table-condensed table-bordered">
     <thead>
       <tr>
         <th scope="row">Sample ID</th>
         <th>Manifest ID</th>
-        <th>Created</th>
+        <th>Scientific name</th>
+        <th>NCBI tax ID</th>
+        <th>Location</th>
+        <th>Collection date</th>
+        <th>Source</th>
       </tr>
     </thead>
     <tbody>
-      [% FOREACH sample IN samples %]
+      [% FOREACH sample IN samples.all %]
       <tr>
-        <td scope="row">
+        <td scope="row" data-search="[% sample.sample_id %]">
           <a href="[% c.uri_for('/sample', sample.sample_id) %]">[% sample.sample_id %]</a>
         </td>
         <td>[% sample.manifest_id %]</td>
-        <td>[% sample.created_at %]</td>
+        <td data-search="[% sample.scientific_name %]">
+          <a class="ext" href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id=[% sample.tax_id %]">[% sample.scientific_name %]</a>
+        </td>
+        <td data-search="[% sample.scientific_name %]">
+          <a class="ext" href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id=[% sample.tax_id %]">[% sample.tax_id %]</a>
+        </td>
+        <td>[% sample.location_description.description %]</td>
+        <td>[% sample.collection_date %]</td>
+        <td>[% sample.collected_at %]</td>
       </tr>
       [% END %]
     </tbody>
