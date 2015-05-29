@@ -54,7 +54,8 @@ module.exports = function (grunt) {
     jshint: {
       options: {
         jshintrc: '.jshintrc',
-        reporter: require('jshint-stylish-ex')
+        reporter: require('jshint-stylish-ex'),
+        ignores: [ '<%= config.app %>/root/static/javascripts/vendor/**' ]
       },
       all: [
         'Gruntfile.js',
