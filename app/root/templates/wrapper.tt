@@ -24,6 +24,7 @@
     <link href="/styles/index.css" rel="stylesheet">
     <link href="/styles/contact-us.css" rel="stylesheet">
     <link href="/styles/validation.css" rel="stylesheet">
+    <link href="/styles/samples.css" rel="stylesheet">
     <link href="/styles/reset.css" rel="stylesheet">
     <link href="/styles/images.css" rel="stylesheet">
     <link href="/styles/vendor/dataTables.bootstrap.css" rel="stylesheet">
