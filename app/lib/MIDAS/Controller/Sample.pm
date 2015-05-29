@@ -63,7 +63,15 @@ sub samples : Chained('/')
               ActionClass('REST::ForBrowsers') {
   my ( $self, $c ) = @_;
 
-  $c->stash( samples  => [ $c->model('HICFDB::Sample')->all ] );
+  my $samples_rs = $c->model('HICFDB::Sample')->search(
+    {},
+    {
+      join     => [qw( geolocation location_description )],
+      prefetch => [qw( geolocation location_description )]
+    }
+  );
+
+  $c->stash( samples => $samples_rs );
 }
 
 #---------------------------------------
@@ -73,12 +81,17 @@ sub samples_GET {
 
   my $samples = [];
 
-  foreach my $sample ( @{ $c->stash->{samples} } ) {
+  foreach my $sample ( $c->stash->{samples}->all ) {
     push @$samples,
     {
-      sample_id   => $sample->sample_id,
-      manifest_id => $sample->manifest_id,
-      created     => $sample->created_at . '', # (force stringification of DateTime object)
+      sample_id       => $sample->sample_id,
+      manifest_id     => $sample->manifest_id,
+      scientific_name => $sample->scientific_name,
+      tax_id          => $sample->tax_id,
+      location        => $sample->location_description->description,
+      collection_date => $sample->collection_date . '',
+      # (force stringification of DateTime objects by concatenating the empty string)
+      source          => $sample->collected_at,
     };
   }
 
@@ -93,7 +106,12 @@ sub samples_GET {
 
 sub samples_GET_html {
   my ( $self, $c ) = @_;
-  $c->stash( template => 'pages/samples.tt' );
+
+  $c->stash(
+    template     => 'pages/samples.tt',
+    title        => 'Samples',
+    jscontroller => 'samples'
+  );
 }
 
 #-------------------------------------------------------------------------------
