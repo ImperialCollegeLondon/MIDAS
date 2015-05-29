@@ -4,7 +4,7 @@
 //
 // see http://viget.com/inspire/extending-paul-irishs-comprehensive-dom-ready-execution
 
-/* global validation,fourohfour,login,account,samples */
+/* global validation,fourohfour,login,account */
 /* exported HICF */
 
 var HICF = {
@@ -55,7 +55,7 @@ var HICF = {
     init: function() {
       "use strict";
       $("#samples").DataTable( {
-        dom: 'T<"clear">lfrtip'
+        dom: "T<'clear'>lfrtip"
       } );
     }
   }
