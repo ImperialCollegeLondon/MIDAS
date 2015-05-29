@@ -17,7 +17,6 @@ use Catalyst::Runtime 5.80;
 #                 directory
 
 use Catalyst qw/
-    -Debug
     ConfigLoader
     +CatalystX::SimpleLogin
     Cache
@@ -76,6 +75,13 @@ __PACKAGE__->config(
       dsn => 'dbi:SQLite:dbname=t/data/test.db'
     },
   },
+
+  'Model::UserDB' => {
+    schema_class => 'Bio::HICF::User',
+    connect_info => {
+      dsn => 'dbi:SQLite:dbname=t/data/user.db'
+    },
+  },
   # TODO add caching to DBIC; see http://www.catalystframework.org/calendar/2010/3
 
   #-----------------------------------------------------------------------------
@@ -122,28 +128,28 @@ __PACKAGE__->config(
 
   'Plugin::Authentication' => {
     default_realm => 'db',
-    plain => {
-      credential => {
-        class          => 'Password',
-        password_field => 'password',
-        password_type  => 'clear',
-      },
-      store => {
-        class => 'Minimal',
-        users => {
-          alice => {
-            name     => 'Alice',
-            password => 'alicepass',
-            roles    => [qw( admin user )]
-          },
-          bob => {
-            name     => 'Bob',
-            password => 'bobpass',
-            roles    => [qw( user )]
-          },
-        }
-      }
-    },
+    # plain => {
+    #   credential => {
+    #     class          => 'Password',
+    #     password_field => 'password',
+    #     password_type  => 'clear',
+    #   },
+    #   store => {
+    #     class => 'Minimal',
+    #     users => {
+    #       alice => {
+    #         name     => 'Alice',
+    #         password => 'alicepass',
+    #         roles    => [qw( admin user )]
+    #       },
+    #       bob => {
+    #         name     => 'Bob',
+    #         password => 'bobpass',
+    #         roles    => [qw( user )]
+    #       },
+    #     }
+    #   }
+    # },
     db => {
       credential => {
         class          => 'Password',
@@ -152,7 +158,7 @@ __PACKAGE__->config(
       },
       store => {
         class      => 'DBIx::Class',
-        user_model => 'HICFDB::User',
+        user_model => 'UserDB::User',
         role_field => 'roles',
 
         # TODO implement a separate roles table ?
