@@ -130,7 +130,7 @@ around execute => sub {
   # we can be authenticated in two ways, via the browser or by checking the API
   # key against the database. In the first case we end up with a
   # Catalyst::Authentication::User object, accessible as $c->user. In the
-  # second case we end up with a Bio::HICF::Schema::Result::User, essentially a
+  # second case we end up with a Bio::HICF::User::Result::User, essentially a
   # row from the "user" table. We need to generate a message for the audit log
   # in both of those situations:
   my ( $log_name, $log_email, $log_req_type );
@@ -201,7 +201,7 @@ around execute => sub {
       my $api_key  = $2;
 
       # look up the user and confirm the API key matches
-      my $user = $c->model('HICFDB::User')->find($username);
+      my $user = $c->model('UserDB::User')->find($username);
 
       unless ( defined $user ) {
         $c->log->error( 'around execute: no such user' )
@@ -221,7 +221,7 @@ around execute => sub {
         return;
       }
 
-      # user details come from Bio::HICF::Schema::Result::User...
+      # user details come from Bio::HICF::User::Result::User...
       $log_name     = $user->username;
       $log_email    = $user->email;
       $log_req_type = 'REST';
