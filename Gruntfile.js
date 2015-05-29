@@ -216,6 +216,7 @@ module.exports = function (grunt) {
             expand: true,
             dot: true
           },
+          // TODO really should rationalise all of these copy blocks
           {
             cwd: '<%= config.app %>/root/templates',
             src: '**/*.tt',
@@ -231,6 +232,13 @@ module.exports = function (grunt) {
               'favicon.ico',
             ],
             dest: '<%= config.dist %>/root/static',
+            expand: true,
+            dot: true
+          },
+          {
+            cwd: '<%= config.app %>/root/static/swf',
+            src: '**/*',
+            dest: '<%= config.dist %>/root/static/swf',
             expand: true,
             dot: true
           },
