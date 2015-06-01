@@ -4,19 +4,15 @@ use strict;
 use warnings;
 
 use Test::More;
+use File::Copy;
 
 BEGIN {
   $ENV{CATALYST_CONFIG_LOCAL_SUFFIX} = 'testing';
   use_ok("Test::WWW::Mechanize::Catalyst" => 'MIDAS');
 }
 
-# the DSN here has to match that specified in "midas_testing.conf"
-use Test::DBIx::Class {
-  connect_info => [ 'dbi:SQLite:dbname=testing.db', '', '' ],
-}, qw( :resultsets );
-
-# load the pre-requisite data and THEN turn on foreign keys
-fixtures_ok 'main', 'installed fixtures';
+# clone the test database, so that changes don't break the original
+copy 't/data/user.db', 'temp_user.db';
 
 my $mech = Test::WWW::Mechanize::Catalyst->new;
 

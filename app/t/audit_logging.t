@@ -7,6 +7,7 @@ use Test::More;
 use Test::Exception;
 use File::Path qw( make_path remove_tree );
 use File::Slurp;
+use File::Copy;
 use HTTP::Request::Common;
 
 BEGIN {
@@ -16,14 +17,14 @@ BEGIN {
 
 use Catalyst::Test 'MIDAS';
 
-# the DSN here has to match that specified in "testing_audit.conf"
-use Test::DBIx::Class {
-  connect_info => [ 'dbi:SQLite:dbname=testing.db', '', '' ],
-}, qw( :resultsets );
+# clone the test databases, so that changes don't break the originals
+copy 't/data/user.db', 'temp_user.db';
+copy 't/data/data.db', 'temp_data.db';
 
-# load the pre-requisite data
-fixtures_ok 'main', 'installed fixtures';
+# TODO need to add the sample database too
 
+# set up a temp dir for the audit logs. Again, this needs to match the
+# path given in t/data/testing_audit.conf
 my $tmp_dir = '/tmp/__midas_audit_logs';
 remove_tree( $tmp_dir );
 make_path( $tmp_dir );
@@ -36,7 +37,7 @@ ok ! -f $log_file, 'no audit log at start';
 # make a valid request and make sure there's a log file afterwards
 my @request_params = (
   GET '/samples',
-  Authorization => 'testuser:2566ZD3k4SVdJfGkdXJQUj6B4aPoq2Rf',
+  Authorization => 'testuser:JSVVZjKQEUQGGnnKe1nS367BbMJESjJe',
   Content_Type  => 'application/json',
 );
 my $res = request(@request_params);
@@ -62,9 +63,8 @@ is scalar @log_file_contents, 5, 'found 5 rows in active log';
 @log_file_contents = read_file "$tmp_dir/$log_files[1]";
 is scalar @log_file_contents, 6, 'found 6 rows in rotated log';
 
-$DB::single = 1;
-
 done_testing;
 
-remove_tree( $tmp_dir );
+remove_tree($tmp_dir)                    unless $ENV{KEEP_LOGS};
+unlink( 'temp_user.db', 'temp_data.db' ) unless $ENV{KEEP_DB};
 

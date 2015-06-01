@@ -15,17 +15,6 @@ BEGIN {
   use_ok("Test::WWW::Mechanize::Catalyst" => 'MIDAS');
 }
 
-# the DSN here has to match that specified in "midas_testing.conf"
-use Test::DBIx::Class {
-  connect_info => [ 'dbi:SQLite:dbname=testing.db', '', '' ],
-}, qw( :resultsets );
-
-# load the pre-requisite data and THEN turn on foreign keys
-fixtures_ok 'main', 'installed fixtures';
-
-# make sure the DB looks sensible before we start
-is Taxonomy->count, 3, 'taxonomy table has 3 rows';
-
 # check the basic page contents
 my $mech = Test::WWW::Mechanize::Catalyst->new;
 
@@ -74,8 +63,6 @@ ok $res = request($req), 'sent download request';
 ok $res->is_success, 'response successful';
 is $res->content_type, 'text/csv', 'got CSV response';
 like $res->content, qr/errors found on row 2/, 'found errors in validated file';
-
-$DB::single = 1;
 
 done_testing();
 

@@ -7,18 +7,15 @@ use Test::More;
 use Test::Exception;
 use JSON;
 use HTTP::Request::Common;
+use File::Copy;
 
 use Catalyst::Test 'MIDAS';
 
 BEGIN { $ENV{CATALYST_CONFIG_LOCAL_SUFFIX} = 'testing'; }
 
-# the DSN here has to match that specified in "midas_testing.conf"
-use Test::DBIx::Class {
-  connect_info => [ 'dbi:SQLite:dbname=testing.db', '', '' ],
-}, qw( :resultsets );
-
-# load the pre-requisite data and THEN turn on foreign keys
-fixtures_ok 'main', 'installed fixtures';
+# clone the test databases, so that changes don't break the originals
+copy 't/data/user.db', 'temp_user.db';
+copy 't/data/data.db', 'temp_data.db';
 
 # omit Auth header entirely
 my $res = request( GET '/account',
@@ -33,7 +30,7 @@ $res = request( GET '/account',
 is $res->status_line, '401 Unauthorized', 'got 401 with incorrect API key';
 
 $res = request( GET '/account',
-  Authorization => 'testuser#2566ZD3k4SVdJfGkdXJQUj6B4aPoq2Rf',
+  Authorization => 'testuser#JSVVZjKQEUQGGnnKe1nS367BbMJESjJe',
   Content_Type => 'application/json',
 );
 is $res->status_line, '401 Unauthorized', 'got 401 with malformed header';
@@ -46,7 +43,7 @@ is $res->status_line, '401 Unauthorized', 'got 401 with incorrect API key';
 
 $res = request(
   GET '/samples',
-  Authorization => 'testuser:2566ZD3k4SVdJfGkdXJQUj6B4aPoq2Rf',
+  Authorization => 'testuser:JSVVZjKQEUQGGnnKe1nS367BbMJESjJe',
   Content_Type => 'application/json',
 );
 is $res->status_line, '200 OK', 'got 200 with valid user and API key';
