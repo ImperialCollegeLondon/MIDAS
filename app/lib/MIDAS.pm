@@ -50,7 +50,8 @@ __PACKAGE__->config(
 
   name => 'MIDAS',
 
-  default_view => 'HTML',
+  default_view  => 'HTML',
+  default_model => 'HICFDB',
 
   # disable deprecated behavior needed by old applications
   disable_component_resolution_regex_fallback => 1,
