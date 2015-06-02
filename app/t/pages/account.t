@@ -6,27 +6,28 @@ use warnings;
 use Test::More;
 use Test::Exception;
 use JSON;
+use File::Copy;
+use Bio::HICF::User;
 
 BEGIN {
   $ENV{CATALYST_CONFIG_LOCAL_SUFFIX} = 'testing';
   use_ok("Test::WWW::Mechanize::Catalyst" => 'MIDAS');
 }
 
-# the DSN here has to match that specified in "midas_testing.conf"
-use Test::DBIx::Class {
-  connect_info => [ 'dbi:SQLite:dbname=testing.db', '', '' ],
-}, qw( :resultsets );
+# clone the test database, so that changes don't break the original
+copy 't/data/user.db', 'temp_user.db';
 
-# load the pre-requisite data and THEN turn on foreign keys
-fixtures_ok 'main', 'installed fixtures';
+# set up a connection to the SQLite database with the test user data.
+# The DSN here has to match that specified in "midas_testing.conf"
+my $schema = Bio::HICF::User->connect( 'dbi:SQLite:dbname=temp_user.db' );
 
-is( User->count, 1, 'one user before beginning testing' );
+is( $schema->resultset('User')->count, 1, 'one user before beginning testing' );
+my $user = $schema->resultset('User')->find('testuser');
+ok( $user->check_password('password'), 'password is "password"');
 
+# set up the mech
 my $json = JSON->new;
 my $mech = Test::WWW::Mechanize::Catalyst->new;
-my $user = Schema->resultset('User')->find('testuser');
-
-ok( $user->check_password('password'), 'password is "password"');
 
 $mech->get_ok('http://localhost/logout', 'logout before starting testing');
 $mech->get_ok('http://localhost/account', 'request to account page succeeds...');
@@ -85,10 +86,10 @@ is($response_data->{message}, 'Your password has been changed', 'message is as e
 
 # make sure we're not getting cached values from the User object
 $user = undef;
-$user = Schema->resultset('User')->find('testuser');
+$user = $schema->resultset('User')->find('testuser');
 ok( $user->check_password('newpassword'), 'password changed');
 
-is( User->count, 1, 'still one user after testing' );
+is( $schema->resultset('User')->count, 1, 'still one user after testing' );
 
 my $old_key_hash = $user->api_key;
 
@@ -114,7 +115,7 @@ lives_ok { $response_data = $json->decode($mech->content) } 'got JSON content fr
 is($response_data->{message}, 'Your API key has been reset', 'message is as expected');
 
 $user = undef;
-$user = Schema->resultset('User')->find('testuser');
+$user = $schema->resultset('User')->find('testuser');
 my $new_key_hash = $user->api_key;
 ok( $new_key_hash ne $old_key_hash, 'key has been changed');
 
@@ -122,7 +123,8 @@ my $new_key = $response_data->{key};
 like( $new_key, qr/^[A-Za-z0-9]{32}/, 'new key looks sensible');
 ok $user->check_api_key($response_data->{key}), 'new key checks out against hash in DB';
 
-$DB::single = 1;
+done_testing;
 
-done_testing();
+# tidy up
+unlink 'temp_user.db' unless $ENV{KEEP_DB};
 

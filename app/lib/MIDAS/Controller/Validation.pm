@@ -121,15 +121,23 @@ sub validate_upload : Chained('/') PathPart('validate') Args(0) {
 
   # load the uploaded file into a B::M::Manifest object and validate it
   my $manifest;
+
+  # we can't "return" within a catch block because that only results in a
+  # return from that catch. Instead, we need to record that the call failed and
+  # then do a return outside of there, having set up the error response inside
+  # the block
+  my $call_failed = 0;
+
   try {
     $manifest = $self->_reader->read_csv($upload->tempname);
   }
   catch {
     $c->log->error("Couldn't read uploaded file: $_");
     $c->res->status(500); # internal server error
-    $c->res->body('There was a problem reading your CSV file');
-    return;
+    $c->res->body("Couldn't read your CSV file");
+    $call_failed = 1;
   };
+  return if $call_failed;
 
   my $valid;
   try {
@@ -138,9 +146,10 @@ sub validate_upload : Chained('/') PathPart('validate') Args(0) {
   catch {
     $c->log->error("Couldn't validate file: $_");
     $c->res->status(500); # internal server error
-    $c->res->body('There was a problem validating your CSV file');
-    return;
+    $c->res->body("Couldn't validate your CSV file");
+    $call_failed = 1;
   };
+  return if $call_failed;
 
   my $response_data;
 
@@ -160,7 +169,7 @@ sub validate_upload : Chained('/') PathPart('validate') Args(0) {
     $c->log->debug( 'file was INvalid' )
       if $c->debug;
 
-    my $file_contents = join "\n", $manifest->get_csv_rows;
+    my $file_contents = $manifest->get_csv;
     unless ( $file_contents ) {
       $c->log->error("Couldn't read uploaded file: $!");
       $c->res->status(500); # internal server error
@@ -175,7 +184,7 @@ sub validate_upload : Chained('/') PathPart('validate') Args(0) {
         filename => $upload->filename,
         contents => $file_contents
       },
-      $self->{upload_file_lifetime},
+      $self->{upload_file_lifetime} || 3600,
     );
 
     $c->log->debug( 'cached validated file' )

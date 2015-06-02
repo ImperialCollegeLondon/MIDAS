@@ -63,7 +63,7 @@ sub samples : Chained('/')
               ActionClass('REST::ForBrowsers') {
   my ( $self, $c ) = @_;
 
-  $c->stash( samples  => [ $c->model('HICFDB::Sample')->all ] );
+  $c->stash( samples => $c->model->schema->get_all_samples );
 }
 
 #---------------------------------------
@@ -73,12 +73,17 @@ sub samples_GET {
 
   my $samples = [];
 
-  foreach my $sample ( @{ $c->stash->{samples} } ) {
+  foreach my $sample ( $c->stash->{samples}->all ) {
     push @$samples,
     {
-      sample_id   => $sample->sample_id,
-      manifest_id => $sample->manifest_id,
-      created     => $sample->created_at . '', # (force stringification of DateTime object)
+      sample_id       => $sample->sample_id,
+      manifest_id     => $sample->manifest_id,
+      scientific_name => $sample->scientific_name,
+      tax_id          => $sample->tax_id,
+      location        => $sample->location_description->description,
+      source          => $sample->collected_at,
+      collection_date => $sample->collection_date . '',
+      # (force stringification of DateTime objects by concatenating the empty string)
     };
   }
 
@@ -93,7 +98,12 @@ sub samples_GET {
 
 sub samples_GET_html {
   my ( $self, $c ) = @_;
-  $c->stash( template => 'pages/samples.tt' );
+
+  $c->stash(
+    template     => 'pages/samples.tt',
+    title        => 'Samples',
+    jscontroller => 'samples'
+  );
 }
 
 #-------------------------------------------------------------------------------
@@ -123,8 +133,7 @@ before sample => sub {
   # at this point the user is authenticated, either via login or session if the
   # request came from a browser, or via an HMAC in the "Authorization" header
 
-  my $sample = $c->model('HICFDB::Sample')
-                 ->find( { sample_id => $id } );
+  my $sample = $c->model->schema->get_sample_by_id($id);
 
   if ( defined $sample ) {
     $c->log->debug( 'before sample: stashing sample row' )
