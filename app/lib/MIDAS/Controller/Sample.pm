@@ -63,15 +63,7 @@ sub samples : Chained('/')
               ActionClass('REST::ForBrowsers') {
   my ( $self, $c ) = @_;
 
-  my $samples_rs = $c->model('HICFDB::Sample')->search(
-    {},
-    {
-      join     => [qw( geolocation location_description )],
-      prefetch => [qw( geolocation location_description )]
-    }
-  );
-
-  $c->stash( samples => $samples_rs );
+  $c->stash( samples => $c->model->schema->get_all_samples );
 }
 
 #---------------------------------------
@@ -89,9 +81,9 @@ sub samples_GET {
       scientific_name => $sample->scientific_name,
       tax_id          => $sample->tax_id,
       location        => $sample->location_description->description,
+      source          => $sample->collected_at,
       collection_date => $sample->collection_date . '',
       # (force stringification of DateTime objects by concatenating the empty string)
-      source          => $sample->collected_at,
     };
   }
 
@@ -141,8 +133,7 @@ before sample => sub {
   # at this point the user is authenticated, either via login or session if the
   # request came from a browser, or via an HMAC in the "Authorization" header
 
-  my $sample = $c->model('HICFDB::Sample')
-                 ->find( { sample_id => $id } );
+  my $sample = $c->model->schema->get_sample_by_id($id);
 
   if ( defined $sample ) {
     $c->log->debug( 'before sample: stashing sample row' )
