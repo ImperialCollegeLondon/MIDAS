@@ -184,7 +184,7 @@ sub validate_upload : Chained('/') PathPart('validate') Args(0) {
         filename => $upload->filename,
         contents => $file_contents
       },
-      $self->{upload_file_lifetime},
+      $self->{upload_file_lifetime} || 3600,
     );
 
     $c->log->debug( 'cached validated file' )
