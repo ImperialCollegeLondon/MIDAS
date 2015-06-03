@@ -47,7 +47,8 @@ TODO: {
 
 $mech->content_lacks('Thomas Splettstoesser', 'virus image credit not found');
 
-is( $mech->scrape_text_by_id('samples'), 'Sample ID Manifest ID Scientific name NCBI tax ID Location Collection date Source 1 4162F712-1DD2-11B2-B17E-C09EFE1DC403 9606 Hinxton 1428658943 CAMBRIDGE', '"samples" table looks right');
-is( scalar( $mech->scrape_text_by_attr('scope', 'row') ), 2, 'got header and one sample row' );
+is( $mech->scrape_text_by_id('samples'), 'Sample ID Manifest ID Scientific name NCBI tax ID Collection date Source 1 4162F712-1DD2-11B2-B17E-C09EFE1DC403 9606 1428658943 CAMBRIDGE', '"samples" table looks right');
+my @rows = $mech->scrape_text_by_attr('scope', 'row');
+is( scalar @rows, 2, 'got header and one sample row' );
 done_testing;
 
