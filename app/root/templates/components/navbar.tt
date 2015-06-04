@@ -23,43 +23,51 @@
       </ol>
       [% END # of IF breadcrumbs.defined %]
 
-      <form class="navbar-form" role="search">
-        <div id="nav-tools" class="col-md-5 navbar-right">
+      <div class="row">
+        <div id="nav-tools" class="navbar-right col-md-6">
+
           [% IF c.user_exists %]
           <div class="row">
-            <div class="col-md-10 input-group input-group-sm">
-              <input type="text" class="form-control" placeholder="Search">
-              <span class="input-group-btn">
-                <button class="btn btn-default btn-sm" type="button">Search</button>
-              </span>
-            </div><!-- /input-group -->
-            <div class="navbar-right">
-              <button id="signOutButton"
-                      class="btn btn-default btn-sm"
-                      type="button">Sign out</button>
-            </div>
+            <form class="navbar-form" role="search">
+              <div class="col-md-10">
+                  <div class="input-group input-group-sm pull-right">
+                    <input type="text" class="form-control" placeholder="Search">
+                    <span class="input-group-btn">
+                      <button class="btn btn-default btn-sm disabled" type="button">Search</button>
+                    </span>
+                  </div><!-- /input-group -->
+              </div>
+              <div class="col-md-2 pull-right">
+                <button id="signOutButton"
+                        class="btn btn-default btn-sm"
+                        type="button">Sign out</button>
+              </div>
+            </form>
           </div>
           <div class="row">
-            <div class="navbar-right">
-              <span class="signed-in">
-                Signed in as
-                <a href="[% c.uri_for_action('/account/account_page') %]">
-                  [% c.user.id %]</a>
-              </span>
-            </div>
+            <span class="signed-in col-md-offset-6 col-md-6 text-right">
+              Signed in as
+              <a class="navbar-link"
+                 href="[% c.uri_for_action('/account/account_page') %]">
+                [% c.user.id %]</a>
+            </span>
           </div>
           [% ELSE %]
           <div class="row">
-            <div class="navbar-right">
-              <button id="signInButton"
-                      class="btn btn-default btn-sm[% IF c.config.disable_signin %] disabled[% END %]"
-                      type="button">Sign in</button>
+            <div class="col-md-offset-10 col-md-2 pull-right">
+              <form class="navbar-form" role="signin">
+                <button id="signInButton"
+                        class="btn btn-default btn-sm[% IF c.config.disable_signin %] disabled[% END %]"
+                        type="button">Sign in</button>
+              </form>
             </div>
           </div>
           [% END %]
+
         </div>
-      </form>
+      </div>
+
     </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
+  </div><!-- /.container -->
 </nav>
 

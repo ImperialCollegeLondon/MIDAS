@@ -80,7 +80,6 @@ sub samples_GET {
       manifest_id     => $sample->manifest_id,
       scientific_name => $sample->scientific_name,
       tax_id          => $sample->tax_id,
-      location        => $sample->location_description->description,
       source          => $sample->collected_at,
       collection_date => $sample->collection_date . '',
       # (force stringification of DateTime objects by concatenating the empty string)

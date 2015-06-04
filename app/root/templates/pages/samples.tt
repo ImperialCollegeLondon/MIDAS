@@ -10,9 +10,8 @@
         <th>Manifest ID</th>
         <th>Scientific name</th>
         <th>NCBI tax ID</th>
-        <th>Location</th>
         <th>Collection date</th>
-        <th>Source</th>
+        <th>Collected at</th>
       </tr>
     </thead>
     <tbody>
@@ -28,7 +27,6 @@
         <td data-search="[% sample.scientific_name %]">
           <a class="ext" href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id=[% sample.tax_id %]">[% sample.tax_id %]</a>
         </td>
-        <td>[% sample.location_description.description %]</td>
         <td>[% sample.collection_date %]</td>
         <td>[% sample.collected_at %]</td>
       </tr>
