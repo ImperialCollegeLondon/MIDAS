@@ -15,8 +15,8 @@
        # We'll hide it away somewhere...
     PROCESS components/favicon.tt %]
 
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-    <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.4/flatly/bootstrap.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.4/flatly/bootstrap.min.css" rel="stylesheet">
 
     <!-- app CSS -->
     <!-- build:css({app/root/static,.tmp}) /styles/app.css -->
@@ -68,8 +68,7 @@
     <script type="text/javascript" src="/zxtm/piwik2.js"></script>
     [% END -%]
 
-    <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> -->
-    <script src="//code.jquery.com/jquery-2.1.3.min.js"></script>
+    <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
     <!-- build:js({app/root/static,.tmp}) /javascripts/app.js -->
