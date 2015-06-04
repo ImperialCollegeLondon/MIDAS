@@ -6,68 +6,71 @@
 
 <div class="container">
 
-  <div class="col-sm-offset-2 col-sm-10">
+  <div class="row">
 
-    [% IF c.config.disable_signin %]
+    <div class="col-sm-offset-2 col-sm-10">
 
-    <h2>
-      Sign in disabled
-    </h2>
+      [% IF c.config.disable_signin %]
 
-    [% ELSE %]
+      <h2>
+        Sign in disabled
+      </h2>
 
-    <h2>
-      Sign in
-      [% IF c.user %]
-      <small>
-        (You are already signed in as <strong>[% c.user.id %]</strong>)
-      </small>
-      [% END %]
-    </h2>
+      [% ELSE %]
 
-    <p>
-      Access to MIDAS data is currently restricted. Please
-      <a href="[% c.uri_for('/contact') %]">contact us</a> to request access
-      credentials.
-    </p>
-    <p>
-      <strong>Please note</strong> that all access to this site is recorded for
-      auditing and accounting purposes.
-    </p>
+      <h2>
+        Sign in
+        [% IF c.user %]
+        <small>
+          (You are already signed in as <strong>[% c.user.id %]</strong>)
+        </small>
+        [% END %]
+      </h2>
 
-    <form name="signin-form" class="form-horizontal" method="post">
-      <div class="form-group">
-        <label for="username" class="col-md-2 control-label">Email</label>
-        <div class="col-md-6">
-          <input type="username" class="form-control" id="username" name="username" placeholder="Username">
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="password" class="col-md-2 control-label">Password</label>
-        <div class="col-md-6">
-          <input type="password" class="form-control" id="password" name="password" placeholder="Password">
-        </div>
-      </div>
-      [%- FOREACH error IN p.errors %]
-      <div class="form-group slim">
-        <div class="col-md-offset-2 col-md-6">
-          <div class="alert alert-danger" role="alert">
-            <span class="sr-only">Error:</span>
-            [% error %]
+      <p>
+        Access to MIDAS data is currently restricted. Please
+        <a href="[% c.uri_for('/contact') %]">contact us</a> to request access
+        credentials.
+      </p>
+      <p>
+        <strong>Please note</strong> that all access to this site is recorded for
+        auditing and accounting purposes.
+      </p>
+
+      <form name="signin-form" class="form-horizontal" method="post">
+        <div class="form-group">
+          <label for="username" class="col-md-2 control-label">Email</label>
+          <div class="col-md-6">
+            <input type="username" class="form-control" id="username" name="username" placeholder="Username" autofocus>
           </div>
         </div>
-      </div>
-      [%- END -%]
-      <div class="form-group">
-        <div class="col-md-offset-2 col-md-6">
-          <button type="submit" class="btn btn-default">Sign in</button>
+        <div class="form-group">
+          <label for="password" class="col-md-2 control-label">Password</label>
+          <div class="col-md-6">
+            <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+          </div>
         </div>
-      </div>
-    </form>
+        [%- FOREACH error IN p.errors %]
+        <div class="form-group slim">
+          <div class="col-md-offset-2 col-md-6">
+            <div class="alert alert-danger" role="alert">
+              <span class="sr-only">Error:</span>
+              [% error %]
+            </div>
+          </div>
+        </div>
+        [%- END -%]
+        <div class="form-group">
+          <div class="col-md-offset-2 col-md-6">
+            <button type="submit" class="btn btn-default">Sign in</button>
+          </div>
+        </div>
+      </form>
 
-    [% END # of "IF signin disabled" %]
+      [% END # of "IF signin disabled" %]
 
-  </div><!-- /container -->
+    </div><!-- /cols -->
+  </div><!-- /row -->
 </div><!-- /container -->
 
 [% IF 0 %]
