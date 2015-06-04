@@ -11,7 +11,7 @@
         <th>Scientific name</th>
         <th>NCBI tax ID</th>
         <th>Collection date</th>
-        <th>Source</th>
+        <th>Collected at</th>
       </tr>
     </thead>
     <tbody>
