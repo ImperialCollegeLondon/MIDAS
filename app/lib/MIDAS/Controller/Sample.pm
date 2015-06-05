@@ -107,6 +107,19 @@ sub samples_GET_html {
 
 #-------------------------------------------------------------------------------
 
+# sub samples_by_organism : Chained('/')
+#                           Args(1)
+#                           Does('~NeedsAuth')
+#                           ActionClass('REST::ForBrowsers') {
+#   my ( $self, $c, $sci_name ) = @_;
+#
+#   
+#
+#   $c->stash( samples => $c->model->schema->get_samples_by_sci_name($sci_name);
+# }
+
+#-------------------------------------------------------------------------------
+
 =head2 sample : Chained('/') Args(1) Does('~NeedsAuth') ActionClass('REST::ForBrowsers')
 
 Returns sample information. Captures a single argument, the ID of the sample.
@@ -124,13 +137,24 @@ sub sample : Chained('/')
 #---------------------------------------
 
 before sample => sub {
-  my ( $self, $c, $id ) = @_;
-
-  $c->log->debug( "before sample: AUTHENTICATED; retrieving sample data for '$id'" )
-    if $c->debug;
+  my ( $self, $c, $tainted_id ) = @_;
 
   # at this point the user is authenticated, either via login or session if the
   # request came from a browser, or via an HMAC in the "Authorization" header
+
+  # detaint the ID from the URL
+  unless ( defined $tainted_id and 
+           $tainted_id =~ m/^(\d+)$/ ) {
+    $c->log->warn( 'Sample::before sample: not a valid ID' )
+      if $c->debug;
+    $c->stash( error => 'Not a valid sample ID' );
+    return;
+  }
+
+  my $id = $1;
+
+  $c->log->debug( "before sample: AUTHENTICATED; retrieving sample data for '$id'" )
+    if $c->debug;
 
   my $sample = $c->model->schema->get_sample_by_id($id);
 
@@ -144,7 +168,7 @@ before sample => sub {
     $c->log->warn( 'before sample: no such sample; stashing error message' )
       if $c->debug;
     $c->stash( id    => $id,
-               error => 'no such sample' );
+               error => 'No such sample' );
   }
 };
 
@@ -153,12 +177,17 @@ before sample => sub {
 # return sample data to a browser
 
 sub sample_GET_html {
-  my ( $self, $c, $id ) = @_;
+  my ( $self, $c, $tainted_id ) = @_;
 
-  $c->log->debug( "sample_GET_html: request for sample '$id' came from a browser" )
-    if $c->debug;
+  my $title = ( defined $tainted_id and $tainted_id =~ m/^(\d+)$/ )
+            ? "Sample $1"
+            : "Sample";
 
-  $c->stash( template => 'pages/sample.tt' );
+  $c->stash(
+    template     => 'pages/sample.tt',
+    title        => $title,
+    jscontroller => 'sample'
+  );
 }
 
 #---------------------------------------
@@ -166,10 +195,7 @@ sub sample_GET_html {
 # return sample data to a non-browser client
 
 sub sample_GET {
-  my ( $self, $c, $id ) = @_;
-
-  $c->log->debug( "sample_GET: request for sample '$id' did not come from a browser" )
-    if $c->debug;
+  my ( $self, $c ) = @_;
 
   if ( defined $c->stash->{sample} ) {
     $self->status_ok(
