@@ -188,6 +188,49 @@ sub sample_GET {
 
 #-------------------------------------------------------------------------------
 
+=head2 summary : Chained('/') Args(0) Does('~NeedsAuth') ActionClass('REST::ForBrowsers')
+
+Returns a summary of the samples n the database.
+
+Requires login (for requests from a browser) or HMAC authentication (for REST
+calls).
+
+=cut
+
+sub summary : Chained('/')
+              Args(0)
+              Does('~NeedsAuth')
+              ActionClass('REST::ForBrowsers') {}
+
+#---------------------------------------
+
+before summary => sub {
+  my ( $self, $c ) = @_;
+
+  $c->stash( summary => $c->model->schema->get_sample_summary );
+};
+
+#---------------------------------------
+
+sub summary_GET_html {
+  my ( $self, $c ) = @_;
+
+  $c->stash( template => 'pages/summary.tt' );
+}
+
+#---------------------------------------
+
+sub summary_GET {
+  my ( $self, $c ) = @_;
+
+  $self->status_ok(
+    $c,
+    entity => $c->stash->{summary}
+  );
+}
+
+#-------------------------------------------------------------------------------
+
 =encoding utf8
 
 =head1 AUTHOR

@@ -1,0 +1,50 @@
+
+<section class="container">
+
+  <h1>Sample summary</h1>
+
+  <p>
+    The HICF sample database currently contains a total of
+    <strong>[% summary.total_number_of_samples %]</strong> samples from
+    <strong>[% summary.total_number_of_manifests %]</strong> manifests.
+  </p>
+
+  <table class="table table-striped table-bordered table-condensed">
+    <caption>Number of samples from each contributing site</caption>
+    <thead>
+      <tr>
+        <th>Site</th>
+        <th>Number of samples</th>
+      </tr>
+    </thead>
+    <tbody>
+      [% ca = summary.collected_at;
+      FOREACH site IN ca.keys.sort %]
+      <tr>
+        <td>[% site %]</td>
+        <td>[% ca.$site %]</td>
+      </tr>
+      [% END %]
+    </tbody>
+  </table>
+
+  <table class="table table-striped table-bordered table-condensed">
+    <caption>Number of samples for each organism</caption>
+    <thead>
+      <tr>
+        <th>Scientific name</th>
+        <th>Number of samples</th>
+      </tr>
+    </thead>
+    <tbody>
+      [% names = summary.scientific_names;
+      FOREACH name IN names.keys.sort %]
+      <tr>
+        <td>[% name %]</td>
+        <td>[% names.$name %]</td>
+      </tr>
+      [% END %]
+    </tbody>
+  </table>
+
+</section>
