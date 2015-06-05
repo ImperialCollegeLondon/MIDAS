@@ -63,7 +63,10 @@ sub samples : Chained('/')
               ActionClass('REST::ForBrowsers') {
   my ( $self, $c ) = @_;
 
-  $c->stash( samples => $c->model->schema->get_all_samples );
+  $c->stash(
+    template => 'pages/samples.tt',
+    samples  => $c->model->schema->get_all_samples
+  );
 }
 
 #---------------------------------------
@@ -99,7 +102,6 @@ sub samples_GET_html {
   my ( $self, $c ) = @_;
 
   $c->stash(
-    template     => 'pages/samples.tt',
     title        => 'Samples',
     jscontroller => 'samples'
   );
@@ -113,7 +115,6 @@ sub samples_GET_html {
 #                           ActionClass('REST::ForBrowsers') {
 #   my ( $self, $c, $sci_name ) = @_;
 #
-#   
 #
 #   $c->stash( samples => $c->model->schema->get_samples_by_sci_name($sci_name);
 # }
@@ -132,20 +133,18 @@ REST calls).
 sub sample : Chained('/')
              Args(1)
              Does('~NeedsAuth')
-             ActionClass('REST::ForBrowsers') {}
-
-#---------------------------------------
-
-before sample => sub {
+             ActionClass('REST::ForBrowsers') {
   my ( $self, $c, $tainted_id ) = @_;
 
   # at this point the user is authenticated, either via login or session if the
   # request came from a browser, or via an HMAC in the "Authorization" header
 
+  $c->stash( template => 'pages/sample.tt' );
+
   # detaint the ID from the URL
-  unless ( defined $tainted_id and 
+  unless ( defined $tainted_id and
            $tainted_id =~ m/^(\d+)$/ ) {
-    $c->log->warn( 'Sample::before sample: not a valid ID' )
+    $c->log->warn( 'Sample::sample: not a valid ID' )
       if $c->debug;
     $c->stash( error => 'Not a valid sample ID' );
     return;
@@ -153,41 +152,23 @@ before sample => sub {
 
   my $id = $1;
 
-  $c->log->debug( "before sample: AUTHENTICATED; retrieving sample data for '$id'" )
+  $c->log->debug( "Sample::sample: AUTHENTICATED; retrieving sample data for '$id'" )
     if $c->debug;
 
   my $sample = $c->model->schema->get_sample_by_id($id);
 
   if ( defined $sample ) {
-    $c->log->debug( 'before sample: stashing sample row' )
+    $c->log->debug( 'Sample::sample: stashing sample row' )
       if $c->debug;
     $c->stash( id     => $id,
                sample => $sample );
   }
   else {
-    $c->log->warn( 'before sample: no such sample; stashing error message' )
+    $c->log->warn( 'Sample::sample: no such sample; stashing error message' )
       if $c->debug;
     $c->stash( id    => $id,
                error => 'No such sample' );
   }
-};
-
-#---------------------------------------
-
-# return sample data to a browser
-
-sub sample_GET_html {
-  my ( $self, $c, $tainted_id ) = @_;
-
-  my $title = ( defined $tainted_id and $tainted_id =~ m/^(\d+)$/ )
-            ? "Sample $1"
-            : "Sample";
-
-  $c->stash(
-    template     => 'pages/sample.tt',
-    title        => $title,
-    jscontroller => 'sample'
-  );
 }
 
 #---------------------------------------
@@ -196,6 +177,9 @@ sub sample_GET_html {
 
 sub sample_GET {
   my ( $self, $c ) = @_;
+
+  $c->log->debug( 'sample_GET' )
+    if $c->debug;
 
   if ( defined $c->stash->{sample} ) {
     $self->status_ok(
@@ -210,6 +194,26 @@ sub sample_GET {
     );
   }
 
+}
+
+#---------------------------------------
+
+# return sample data to a browser
+
+sub sample_GET_html {
+  my ( $self, $c, $tainted_id ) = @_;
+
+  $c->log->debug( 'sample_GET_html' )
+    if $c->debug;
+
+  my $title = ( defined $tainted_id and $tainted_id =~ m/^(\d+)$/ )
+            ? "Sample $1"
+            : "Sample";
+
+  $c->stash(
+    title        => $title,
+    jscontroller => 'sample'
+  );
 }
 
 #-------------------------------------------------------------------------------
