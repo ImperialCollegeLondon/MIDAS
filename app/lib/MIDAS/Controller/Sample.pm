@@ -63,7 +63,10 @@ sub samples : Chained('/')
               ActionClass('REST::ForBrowsers') {
   my ( $self, $c ) = @_;
 
-  $c->stash( samples => $c->model->schema->get_all_samples );
+  $c->stash(
+    template => 'pages/samples.tt',
+    samples  => $c->model->schema->get_all_samples
+  );
 }
 
 #---------------------------------------
@@ -99,11 +102,22 @@ sub samples_GET_html {
   my ( $self, $c ) = @_;
 
   $c->stash(
-    template     => 'pages/samples.tt',
     title        => 'Samples',
     jscontroller => 'samples'
   );
 }
+
+#-------------------------------------------------------------------------------
+
+# sub samples_by_organism : Chained('/')
+#                           Args(1)
+#                           Does('~NeedsAuth')
+#                           ActionClass('REST::ForBrowsers') {
+#   my ( $self, $c, $sci_name ) = @_;
+#
+#
+#   $c->stash( samples => $c->model->schema->get_samples_by_sci_name($sci_name);
+# }
 
 #-------------------------------------------------------------------------------
 
@@ -119,46 +133,42 @@ REST calls).
 sub sample : Chained('/')
              Args(1)
              Does('~NeedsAuth')
-             ActionClass('REST::ForBrowsers') {}
-
-#---------------------------------------
-
-before sample => sub {
-  my ( $self, $c, $id ) = @_;
-
-  $c->log->debug( "before sample: AUTHENTICATED; retrieving sample data for '$id'" )
-    if $c->debug;
+             ActionClass('REST::ForBrowsers') {
+  my ( $self, $c, $tainted_id ) = @_;
 
   # at this point the user is authenticated, either via login or session if the
   # request came from a browser, or via an HMAC in the "Authorization" header
 
+  $c->stash( template => 'pages/sample.tt' );
+
+  # detaint the ID from the URL
+  unless ( defined $tainted_id and
+           $tainted_id =~ m/^(\d+)$/ ) {
+    $c->log->warn( 'Sample::sample: not a valid ID' )
+      if $c->debug;
+    $c->stash( error => 'Not a valid sample ID' );
+    return;
+  }
+
+  my $id = $1;
+
+  $c->log->debug( "Sample::sample: AUTHENTICATED; retrieving sample data for '$id'" )
+    if $c->debug;
+
   my $sample = $c->model->schema->get_sample_by_id($id);
 
   if ( defined $sample ) {
-    $c->log->debug( 'before sample: stashing sample row' )
+    $c->log->debug( 'Sample::sample: stashing sample row' )
       if $c->debug;
     $c->stash( id     => $id,
                sample => $sample );
   }
   else {
-    $c->log->warn( 'before sample: no such sample; stashing error message' )
+    $c->log->warn( 'Sample::sample: no such sample; stashing error message' )
       if $c->debug;
     $c->stash( id    => $id,
-               error => 'no such sample' );
+               error => 'No such sample' );
   }
-};
-
-#---------------------------------------
-
-# return sample data to a browser
-
-sub sample_GET_html {
-  my ( $self, $c, $id ) = @_;
-
-  $c->log->debug( "sample_GET_html: request for sample '$id' came from a browser" )
-    if $c->debug;
-
-  $c->stash( template => 'pages/sample.tt' );
 }
 
 #---------------------------------------
@@ -166,9 +176,9 @@ sub sample_GET_html {
 # return sample data to a non-browser client
 
 sub sample_GET {
-  my ( $self, $c, $id ) = @_;
+  my ( $self, $c ) = @_;
 
-  $c->log->debug( "sample_GET: request for sample '$id' did not come from a browser" )
+  $c->log->debug( 'sample_GET' )
     if $c->debug;
 
   if ( defined $c->stash->{sample} ) {
@@ -184,6 +194,69 @@ sub sample_GET {
     );
   }
 
+}
+
+#---------------------------------------
+
+# return sample data to a browser
+
+sub sample_GET_html {
+  my ( $self, $c, $tainted_id ) = @_;
+
+  $c->log->debug( 'sample_GET_html' )
+    if $c->debug;
+
+  my $title = ( defined $tainted_id and $tainted_id =~ m/^(\d+)$/ )
+            ? "Sample $1"
+            : "Sample";
+
+  $c->stash(
+    title        => $title,
+    jscontroller => 'sample'
+  );
+}
+
+#-------------------------------------------------------------------------------
+
+=head2 summary : Chained('/') Args(0) Does('~NeedsAuth') ActionClass('REST::ForBrowsers')
+
+Returns a summary of the samples n the database.
+
+Requires login (for requests from a browser) or HMAC authentication (for REST
+calls).
+
+=cut
+
+sub summary : Chained('/')
+              Args(0)
+              Does('~NeedsAuth')
+              ActionClass('REST::ForBrowsers') {}
+
+#---------------------------------------
+
+before summary => sub {
+  my ( $self, $c ) = @_;
+
+  $c->stash( summary => $c->model->schema->get_sample_summary );
+};
+
+#---------------------------------------
+
+sub summary_GET_html {
+  my ( $self, $c ) = @_;
+
+  $c->stash( template => 'pages/summary.tt' );
+}
+
+#---------------------------------------
+
+sub summary_GET {
+  my ( $self, $c ) = @_;
+
+  $self->status_ok(
+    $c,
+    entity => $c->stash->{summary}
+  );
 }
 
 #-------------------------------------------------------------------------------
