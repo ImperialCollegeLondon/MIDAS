@@ -4,6 +4,19 @@ package MIDAS::Controller::Sample;
 use Moose;
 use namespace::autoclean;
 
+use Try::Tiny;
+use MooseX::Params::Validate;
+use Moose::Util::TypeConstraints;
+use MooseX::Types::Moose qw( Int Str );
+use MooseX::Types -declare => [ qw(
+  FilterString
+) ];
+
+subtype FilterString,
+  as Str,
+  where { $_ !~ m/[;%]/ },
+  message { 'Not a valid filter string' };
+
 BEGIN { extends 'MIDAS::Base::Controller::Restful' }
 
 =head1 NAME
@@ -58,14 +71,22 @@ REST calls).
 =cut
 
 sub samples : Chained('/')
-              Args(0)
+              Args()
               Does('~NeedsAuth')
               ActionClass('REST::ForBrowsers') {
-  my ( $self, $c ) = @_;
+  my ( $self, $c, $organism ) = @_;
+
+  if ( $organism ) {
+    $c->log->debug( "returning samples from $organism" )
+      if $c->debug;
+  }
+  else {
+    $c->log->debug( "returning all samples" )
+      if $c->debug;
+  }
 
   $c->stash(
     template => 'pages/samples.tt',
-    samples  => $c->model->schema->get_all_samples
   );
 }
 
@@ -74,25 +95,20 @@ sub samples : Chained('/')
 sub samples_GET {
   my ( $self, $c ) = @_;
 
-  my $samples = [];
-
-  foreach my $sample ( $c->stash->{samples}->all ) {
-    push @$samples,
-    {
-      sample_id       => $sample->sample_id,
-      manifest_id     => $sample->manifest_id,
-      scientific_name => $sample->scientific_name,
-      tax_id          => $sample->tax_id,
-      source          => $sample->collected_at,
-      collection_date => $sample->collection_date . '',
-      # (force stringification of DateTime objects by concatenating the empty string)
-    };
+  try {
+    $c->forward('_get_sample_data');
+    $self->status_ok(
+      $c,
+      entity => $c->stash->{output}
+    );
+  } catch {
+    $self->status_ok(
+      $c,
+      entity => { error => $_ }
+    );
   }
 
-  $self->status_ok(
-    $c,
-    entity => $samples
-  );
+  # TODO add a link to download the dataset as CSV
 
 }
 
@@ -109,15 +125,46 @@ sub samples_GET_html {
 
 #-------------------------------------------------------------------------------
 
-# sub samples_by_organism : Chained('/')
-#                           Args(1)
-#                           Does('~NeedsAuth')
-#                           ActionClass('REST::ForBrowsers') {
-#   my ( $self, $c, $sci_name ) = @_;
-#
-#
-#   $c->stash( samples => $c->model->schema->get_samples_by_sci_name($sci_name);
-# }
+sub samples_by_organism : Chained('/')
+                          Args(1)
+                          Does('~NeedsAuth')
+                          ActionClass('REST::ForBrowsers') {
+  my ( $self, $c, $organism ) = @_;
+
+  # I started building a regex to detaint the organism name, but the scientific
+  # names in the NCBI taxonomy appear to contain every non-word character in
+  # the lexicon, with the exception of pipe ("|"), which they use as a
+  # separator in "names.dmp". White-listing would end up looking something
+  # like:
+  #
+  #   unless ( $tainted_organism =~ m|^([\w\s\.-;:'"/%\*^()[]{}\?\&\#]+)$| ) {
+  #     ...
+  #   }
+  #
+  # Basically, there's not a lot of point in trying to validate this. We'll
+  # just hope that DBIC does a good job of escaping everything before it
+  # hits the DB
+
+  my $samples = $c->model->schema->get_samples_from_organism($organism);
+
+  $c->stash(
+    template => 'pages/samples.tt',
+    samples  => $samples,
+  );
+}
+
+#---------------------------------------
+
+sub samples_by_organism_GET {
+  my ( $self, $c ) = @_;
+
+}
+
+#---------------------------------------
+
+sub samples_by_organism_GET_html {
+
+}
 
 #-------------------------------------------------------------------------------
 
@@ -257,6 +304,208 @@ sub summary_GET {
     $c,
     entity => $c->stash->{summary}
   );
+}
+
+#-------------------------------------------------------------------------------
+#- private actions -------------------------------------------------------------
+#-------------------------------------------------------------------------------
+
+# return data for a set of samples
+sub _get_sample_data : Private {
+  my ( $self, $c ) = @_;
+
+  my $crp = $c->req->params;
+
+  foreach my $param_name ( qw( draw start length order[0][column] ) ) {
+    next unless ( defined $crp->{$param_name} and $crp->{$param_name} ne '' );
+    die "not a valid value for '$param_name'"
+      unless $crp->{$param_name} =~ m/^\d+$/;
+  }
+
+  if ( defined $crp->{'search[value]'} and $crp->{'search[value]'} ne '' ) {
+    die "not a valid value for search term"
+      unless $crp->{'search[value]'} =~ m/^\d+$/;
+  }
+
+  if ( defined $crp->{'order[dir]'} and $crp->{'order[dir]'} ne '' ) {
+    die "not a valid value for search direction"
+      unless ( $crp->{'order[dir]'} eq 'asc' or
+               $crp->{'order[dir]'} eq 'desc' );
+  }
+
+  $c->stash(
+    params           => $crp,
+    returned_columns => [
+      qw(
+        sample_id
+        manifest_id
+        scientific_name
+        tax_id
+        collection_date
+        collected_at
+      )
+    ],
+    filter_columns => [
+      qw(
+        manifest_id
+        scientific_name
+        tax_id
+        collection_date
+        collected_at
+      )
+    ]
+  );
+
+  # we can take advantage of DBIC here by simply stacking up the modifications
+  # to the query and letting it build a final SQL query that encompasses all of
+  # them. The paging query has to be first, because it uses an API call to get
+  # the ResultSet for the specified rows
+  $c->forward('_do_paging');
+  $c->forward('_do_filtering');
+  $c->forward('_do_sorting');
+
+  # if the response is going to a DataTable, we need to format it differently
+  # and add extra information. Either way, we simply stash the output and let
+  # Catalyst::Controller::REST take care of serialising it
+  if ( $crp->{_dt} ) {
+    $c->forward('_get_dt_data');
+  }
+  else {
+    $c->forward('_get_raw_data');
+  }
+}
+
+#-------------------------------------------------------------------------------
+
+# retrieve a ResultSet containing the specified rows
+sub _do_paging : Private {
+  my ( $self, $c ) = @_;
+
+  my $from = $c->stash->{params}->{start};
+  my $to   = $c->stash->{params}->{start} + $c->stash->{params}->{length} - 1;
+
+  $c->log->debug( "_do_paging: retrieving rows $from - $to" )
+    if $c->debug;
+
+  $c->stash( rs => $c->model->schema->get_samples($from, $to) );
+}
+
+#-------------------------------------------------------------------------------
+
+# filter the resultset
+sub _do_filtering : Private {
+  my ( $self, $c ) = @_;
+
+  return unless defined $c->stash->{params}->{'search[value]'};
+  return if     $c->stash->{params}->{'search[value]'} eq '';
+
+  $c->log->debug( '_do_filtering: retrieving rows matching |'
+                  . $c->stash->{params}->{'search[value]'} . '|' )
+    if $c->debug;
+
+  # apply the filter to the range ResultSet, so that we end up with the set
+  # of filtered samples
+  my $filtered_rs = $c->model->schema->filter_rs(
+    $c->stash->{rs},
+    $c->stash->{filter_columns},
+    $c->stash->{params}->{'search[value]'}
+  );
+
+  $c->stash( rs => $filtered_rs );
+}
+
+#-------------------------------------------------------------------------------
+
+# sort the ResultSet
+sub _do_sorting : Private {
+  my ( $self, $c ) = @_;
+
+  my $sort_column_dir  = $c->stash->{params}->{'order[0][dir]'};
+  my $sort_column_num  = $c->stash->{params}->{'order[0][column]'};
+  my $sort_column_name = $c->stash->{returned_columns}->[$sort_column_num];
+
+  $c->log->debug( '_do_sorting: checking that we can sort on column '
+                  . "$sort_column_num ($sort_column_name)" )
+    if $c->debug;
+
+  # check that the specified column is searchable and orderable, according to
+  # the DataTables script
+  return unless $c->req->params->{"columns[$sort_column_num][searchable]"} eq 'true';
+  return unless $c->req->params->{"columns[$sort_column_num][orderable]"} eq 'true';
+
+  $c->log->debug( "_do_sorting: sorting on column $sort_column_num ($sort_column_name)" )
+    if $c->debug;
+
+  my $order = $sort_column_dir eq 'asc'
+            ? '-asc'
+            : '-desc';
+
+  my $sorted_rs = $c->stash->{rs}->search_rs(
+    undef,
+    { order_by => { $order => $sort_column_name } }
+  );
+
+  $c->stash( rs => $sorted_rs );
+}
+
+#-------------------------------------------------------------------------------
+
+# format the sample data for a DataTables table
+sub _get_dt_data : Private {
+  my ( $self, $c ) = @_;
+
+  $c->log->debug( '_get_dt_data: returning data to DataTables' )
+    if $c->debug;
+
+  # if we're filtering the dataset we need to apply the filter to the ResultSet
+  # containing all samples, so that we can count how many samples that leaves
+  # us with
+  if ( defined $c->stash->{params}->{'search[value]'} and
+       $c->stash->{params}->{'search[value]'} ne '' ) {
+    $c->log->debug( '_get_dt_data: counting unfiltered rows' )
+      if $c->debug;
+    my $count_rs = $c->model->schema->filter_rs(
+      $c->model->schema->get_all_samples,
+      $c->stash->{filter_columns},
+      $c->stash->{params}->{'search[value]'}
+    );
+    $c->stash->{output}->{recordsFiltered} = $count_rs->count;
+  }
+
+  my @samples = ();
+  foreach my $row ( $c->stash->{rs}->all ) {
+    my $sample = [];
+    push @$sample, $row->get_column($_) for @{ $c->stash->{returned_columns} };
+    push @samples, $sample;
+  }
+
+  # build the data structure that we need to return to DataTables on the front
+  # end
+  $c->stash->{output}->{draw}              = $c->stash->{params}->{draw};
+  $c->stash->{output}->{recordsTotal}      = $c->model->schema->get_all_samples->count;
+  $c->stash->{output}->{recordsFiltered} ||= $c->stash->{output}->{recordsTotal};
+  $c->stash->{output}->{data}              = \@samples;
+
+  $c->log->debug( '_get_rt_data: built output' )
+    if $c->debug;
+}
+
+#-------------------------------------------------------------------------------
+
+# format the sample data as a simple JSON data structure
+sub _get_raw_data : Private {
+  my ( $self, $c ) = @_;
+
+  $c->log->debug( '_get_raw_data: returning raw data' )
+    if $c->debug;
+
+  my @samples = ();
+  foreach my $row ( $c->stash->{rs}->all ) {
+    my %sample = map { $_ => $row->get_column($_) } @{ $c->stash->{returned_columns} };
+    push @samples, \%sample;
+  }
+
+  $c->stash->{output} = \@samples;
 }
 
 #-------------------------------------------------------------------------------
