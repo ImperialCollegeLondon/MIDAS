@@ -54,8 +54,16 @@ var HICF = {
   samples: {
     init: function() {
       "use strict";
-      $("#samples").DataTable( {
-        dom: "T<'clear'>lfrtip"
+      $("#samples").dataTable( {
+        dom: "T<'clear'>lfrtip",
+        serverSide: true,
+        ajax: {
+          url: "/samples",
+          data: function(d) {
+            // add a param to signify that this request comes from DataTables
+            d._dt = 1;
+          }
+        }
       } );
     }
   }
