@@ -17,6 +17,36 @@ subtype FilterString,
   where { $_ !~ m/[;%]/ },
   message { 'Not a valid filter string' };
 
+# these are the columns that can be used to filter the result set
+# via "_get_sample_data"
+has '_filter_columns' => (
+  is => 'ro',
+  default => sub {
+    [ qw(
+      manifest_id
+      scientific_name
+      tax_id
+      collection_date
+      collected_at
+    ) ];
+  }
+);
+
+# thse are the columns that will be returned by "_get_sample_data"
+has '_returned_columns' => (
+  is      => 'ro',
+  default => sub {
+    [ qw(
+      sample_id
+      manifest_id
+      scientific_name
+      tax_id
+      collection_date
+      collected_at
+    ) ];
+  }
+);
+
 BEGIN { extends 'MIDAS::Base::Controller::Restful' }
 
 =head1 NAME
@@ -71,29 +101,30 @@ REST calls).
 =cut
 
 sub samples : Chained('/')
-              Args()
+              PathPart('samples')
               Does('~NeedsAuth')
               ActionClass('REST::ForBrowsers') {
-  my ( $self, $c, $organism ) = @_;
+  my ( $self, $c ) = @_;
 
-  if ( $organism ) {
-    $c->log->debug( "returning samples from $organism" )
-      if $c->debug;
-  }
-  else {
-    $c->log->debug( "returning all samples" )
-      if $c->debug;
-  }
-
-  $c->stash(
-    template => 'pages/samples.tt',
-  );
+  $c->stash( template => 'pages/samples.tt' );
 }
 
 #---------------------------------------
 
 sub samples_GET {
   my ( $self, $c ) = @_;
+
+  # stash two copies of the full, starting dataset. One, "rs", will be paged,
+  # filtered and sorted, while the other will be kept untouched and used to
+  # calculate things like the number of samples in the whole dataset.
+  #
+  # DBIC is (hopefully) smart enough not to instantiate the object or run the
+  # query to retrieve all samples unless requested, so at this point we're just
+  # storing a reference to a small DBIC object that doesn't contain any data.
+  $c->stash(
+    rs      => $c->model->schema->get_all_samples,
+    full_rs => $c->model->schema->get_all_samples
+  );
 
   try {
     $c->forward('_get_sample_data');
@@ -314,61 +345,33 @@ sub summary_GET {
 sub _get_sample_data : Private {
   my ( $self, $c ) = @_;
 
-  my $crp = $c->req->params;
-
-  foreach my $param_name ( qw( draw start length order[0][column] ) ) {
-    next unless ( defined $crp->{$param_name} and $crp->{$param_name} ne '' );
-    die "not a valid value for '$param_name'"
-      unless $crp->{$param_name} =~ m/^\d+$/;
-  }
-
-  if ( defined $crp->{'search[value]'} and $crp->{'search[value]'} ne '' ) {
-    die "not a valid value for search term"
-      unless $crp->{'search[value]'} =~ m/^\d+$/;
-  }
-
-  if ( defined $crp->{'order[dir]'} and $crp->{'order[dir]'} ne '' ) {
-    die "not a valid value for search direction"
-      unless ( $crp->{'order[dir]'} eq 'asc' or
-               $crp->{'order[dir]'} eq 'desc' );
-  }
-
-  $c->stash(
-    params           => $crp,
-    returned_columns => [
-      qw(
-        sample_id
-        manifest_id
-        scientific_name
-        tax_id
-        collection_date
-        collected_at
-      )
-    ],
-    filter_columns => [
-      qw(
-        manifest_id
-        scientific_name
-        tax_id
-        collection_date
-        collected_at
-      )
-    ]
-  );
+  die 'no resultset to work with' unless defined $c->stash->{rs};
+  die 'no full resultset to work with' unless defined $c->stash->{full_rs};
 
   # we can take advantage of DBIC here by simply stacking up the modifications
   # to the query and letting it build a final SQL query that encompasses all of
-  # them. The paging query has to be first, because it uses an API call to get
-  # the ResultSet for the specified rows
-  $c->forward('_do_paging');
-  $c->forward('_do_filtering');
-  $c->forward('_do_sorting');
+  # them
+  $c->forward('_do_paging', [ $c->req->params->{start}, $c->req->params->{length} ] );
+  $c->forward('_do_filtering', [ $c->req->params->{'search[value]'} ] );
+  $c->forward(
+    '_do_sorting',
+    [
+      $c->req->params->{'order[0][dir]'},
+      $c->req->params->{'order[0][column]'},
+    ]
+  );
 
   # if the response is going to a DataTable, we need to format it differently
   # and add extra information. Either way, we simply stash the output and let
   # Catalyst::Controller::REST take care of serialising it
-  if ( $crp->{_dt} ) {
-    $c->forward('_get_dt_data');
+  if ( $c->req->params->{_dt} ) {
+    $c->forward(
+      '_get_dt_data',
+      [
+        $c->req->params->{draw},
+        $c->req->params->{'search[value]'},
+      ]
+    );
   }
   else {
     $c->forward('_get_raw_data');
@@ -379,36 +382,45 @@ sub _get_sample_data : Private {
 
 # retrieve a ResultSet containing the specified rows
 sub _do_paging : Private {
-  my ( $self, $c ) = @_;
+  my ( $self, $c, $start, $length ) = @_;
 
-  my $from = $c->stash->{params}->{start};
-  my $to   = $c->stash->{params}->{start} + $c->stash->{params}->{length} - 1;
+  $c->log->debug( "_do_paging: checking bounds (start |$start|, length |$length|)" )
+    if $c->debug;
+
+  return unless defined $start;
+  return unless $start =~ m/^(\d+)$/;
+  my $from = $1;
+
+  return unless defined $length;
+  return unless $length =~ m/^(\d+)$/;
+  my $to = $start + $1 - 1;
 
   $c->log->debug( "_do_paging: retrieving rows $from - $to" )
     if $c->debug;
 
-  $c->stash( rs => $c->model->schema->get_samples($from, $to) );
+  my $sliced_rs = $c->stash->{rs}->slice($from, $to);
+
+  $c->stash( rs => $sliced_rs );
 }
 
 #-------------------------------------------------------------------------------
 
 # filter the resultset
 sub _do_filtering : Private {
-  my ( $self, $c ) = @_;
+  my ( $self, $c, $filter ) = @_;
 
-  return unless defined $c->stash->{params}->{'search[value]'};
-  return if     $c->stash->{params}->{'search[value]'} eq '';
+  return if not defined $filter;
+  return if $filter eq '';
 
-  $c->log->debug( '_do_filtering: retrieving rows matching |'
-                  . $c->stash->{params}->{'search[value]'} . '|' )
+  $c->log->debug( "_do_filtering: retrieving rows matching |$filter|" )
     if $c->debug;
 
   # apply the filter to the range ResultSet, so that we end up with the set
   # of filtered samples
   my $filtered_rs = $c->model->schema->filter_rs(
     $c->stash->{rs},
-    $c->stash->{filter_columns},
-    $c->stash->{params}->{'search[value]'}
+    $self->_filter_columns,
+    $filter,
   );
 
   $c->stash( rs => $filtered_rs );
@@ -418,11 +430,20 @@ sub _do_filtering : Private {
 
 # sort the ResultSet
 sub _do_sorting : Private {
-  my ( $self, $c ) = @_;
+  my ( $self, $c, $dir, $col_num ) = @_;
 
-  my $sort_column_dir  = $c->stash->{params}->{'order[0][dir]'};
-  my $sort_column_num  = $c->stash->{params}->{'order[0][column]'};
-  my $sort_column_name = $c->stash->{returned_columns}->[$sort_column_num];
+  my $sort_column_dir = 'asc';
+  my $sort_column_num = 0;
+
+  if ( defined $dir and ( $dir eq 'asc' or $dir eq 'desc' ) ) {
+    $sort_column_dir = $dir;
+  }
+
+  if ( defined $col_num and $col_num =~ m/^(\d+)$/ ) {
+    $sort_column_num = $1;
+  }
+
+  my $sort_column_name = $self->_returned_columns->[$sort_column_num];
 
   $c->log->debug( '_do_sorting: checking that we can sort on column '
                   . "$sort_column_num ($sort_column_name)" )
@@ -431,9 +452,10 @@ sub _do_sorting : Private {
   # check that the specified column is searchable and orderable, according to
   # the DataTables script
   return unless $c->req->params->{"columns[$sort_column_num][searchable]"} eq 'true';
-  return unless $c->req->params->{"columns[$sort_column_num][orderable]"} eq 'true';
+  return unless $c->req->params->{"columns[$sort_column_num][orderable]"}  eq 'true';
 
-  $c->log->debug( "_do_sorting: sorting on column $sort_column_num ($sort_column_name)" )
+  $c->log->debug( "_do_sorting: sorting $sort_column_dir "
+                  . "on column $sort_column_num ($sort_column_name)" )
     if $c->debug;
 
   my $order = $sort_column_dir eq 'asc'
@@ -452,41 +474,42 @@ sub _do_sorting : Private {
 
 # format the sample data for a DataTables table
 sub _get_dt_data : Private {
-  my ( $self, $c ) = @_;
+  my ( $self, $c, $draw, $filter ) = @_;
 
   $c->log->debug( '_get_dt_data: returning data to DataTables' )
     if $c->debug;
 
-  # if we're filtering the dataset we need to apply the filter to the ResultSet
+  # if we're filtering the dataset, we need to apply the filter to the ResultSet
   # containing all samples, so that we can count how many samples that leaves
   # us with
-  if ( defined $c->stash->{params}->{'search[value]'} and
-       $c->stash->{params}->{'search[value]'} ne '' ) {
+  if ( defined $filter and $filter ne '' ) {
     $c->log->debug( '_get_dt_data: counting unfiltered rows' )
       if $c->debug;
     my $count_rs = $c->model->schema->filter_rs(
-      $c->model->schema->get_all_samples,
-      $c->stash->{filter_columns},
-      $c->stash->{params}->{'search[value]'}
+      $c->stash->{full_rs},
+      $self->_filter_columns,
+      $filter
     );
     $c->stash->{output}->{recordsFiltered} = $count_rs->count;
   }
 
+  # build an array holding all of the rows in the paged, filtered, and sorted
+  # ResultSet
   my @samples = ();
   foreach my $row ( $c->stash->{rs}->all ) {
     my $sample = [];
-    push @$sample, $row->get_column($_) for @{ $c->stash->{returned_columns} };
+    push @$sample, $row->get_column($_) for @{ $self->_returned_columns };
     push @samples, $sample;
   }
 
   # build the data structure that we need to return to DataTables on the front
   # end
-  $c->stash->{output}->{draw}              = $c->stash->{params}->{draw};
-  $c->stash->{output}->{recordsTotal}      = $c->model->schema->get_all_samples->count;
+  $c->stash->{output}->{draw}              = $c->req->params->{draw};
+  $c->stash->{output}->{recordsTotal}      = $c->stash->{full_rs}->count;
   $c->stash->{output}->{recordsFiltered} ||= $c->stash->{output}->{recordsTotal};
   $c->stash->{output}->{data}              = \@samples;
 
-  $c->log->debug( '_get_rt_data: built output' )
+  $c->log->debug( '_get_dt_data: built output' )
     if $c->debug;
 }
 
@@ -501,7 +524,7 @@ sub _get_raw_data : Private {
 
   my @samples = ();
   foreach my $row ( $c->stash->{rs}->all ) {
-    my %sample = map { $_ => $row->get_column($_) } @{ $c->stash->{returned_columns} };
+    my %sample = map { $_ => $row->get_column($_) } @{ $self->_returned_columns };
     push @samples, \%sample;
   }
 
