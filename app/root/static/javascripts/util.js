@@ -65,6 +65,14 @@ var HICF = {
           }
         }
       } );
+
+      $("#table-download").on("click", function() {
+        var filterTerm   = $("#samples_filter input").val(),
+            downloadLink = $("#table-download")[0];
+        if ( filterTerm !== undefined ) {
+          downloadLink.href += "&filter=" + encodeURIComponent(filterTerm);
+        }
+      } );
     }
   }
 
