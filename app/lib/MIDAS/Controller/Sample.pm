@@ -5,17 +5,6 @@ use Moose;
 use namespace::autoclean;
 
 use Try::Tiny;
-use MooseX::Params::Validate;
-use Moose::Util::TypeConstraints;
-use MooseX::Types::Moose qw( Int Str );
-use MooseX::Types -declare => [ qw(
-  FilterString
-) ];
-
-subtype FilterString,
-  as Str,
-  where { $_ !~ m/[;%]/ },
-  message { 'Not a valid filter string' };
 
 # these are the columns that can be used to filter the result set
 # via "_get_sample_data"
@@ -33,7 +22,7 @@ has '_filter_columns' => (
 );
 
 # thse are the columns that will be returned by "_get_sample_data"
-has '_returned_columns' => (
+has 'returned_columns' => (
   is      => 'ro',
   default => sub {
     [ qw(
@@ -91,28 +80,26 @@ This is a L<Catalyst::Controller> to handle HICF sample data.
 
 #-------------------------------------------------------------------------------
 
-=head2 samples : Chained('/') Args(0) Does('~NeedsAuth') ActionClass('REST::ForBrowsers')
+=head2 samples : Chained('/') Args(0) Does('~NeedsAuth')
 
-Returns information for all samples.
+This is the beginning of a chain that returns information for samples from all
+organisms. It sets up parameters that are applicable to the actions that format
+sample data, and sets a couple of stash parameters that are generally useful.
 
-Requires login (for requests from a browser) or HMAC authentication (for
+Requires login (for requests from a browser) or "Authorization" header (for
 REST calls).
 
 =cut
 
 sub samples : Chained('/')
               PathPart('samples')
-              Does('~NeedsAuth')
-              ActionClass('REST::ForBrowsers') {
+              CaptureArgs(0)
+              Does('~NeedsAuth') {
   my ( $self, $c ) = @_;
 
-  $c->stash( template => 'pages/samples.tt' );
-}
-
-#---------------------------------------
-
-sub samples_GET {
-  my ( $self, $c ) = @_;
+  # go and get the request parameters that are used by the actions that format
+  # data for DataTables or REST requests
+  $c->forward('_stash_params');
 
   # stash two copies of the full, starting dataset. One, "rs", will be paged,
   # filtered and sorted, while the other will be kept untouched and used to
@@ -121,13 +108,46 @@ sub samples_GET {
   # DBIC is (hopefully) smart enough not to instantiate the object or run the
   # query to retrieve all samples unless requested, so at this point we're just
   # storing a reference to a small DBIC object that doesn't contain any data.
+
   $c->stash(
-    rs      => $c->model->schema->get_all_samples,
-    full_rs => $c->model->schema->get_all_samples
+    title         => 'Samples',
+    template      => 'pages/samples.tt',
+    jscontroller  => 'samples',
+    rs            => $c->model->schema->get_all_samples,
+    full_rs       => $c->model->schema->get_all_samples,
   );
 
+  $c->log->debug( 'samples: returning data for samples from all organisms' )
+    if $c->debug;
+}
+
+#-------------------------------------------------------------------------------
+
+=head2 all_samples : Chained('samples') PathPath('') Args(0) ActionClass('REST::ForBrowsers')
+
+This is an end-point for a chain that returns information for all samples. It
+defers to two methods, C<all_samples_GET> to return information for a REST
+client, and C<all_samples_GET_html> for a browser.
+
+=cut
+
+sub all_samples : Chained('samples')
+                  PathPart('')
+                  Args(0)
+                  ActionClass('REST::ForBrowsers') {
+  my ( $self, $c ) = @_;
+
+  $c->log->debug( 'all_samples: returning all samples' )
+    if $c->debug;
+}
+
+#---------------------------------------
+
+sub all_samples_GET {
+  my ( $self, $c ) = @_;
+
   try {
-    $c->forward('_get_sample_data');
+    $c->forward('_format_sample_data' );
     $self->status_ok(
       $c,
       entity => $c->stash->{output}
@@ -137,74 +157,259 @@ sub samples_GET {
       $c,
       entity => { error => $_ }
     );
-  }
+  };
 
-  # TODO add a link to download the dataset as CSV
-
+  $c->log->debug( 'all_samples_GET: returning raw data' )
+    if $c->debug;
 }
 
 #---------------------------------------
 
-sub samples_GET_html {
+sub all_samples_GET_html {
   my ( $self, $c ) = @_;
 
-  $c->stash(
-    title        => 'Samples',
-    jscontroller => 'samples'
-  );
+  $c->log->debug( 'all_samples_GET_html: returning HTML page' )
+    if $c->debug;
 }
 
 #-------------------------------------------------------------------------------
 
-sub samples_by_organism : Chained('/')
-                          Args(1)
-                          Does('~NeedsAuth')
-                          ActionClass('REST::ForBrowsers') {
+=head2 paged_samples : Chained('samples') PathPath('') Args(2) ActionClass('REST::ForBrowsers')
+
+This is an end-point for a chain that returns information for samples from a
+specific organism. It defers to two methods, C<paged_samples_GET> to return
+information for a REST client, and C<paged_samples_GET_html> for a browser.
+
+Samples are always ordered by ascending sample ID.
+
+=cut
+
+sub paged_samples : Chained('samples')
+                    PathPart('')
+                    Args(2)
+                    ActionClass('REST::ForBrowsers') {
+  my ( $self, $c ) = @_;
+
+  $c->log->debug( 'paged_samples: returning a subset of samples' )
+    if $c->debug;
+}
+
+#---------------------------------------
+
+sub paged_samples_GET {
+  my ( $self, $c, $start, $length ) = @_;
+
+  # make sure the page limits are valid
+  foreach my $limit ( $start, $length ) {
+    unless ( $limit =~ m/^\d+$/ ) {
+      $self->status_bad_request(
+        $c,
+        message => 'not a valid range (from/to)'
+      );
+      return;
+    }
+  }
+
+  $c->stash->{format_params}->{start}  = $start;
+  $c->stash->{format_params}->{length} = $length;
+
+  try {
+    $c->forward('_format_sample_data');
+    $self->status_ok(
+      $c,
+      entity => $c->stash->{output}
+    );
+  } catch {
+    $self->status_ok(
+      $c,
+      entity => { error => $_ }
+    );
+  };
+  $c->log->debug( 'paged_samples_GET: returning raw data' )
+    if $c->debug;
+}
+
+#---------------------------------------
+
+sub paged_samples_GET_html {
+  my ( $self, $c ) = @_;
+
+  $c->log->debug( 'paged_samples_GET_html: returning HTML' )
+    if $c->debug;
+}
+
+#-------------------------------------------------------------------------------
+
+=head2 samples_from_organism : Chained('/') CaptureArgs(0) Does('~NeedsAuth')
+
+This is the beginning of a chain that returns information for samples from
+specific organisms. It sets up parameters that are applicable to the actions
+that format sample data, and sets a couple of stash parameters that are
+generally useful.
+
+Requires login (for requests from a browser) or "Authorization" header (for
+REST calls).
+
+=cut
+
+# this is patterned on "sub samples". See that action for comments too
+
+sub samples_from_organism : Chained('/')
+                            PathPart('samples_from_organism')
+                            CaptureArgs(1)
+                            Does('~NeedsAuth') {
   my ( $self, $c, $organism ) = @_;
 
   # I started building a regex to detaint the organism name, but the scientific
   # names in the NCBI taxonomy appear to contain every non-word character in
   # the lexicon, with the exception of pipe ("|"), which they use as a
-  # separator in "names.dmp". White-listing would end up looking something
-  # like:
+  # separator in "names.dmp", and maybe angle-brackets. White-listing would end
+  # up looking something like:
   #
   #   unless ( $tainted_organism =~ m|^([\w\s\.-;:'"/%\*^()[]{}\?\&\#]+)$| ) {
   #     ...
   #   }
   #
-  # Basically, there's not a lot of point in trying to validate this. We'll
-  # just hope that DBIC does a good job of escaping everything before it
-  # hits the DB
+  # Basically, there's not a lot of point in trying to validate this beyond the
+  # simplest of checks. We'll just hope that DBIC does a good job of escaping
+  # everything before it hits the DB
 
-  my $samples = $c->model->schema->get_samples_from_organism($organism);
+  if ( $organism =~ m/[\<\>\|]/ ) {
+    # amazingly, the organism name is not valid
+    $c->stash(
+      title        => 'Samples',
+      template     => 'pages/samples.tt',
+      jscontroller => 'samples',
+      error        => 'Not a valid organism name',
+    );
+    return;
+  }
+
+  $c->forward('_stash_params');
 
   $c->stash(
-    template => 'pages/samples.tt',
-    samples  => $samples,
+    title        => 'Samples from $organism',
+    template     => 'pages/samples.tt',
+    jscontroller => 'samples',
+    rs           => $c->model->schema->get_all_samples_from_organism($organism),
+    full_rs      => $c->model->schema->get_all_samples_from_organism($organism),
+    organism     => $organism,
   );
-}
 
-#---------------------------------------
-
-sub samples_by_organism_GET {
-  my ( $self, $c ) = @_;
-
-}
-
-#---------------------------------------
-
-sub samples_by_organism_GET_html {
-
+  $c->log->debug( "samples_by_organism: looking for samples from |$organism|" )
+    if $c->debug;
 }
 
 #-------------------------------------------------------------------------------
 
-=head2 sample : Chained('/') Args(1) Does('~NeedsAuth') ActionClass('REST::ForBrowsers')
+sub all_samples_from_organism : Chained('samples_from_organism')
+                                PathPart('')
+                                Args(0)
+                                ActionClass('REST::ForBrowsers') {
+  my ( $self, $c ) = @_;
 
-Returns sample information. Captures a single argument, the ID of the sample.
+  $c->log->debug( 'all_samples_from_organism: returning all samples from '
+                  . $c->stash->{organism} )
+    if $c->debug;
+}
 
-Requires login (for requests from a browser) or HMAC authentication (for
-REST calls).
+#---------------------------------------
+
+sub all_samples_from_organism_GET {
+  my ( $self, $c ) = @_;
+
+  try {
+    $c->forward('_format_sample_data');
+    $self->status_ok(
+      $c,
+      entity => $c->stash->{output}
+    );
+  } catch {
+    $self->status_ok(
+      $c,
+      entity => { error => $_ }
+    );
+  };
+
+  $c->log->debug( 'all_samples_from_organism_GET: returning raw data' )
+    if $c->debug;
+}
+
+#---------------------------------------
+
+sub all_samples_from_organism_GET_html {
+  my ( $self, $c ) = @_;
+
+  $c->log->debug( 'all_samples_from_organism_GET_html: returning HTML page' )
+    if $c->debug;
+}
+
+#-------------------------------------------------------------------------------
+
+sub paged_samples_from_organism : Chained('samples_from_organism')
+                                  PathPart('')
+                                  Args(2)
+                                  ActionClass('REST::ForBrowsers') {
+  my ( $self, $c ) = @_;
+
+  $c->log->debug( 'paged_samples_from_organism: returning subset of samples from '
+                  . $c->stash->{organism} )
+    if $c->debug;
+}
+
+#---------------------------------------
+
+sub paged_samples_from_organism_GET {
+  my ( $self, $c, $start, $length ) = @_;
+
+  # make sure the page limits are valid
+  foreach my $limit ( $start, $length ) {
+    unless ( $limit =~ m/^\d+$/ ) {
+      $self->status_bad_request(
+        $c,
+        message => 'not a valid range (from/to)'
+      );
+      return;
+    }
+  }
+
+  $c->stash->{format_params}->{start}  = $start;
+  $c->stash->{format_params}->{length} = $length;
+
+  try {
+    $c->forward('_format_sample_data');
+    $self->status_ok(
+      $c,
+      entity => $c->stash->{output}
+    );
+  } catch {
+    $self->status_ok(
+      $c,
+      entity => { error => $_ }
+    );
+  };
+
+  $c->log->debug( 'paged_samples_from_organism_GET: returning raw data' )
+    if $c->debug;
+}
+
+#---------------------------------------
+
+sub paged_samples_from_organism_GET_html {
+  my ( $self, $c ) = @_;
+
+  $c->log->debug( 'paged_samples_from_organism_GET_html: returning HTML page' )
+    if $c->debug;
+}
+
+#-------------------------------------------------------------------------------
+
+=head2 sample : chained('/') args(1) does('~needsauth') actionclass('rest::forbrowsers')
+
+returns sample information. captures a single argument, the id of the sample.
+
+requires login (for requests from a browser) or hmac authentication (for
+rest calls).
 
 =cut
 
@@ -341,37 +546,80 @@ sub summary_GET {
 #- private actions -------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
-# return data for a set of samples
-sub _get_sample_data : Private {
+# looks at the request parameters and pulls out those that are relevant to/used
+# by methods in this controller
+sub _stash_params : Private {
   my ( $self, $c ) = @_;
 
-  die 'no resultset to work with' unless defined $c->stash->{rs};
+  $c->log->debug( '_stash_params: storing parameters' )
+    if $c->debug;
+
+  # we need to handle filter terms coming from either DataTables or from
+  # the download link that we build in the page
+  my $filter_term = $c->req->params->{'search[value]'} ||
+                    $c->req->params->{filter} ||
+                    '';
+
+  # we're only accepting sort params from DataTables
+  my $sort_column_num = $c->req->params->{'order[0][column]'};
+  my $sort_column_dir = $c->req->params->{'order[0][dir]'};
+
+  # "draw" must be an integer. It's not clear what happens if we return 0 as a
+  # fall-back but it's better than returning user-specified junk
+  my $draw = $c->req->params->{draw} || 0;
+  $draw = 0 unless $draw =~ m/^\d+$/;
+
+  # "start" and "length" page limits. Again, must be integers, but we don't
+  # want to set defaults, because then everything would be trimmed to that
+  # specified subset of samples. Instead we leave the values of $start and
+  # $length undefined, and the "_do_paging" action will simply not try to page
+  # the results
+  my ( $start, $length );
+  if ( defined $c->req->params->{start} and
+       $c->req->params->{start} =~ m/^(\d+)$/ ) {
+    $start = $1;
+  }
+  if ( defined $c->req->params->{length} and
+       $c->req->params->{length} =~ m/^(\d+)$/ ) {
+    $length = $1;
+  }
+
+  # these are parameters that will be handed to the actions that format the
+  # data, either for display or for downloading in raw JSON format (or whatever
+  # is specified by the content-type URI param)
+  my $format_params = {
+    filter_term     => $filter_term,
+    sort_column_num => $sort_column_num,
+    sort_column_dir => $sort_column_dir,
+    draw            => $draw,
+    start           => $start,
+    length          => $length,
+  };
+
+  $c->stash( format_params => $format_params );
+}
+
+#-------------------------------------------------------------------------------
+
+# return data for a set of samples
+sub _format_sample_data : Private {
+  my ( $self, $c ) = @_;
+
+  die 'no resultset to work with'      unless defined $c->stash->{rs};
   die 'no full resultset to work with' unless defined $c->stash->{full_rs};
 
   # we can take advantage of DBIC here by simply stacking up the modifications
   # to the query and letting it build a final SQL query that encompasses all of
   # them
-  $c->forward('_do_paging', [ $c->req->params->{start}, $c->req->params->{length} ] );
-  $c->forward('_do_filtering', [ $c->req->params->{'search[value]'} ] );
-  $c->forward(
-    '_do_sorting',
-    [
-      $c->req->params->{'order[0][dir]'},
-      $c->req->params->{'order[0][column]'},
-    ]
-  );
+  $c->forward('_do_paging');
+  $c->forward('_do_filtering');
+  $c->forward('_do_sorting');
 
   # if the response is going to a DataTable, we need to format it differently
   # and add extra information. Either way, we simply stash the output and let
   # Catalyst::Controller::REST take care of serialising it
   if ( $c->req->params->{_dt} ) {
-    $c->forward(
-      '_get_dt_data',
-      [
-        $c->req->params->{draw},
-        $c->req->params->{'search[value]'},
-      ]
-    );
+    $c->forward('_get_dt_data');
   }
   else {
     $c->forward('_get_raw_data');
@@ -382,10 +630,16 @@ sub _get_sample_data : Private {
 
 # retrieve a ResultSet containing the specified rows
 sub _do_paging : Private {
-  my ( $self, $c, $start, $length ) = @_;
+  my ( $self, $c ) = @_;
 
-  $c->log->debug( "_do_paging: checking bounds (start |$start|, length |$length|)" )
+  my $start  = $c->stash->{format_params}->{start};
+  my $length = $c->stash->{format_params}->{length};
+
+  $c->log->debug( '_do_paging: checking bounds...' )
     if $c->debug;
+
+  # DataTables tells us the range that it wants as "start/length", while DBIC
+  # selects its ranges as "from - to". This is where the conversion happens
 
   return unless defined $start;
   return unless $start =~ m/^(\d+)$/;
@@ -407,12 +661,14 @@ sub _do_paging : Private {
 
 # filter the resultset
 sub _do_filtering : Private {
-  my ( $self, $c, $filter ) = @_;
+  my ( $self, $c ) = @_;
 
-  return if not defined $filter;
-  return if $filter eq '';
+  my $filter_term = $c->stash->{format_params}->{filter_term};
 
-  $c->log->debug( "_do_filtering: retrieving rows matching |$filter|" )
+  return if not defined $filter_term;
+  return if $filter_term eq '';
+
+  $c->log->debug( "_do_filtering: retrieving rows matching |$filter_term|" )
     if $c->debug;
 
   # apply the filter to the range ResultSet, so that we end up with the set
@@ -420,7 +676,7 @@ sub _do_filtering : Private {
   my $filtered_rs = $c->model->schema->filter_rs(
     $c->stash->{rs},
     $self->_filter_columns,
-    $filter,
+    $filter_term,
   );
 
   $c->stash( rs => $filtered_rs );
@@ -430,41 +686,47 @@ sub _do_filtering : Private {
 
 # sort the ResultSet
 sub _do_sorting : Private {
-  my ( $self, $c, $dir, $col_num ) = @_;
+  my ( $self, $c ) = @_;
 
-  my $sort_column_dir = 'asc';
+  # defaults - if the specified sort params aren't valid, for the sake of
+  # consistency we'll still get DBIC to order the dataset using these defaults
+  my $sort_column_dir = '-asc';
   my $sort_column_num = 0;
 
+  my $dir     = $c->stash->{format_params}->{sort_column_dir};
+  my $col_num = $c->stash->{format_params}->{sort_column_num};
+
   if ( defined $dir and ( $dir eq 'asc' or $dir eq 'desc' ) ) {
-    $sort_column_dir = $dir;
+    # add "-" to make the term into a valid direction for DBIC
+    $sort_column_dir = "-$dir";
   }
 
   if ( defined $col_num and $col_num =~ m/^(\d+)$/ ) {
     $sort_column_num = $1;
   }
 
-  my $sort_column_name = $self->_returned_columns->[$sort_column_num];
+  my $sort_column_name = $self->returned_columns->[$sort_column_num];
 
-  $c->log->debug( '_do_sorting: checking that we can sort on column '
-                  . "$sort_column_num ($sort_column_name)" )
+  $c->log->debug( "_do_sorting: checking that we're allowed to sort on column "
+                  . $sort_column_num )
     if $c->debug;
 
   # check that the specified column is searchable and orderable, according to
-  # the DataTables script
-  return unless $c->req->params->{"columns[$sort_column_num][searchable]"} eq 'true';
-  return unless $c->req->params->{"columns[$sort_column_num][orderable]"}  eq 'true';
+  # the DataTables script. This is enforced to prevent DataTables having to
+  # try to display badly ordered data, rather than as a security measure. The
+  # database will happily order the dataset on any column...
+  return unless ( defined $c->req->params->{"columns[$sort_column_num][searchable]"} and
+                  $c->req->params->{"columns[$sort_column_num][searchable]"} eq 'true' );
+  return unless ( defined $c->req->params->{"columns[$sort_column_num][orderable]"} and
+                  $c->req->params->{"columns[$sort_column_num][orderable]"}  eq 'true' );
 
   $c->log->debug( "_do_sorting: sorting $sort_column_dir "
                   . "on column $sort_column_num ($sort_column_name)" )
     if $c->debug;
 
-  my $order = $sort_column_dir eq 'asc'
-            ? '-asc'
-            : '-desc';
-
   my $sorted_rs = $c->stash->{rs}->search_rs(
     undef,
-    { order_by => { $order => $sort_column_name } }
+    { order_by => { $sort_column_dir => $sort_column_name } }
   );
 
   $c->stash( rs => $sorted_rs );
@@ -482,13 +744,15 @@ sub _get_dt_data : Private {
   # if we're filtering the dataset, we need to apply the filter to the ResultSet
   # containing all samples, so that we can count how many samples that leaves
   # us with
-  if ( defined $filter and $filter ne '' ) {
+  my $filter_term = $c->stash->{format_params}->{filter_term};
+
+  if ( defined $filter_term and $filter_term ne '' ) {
     $c->log->debug( '_get_dt_data: counting unfiltered rows' )
       if $c->debug;
     my $count_rs = $c->model->schema->filter_rs(
       $c->stash->{full_rs},
       $self->_filter_columns,
-      $filter
+      $filter_term,
     );
     $c->stash->{output}->{recordsFiltered} = $count_rs->count;
   }
@@ -498,13 +762,13 @@ sub _get_dt_data : Private {
   my @samples = ();
   foreach my $row ( $c->stash->{rs}->all ) {
     my $sample = [];
-    push @$sample, $row->get_column($_) for @{ $self->_returned_columns };
+    push @$sample, $row->get_column($_) for @{ $self->returned_columns };
     push @samples, $sample;
   }
 
   # build the data structure that we need to return to DataTables on the front
   # end
-  $c->stash->{output}->{draw}              = $c->req->params->{draw};
+  $c->stash->{output}->{draw}              = $c->stash->{format_params}->{draw};
   $c->stash->{output}->{recordsTotal}      = $c->stash->{full_rs}->count;
   $c->stash->{output}->{recordsFiltered} ||= $c->stash->{output}->{recordsTotal};
   $c->stash->{output}->{data}              = \@samples;
@@ -524,7 +788,7 @@ sub _get_raw_data : Private {
 
   my @samples = ();
   foreach my $row ( $c->stash->{rs}->all ) {
-    my %sample = map { $_ => $row->get_column($_) } @{ $self->_returned_columns };
+    my %sample = map { $_ => $row->get_column($_) } @{ $self->returned_columns };
     push @samples, \%sample;
   }
 
