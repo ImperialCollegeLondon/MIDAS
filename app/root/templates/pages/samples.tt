@@ -1,9 +1,9 @@
 
 <section class="container">
 
-  <h1>HICF samples</h1>
-
   [% IF error %]
+
+    <h1>HICF samples</h1>
 
     <div id="organism-name-error" class="panel panel-warning">
       <div class="panel-heading">Error</div>
@@ -12,7 +12,14 @@
       </div>
     </div>
 
-  [% ELSE %]
+  [% ELSE;
+    titleComponents = [ "HICF samples" ];
+    titleComponents.push(" from $organism") IF organism;
+    titleComponents.push(", filtered by '${format_params.filter_term}'" )
+      IF format_params.filter_term;
+    pageTitle = titleComponents.join('') %]
+
+    <h1>[% pageTitle %]</h1>
 
     <table id="samples" class="table table-striped table-condensed table-bordered">
       <thead>
@@ -45,9 +52,21 @@
       </tbody>
     </table>
 
-    <p>
-      <a id="table-download" href="[% c.uri_for('/samples', { 'content-type' => 'text/csv' } ) %]">Download</a> table contents.
-    </p>
+    <div id="download-buttons">
+      <span>Download
+        <span id="filtered">filtered</span>
+        <span id="all">all</span>
+        data:
+      </span>
+      <button class="table-download-link btn btn-default btn-sm"
+              data-format="text/csv"
+              type="button"
+              class="btn btn-default">CSV</button>
+      <button class="table-download-link btn btn-default btn-sm"
+              data-format="application/json"
+              type="button"
+              class="btn btn-default">JSON</button>
+    </div>
 
   [% END # of "IF error" %]
 
