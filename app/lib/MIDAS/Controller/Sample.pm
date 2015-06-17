@@ -79,6 +79,8 @@ This is a L<Catalyst::Controller> to handle HICF sample data.
 # }
 
 #-------------------------------------------------------------------------------
+#- samples for all organisms ---------------------------------------------------
+#-------------------------------------------------------------------------------
 
 =head2 samples : Chained('/') Args(0) Does('~NeedsAuth')
 
@@ -119,6 +121,10 @@ sub samples : Chained('/')
 
   $c->log->debug( 'samples: returning data for samples from all organisms' )
     if $c->debug;
+
+  # flag the response for download if the "dl" param is set
+  $c->res->header('Content-disposition', qq(attachment; filename="samples"))
+    if $c->req->params->{dl};
 }
 
 #-------------------------------------------------------------------------------
@@ -239,6 +245,8 @@ sub paged_samples_GET_html {
 }
 
 #-------------------------------------------------------------------------------
+#- samples for one organism ----------------------------------------------------
+#-------------------------------------------------------------------------------
 
 =head2 samples_from_organism : Chained('/') CaptureArgs(0) Does('~NeedsAuth')
 
@@ -298,6 +306,10 @@ sub samples_from_organism : Chained('/')
 
   $c->log->debug( "samples_by_organism: looking for samples from |$organism|" )
     if $c->debug;
+
+  # flag the response for download if the "dl" param is set
+  $c->res->header('Content-disposition', qq(attachment; filename="${organism}_samples"))
+    if $c->req->params->{dl};
 }
 
 #-------------------------------------------------------------------------------
@@ -305,18 +317,22 @@ sub samples_from_organism : Chained('/')
 sub all_samples_from_organism : Chained('samples_from_organism')
                                 PathPart('')
                                 Args(0)
-                                ActionClass('REST::ForBrowsers') {
-  my ( $self, $c ) = @_;
-
-  $c->log->debug( 'all_samples_from_organism: returning all samples from '
-                  . $c->stash->{organism} )
-    if $c->debug;
-}
+                                ActionClass('REST::ForBrowsers') { }
 
 #---------------------------------------
 
 sub all_samples_from_organism_GET {
   my ( $self, $c ) = @_;
+
+  # throw an error if there was a problem validating the organism name
+  if ( defined $c->stash->{error} or
+       not defined $c->stash->{organism} ) {
+    $self->status_bad_request(
+      $c,
+      message => $c->stash->{error} || 'No such organism'
+    );
+    return;
+  }
 
   try {
     $c->forward('_format_sample_data');
@@ -402,6 +418,8 @@ sub paged_samples_from_organism_GET_html {
     if $c->debug;
 }
 
+#-------------------------------------------------------------------------------
+#- single sample ---------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
 =head2 sample : chained('/') args(1) does('~needsauth') actionclass('rest::forbrowsers')
