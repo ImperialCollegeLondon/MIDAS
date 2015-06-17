@@ -9,15 +9,12 @@
   margin-bottom: 0 !important;
 }
 
-.dataTables_length,
-.dataTables_filter,
-.dataTables_info {
-  float: left;
-  margin-right: 1em;
-}
-
 th.row-label,
 td.row-label {
   width: 12em;
   font-weight: bold;
+}
+
+#filtered {
+  display: none;
 }
