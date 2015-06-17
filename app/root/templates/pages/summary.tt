@@ -1,47 +1,66 @@
 
 <section class="container">
 
-  <h1>Sample summary</h1>
+  <h1>HICF sample summary</h1>
 
   <p>
     The HICF sample database currently contains a total of
-    <strong>[% summary.total_number_of_samples %]</strong> samples from
+    <strong>
+      <a href="[% c.uri_for('/samples') %]">
+        [% summary.total_number_of_samples %]</a>
+    </strong> samples
+      (<a href="[% c.uri_for('/samples', { dl => 1, 'content-type' => 'text/csv' } ) %]">download as CSV</a>)
+    from
     <strong>[% summary.total_number_of_manifests %]</strong> manifests.
   </p>
 
+  <h2>Number of samples from each contributing site</h2>
+
   <table class="table table-striped table-bordered table-condensed">
-    <caption>Number of samples from each contributing site</caption>
     <thead>
       <tr>
         <th>Site</th>
-        <th>Number of samples</th>
+        <th>Number of samples (download as CSV)</th>
       </tr>
     </thead>
     <tbody>
       [% ca = summary.collected_at;
       FOREACH site IN ca.keys.sort %]
       <tr>
-        <td>[% site %]</td>
-        <td>[% ca.$site %]</td>
+        <td>
+          <a href="[% c.uri_for('/samples', { filter => site } ) %]">[% site %]</a>
+        </td>
+        <td>
+          <a href="[% c.uri_for('/samples', { dl => 1, filter => site, 'content-type' => 'text/csv' } ) %]">
+            [% ca.$site %]
+          </a>
+        </td>
       </tr>
       [% END %]
     </tbody>
   </table>
 
+  <h2>Number of samples for each organism</h2>
+
   <table class="table table-striped table-bordered table-condensed">
-    <caption>Number of samples for each organism</caption>
     <thead>
       <tr>
         <th>Scientific name</th>
-        <th>Number of samples</th>
+        <th>Number of samples (download as CSV)</th>
       </tr>
     </thead>
     <tbody>
       [% names = summary.scientific_names;
-      FOREACH name IN names.keys.sort %]
+      FOREACH name IN names.keys.sort;
+        organism = name | uri %]
       <tr>
-        <td>[% name %]</td>
-        <td>[% names.$name %]</td>
+        <td>
+          <a href="[% c.uri_for('/samples_from_organism', organism ) %]">[% name %]</a>
+        </td>
+        <td>
+          <a href="[% c.uri_for('/samples_from_organism', organism, { dl => 1, 'content-type' => 'text/csv' } ) %]">
+            [% names.$name %]</a>
+        </td>
       </tr>
       [% END %]
     </tbody>
