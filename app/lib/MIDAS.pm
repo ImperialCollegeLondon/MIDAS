@@ -103,6 +103,7 @@ __PACKAGE__->config(
 
   'Controller::Login' => {
     traits => ['-RenderAsTTTemplate'],
+    redirect_after_login_uri => '/summary',
   },
 
   'Controller::Validation' => {
