@@ -26,7 +26,7 @@
         <tr>
           <th scope="row">Sample ID</th>
           <th>Manifest ID</th>
-          <th>Scientific name</th>
+          <th>Scientific name (NCBI tax ID)</th>
           <th>NCBI tax ID</th>
           <th>Collection date</th>
           <th>Collected at</th>
