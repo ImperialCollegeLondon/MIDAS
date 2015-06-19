@@ -4,7 +4,7 @@
 //
 // see http://viget.com/inspire/extending-paul-irishs-comprehensive-dom-ready-execution
 
-/* global validation,fourohfour,login,account */
+/* global validation,fourohfour,login,account,samples */
 /* exported HICF */
 
 var HICF = {
