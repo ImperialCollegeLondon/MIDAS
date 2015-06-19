@@ -18,3 +18,24 @@ td.row-label {
 #filtered {
   display: none;
 }
+
+table#samples {
+
+  i.hasAMR.fa-plus-square  { color: #0A0 } // dark green
+  i.hasAMR.fa-minus-square { color: #A00 } // dark red
+  i.noAMR                  { color: #CCC } // greyed out
+
+  table.amrData {
+    td.amrName {
+      text-transform: capitalize;
+    }
+    td.amrSIR {
+      margin-left: 6px;
+    }
+    tr.amrS td { color: darken($brand-success, 10%) }
+    tr.amrI td { color: darken($brand-warning, 10%) }
+    tr.amrR td { color: darken($brand-danger,  10%) }
+  }
+
+}
+

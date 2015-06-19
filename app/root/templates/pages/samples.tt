@@ -30,8 +30,10 @@
           <th>NCBI tax ID</th>
           <th>Collection date</th>
           <th>Collected at</th>
+          <th>Has AMR</th>
         </tr>
       </thead>
+      <!--
       <tbody>
         [% FOREACH sample IN samples.all %]
         <tr>
@@ -50,13 +52,16 @@
         </tr>
         [% END %]
       </tbody>
+      -->
     </table>
 
     <div id="download-buttons">
+      <span>Show <a href="[% c.uri_for('/samples') %]">all samples</a>.</span>
+      <span>Show a <a href="[% c.uri_for('/summary') %]">summary</a> of current data.</span>
       <span>Download
         <span id="filtered">filtered</span>
         <span id="all">all</span>
-        data:
+        data in the table:
       </span>
       <button class="table-download-link btn btn-default btn-sm"
               data-format="text/csv"

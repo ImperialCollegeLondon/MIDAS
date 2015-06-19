@@ -112,11 +112,11 @@ sub samples : Chained('/')
   # storing a reference to a small DBIC object that doesn't contain any data.
 
   $c->stash(
-    title         => 'Samples',
-    template      => 'pages/samples.tt',
-    jscontroller  => 'samples',
-    rs            => $c->model->schema->get_all_samples,
-    full_rs       => $c->model->schema->get_all_samples,
+    title        => 'Samples',
+    template     => 'pages/samples.tt',
+    jscontroller => 'samples',
+    rs           => $c->model->schema->get_all_samples,
+    full_rs      => $c->model->schema->get_all_samples,
   );
 
   $c->log->debug( 'samples: returning data for samples from all organisms' )
@@ -574,9 +574,13 @@ sub _stash_params : Private {
 
   # we need to handle filter terms coming from either DataTables or from
   # the download link that we build in the page
-  my $filter_term = $c->req->params->{'search[value]'} ||
-                    $c->req->params->{filter} ||
-                    '';
+  my $tainted_filter_term = $c->req->params->{'search[value]'} ||
+                            $c->req->params->{filter} ||
+                            '';
+  my $filter_term;
+  if ( $tainted_filter_term =~ m/^([\w\-]+)$/ ) {
+    $filter_term = $1;
+  }
 
   # we're only accepting sort params from DataTables
   my $sort_column_num = $c->req->params->{'order[0][column]'};
@@ -742,9 +746,12 @@ sub _do_sorting : Private {
                   . "on column $sort_column_num ($sort_column_name)" )
     if $c->debug;
 
+  # we need to prefix the column name with "me", otherwise, because we're
+  # joining the "sample" table to "antimicrobial_resistance", columns like
+  # "sample_id" will be ambiguous and will cause errors in the RDBMS
   my $sorted_rs = $c->stash->{rs}->search_rs(
     undef,
-    { order_by => { $sort_column_dir => $sort_column_name } }
+    { order_by => { $sort_column_dir => "me.$sort_column_name" } }
   );
 
   $c->stash( rs => $sorted_rs );
@@ -777,22 +784,38 @@ sub _get_dt_data : Private {
 
   # build an array holding all of the rows in the paged, filtered, and sorted
   # ResultSet
-  my @samples = ();
-  foreach my $row ( $c->stash->{rs}->all ) {
-    my $sample = [];
-    push @$sample, $row->get_column($_) for @{ $self->returned_columns };
-    push @samples, $sample;
-  }
+  $c->forward('_munge_rs');
 
   # build the data structure that we need to return to DataTables on the front
   # end
   $c->stash->{output}->{draw}              = $c->stash->{format_params}->{draw};
   $c->stash->{output}->{recordsTotal}      = $c->stash->{full_rs}->count;
   $c->stash->{output}->{recordsFiltered} ||= $c->stash->{output}->{recordsTotal};
-  $c->stash->{output}->{data}              = \@samples;
+  $c->stash->{output}->{data}              = $c->stash->{samples};
 
   $c->log->debug( '_get_dt_data: built output' )
     if $c->debug;
+}
+
+#-------------------------------------------------------------------------------
+
+# convert the ResultSet into a data structure that we can serialise
+sub _munge_rs : Private {
+  my ( $self, $c ) = @_;
+
+  my @samples = ();
+  foreach my $row ( $c->stash->{rs}->all ) {
+    my $sample = [];
+    push @$sample, $row->get_column($_) for @{ $self->returned_columns };
+
+    my $amr_data = [];
+    push @$amr_data, { $_->get_columns } for $row->get_amr->all;
+    push @$sample, $amr_data;
+
+    push @samples, $sample;
+  }
+
+  $c->stash( samples => \@samples );
 }
 
 #-------------------------------------------------------------------------------
@@ -804,6 +827,7 @@ sub _get_raw_data : Private {
   $c->log->debug( '_get_raw_data: returning raw data' )
     if $c->debug;
 
+  # TODO switch to using "_munge_rs"
   my @samples = ();
   foreach my $row ( $c->stash->{rs}->all ) {
     my %sample = map { $_ => $row->get_column($_) } @{ $self->returned_columns };
