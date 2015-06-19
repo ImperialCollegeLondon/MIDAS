@@ -12,9 +12,11 @@ var samples = (function() {
     // build the contents of the row showing AMR data for a sample
     _formatAMR: function(d) {
       /*jshint camelcase: false */
+
       var table = [],
           equality,
           susceptibilityClass;
+
       table.push( "<table class='amrData table table-striped table-condensed'>" );
       table.push( "<thead><tr>" );
       table.push( "<th>Compound name</th>" );
@@ -22,7 +24,8 @@ var samples = (function() {
       table.push( "<th><abbr title='Minimum Inhibitory Concentration'>MIC</abbr> (<abbr title='milligrammes per litre'>mg/l</abbr>)</th>" );
       table.push( "</tr></thead>" );
       table.push( "<tbody>" );
-      $.each( d[d.length - 1], function(i, amr) {
+
+      $.each( d.amr, function(i, amr) {
         switch ( amr.susceptibility ) {
           case "S": susceptibilityClass = "amrS"; break;
           case "I": susceptibilityClass = "amrI"; break;
@@ -41,6 +44,7 @@ var samples = (function() {
         table.push( "<td class='amrMIC'>" + equality + amr.mic + "</td>" );
         table.push( "</tr>" );
       } );
+
       table.push( "</tbody></table>" );
 
       return table.join("");
@@ -48,6 +52,7 @@ var samples = (function() {
 
     // set up the samples table
     setupTable: function() {
+      /*jshint camelcase: false */
 
       var samplesTable = $("#samples").DataTable( {
         // dom: "T<'clear'>lfrtip",
@@ -61,64 +66,70 @@ var samples = (function() {
         },
         columns: [
           {
-            // targets: 0,
+            // sample_id
             render: function(data, type, row, meta) {
-              return "<a href='/sample/" + data + "'>" + data + "</a>";
+              return "<a href='/sample/" + row.sample_id + "'>" +
+                     row.sample_id + "</a>";
             }
           },
-          null,
+          { data: "manifest_id" },
           {
-            // targets: 2,
+            // scientific_name
             orderData: 2,
             render: function(data, type, row, meta) {
-              return row[2] + " (" + row[3] + ")";
+              return row.scientific_name + " (" + row.tax_id + ")";
             }
           },
           {
+            //  tax_id
+            data: "tax_id",
             visible: false
           },
-          null,
-          null,
+          { data: "collection_date" },
+          { data: "collected_at" },
           {
-            // targets: 6,
+            // AMR data
             className: "amrCell text-center",
             orderable: false,
             render: function(data, type, row, meta) {
-              if ( Object.keys(data).length > 0 ) {
+              if ( Object.keys(row.amr).length > 0 ) {
                 return "<i title='Sample has AMR data' class='hasAMR fa fa-plus-square'></i>";
               } else {
                 return "<i title='No AMR data for sample' class='noAMR fa fa-times'></i>";
               }
-              // return data;
             }
           }
         ]
       } );
 
       // add a listener to show AMR data for samples that possess it
-      $("#samples tbody").on("click", "td.amrCell", function() {
-        var tr,
-            row,
-            hasAMR = $(this).children(".hasAMR");
+      samplesTable.on("draw", function() {
 
-        if ( hasAMR.length < 1 ) {
-          return;
-        }
+        $("#samples tbody").on("click", "td.amrCell", function() {
+          var tr,
+              row,
+              hasAMR = $(this).children(".hasAMR");
 
-        tr  = $(this).closest("tr");
-        row = samplesTable.row(tr);
+          if ( hasAMR.length < 1 ) {
+            return;
+          }
 
-        if ( row.child.isShown() ) {
-          row.child.hide();
-          tr.removeClass("shown");
-          hasAMR.removeClass("fa-minus-square")
-                .addClass("fa-plus-square");
-        } else {
-          row.child( samples._formatAMR( row.data() ) ).show();
-          tr.addClass("shown");
-          hasAMR.removeClass("fa-plus-square")
-                .addClass("fa-minus-square");
-        }
+          tr  = $(this).closest("tr");
+          row = samplesTable.row(tr);
+
+          if ( row.child.isShown() ) {
+            row.child.hide();
+            tr.removeClass("shown");
+            hasAMR.removeClass("fa-minus-square")
+                  .addClass("fa-plus-square");
+          } else {
+            row.child( samples._formatAMR( row.data() ) ).show();
+            tr.addClass("shown");
+            hasAMR.removeClass("fa-plus-square")
+                  .addClass("fa-minus-square");
+          }
+        } );
+
       } );
 
       // listen for changes to the "search" input that filters the table and show/hide

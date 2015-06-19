@@ -11,8 +11,9 @@ BEGIN { extends 'Catalyst::Controller::REST' }
 #-------------------------------------------------------------------------------
 
 __PACKAGE__->config(
-  default => 'text/html',
-  map     => {
+  default   => 'text/html',
+  stash_key => 'output',
+  map       => {
     'text/html'          => [ 'View', 'HTML' ],
     'application/json'   => 'JSON',
     'text/yaml'          => 'YAML',
@@ -57,10 +58,11 @@ sub _render_csv {
 
   # it's a bit ugly, but we just walk the array and dump each row in turn
   foreach my $row ( @$data ) {
-    my @values = ();
-    foreach my $key ( @keys ) {
-      push @values, $row->{$key};
-    }
+
+    my @values = map { $row->{$_} } @{ $controller->returned_columns };
+
+    # TODO format AMR data as a string and add it to the output
+
     $status = $controller->_csv->combine(@values);
     die 'problem generating CSV' unless $status;
 

@@ -633,9 +633,12 @@ sub _format_sample_data : Private {
   # we can take advantage of DBIC here by simply stacking up the modifications
   # to the query and letting it build a final SQL query that encompasses all of
   # them
-  $c->forward('_do_paging');
-  $c->forward('_do_filtering');
-  $c->forward('_do_sorting');
+  $c->forward('_do_paging');    # chop the RS down to the required page
+  $c->forward('_do_filtering'); # filter the RS
+  $c->forward('_do_sorting');   # sort it
+  $c->forward('_do_munge_rs');  # convert the RS into a regular data structure.
+                                # The output of "_do_munge_rs" is stored in
+                                # $c->stash->{samples}
 
   # if the response is going to a DataTable, we need to format it differently
   # and add extra information. Either way, we simply stash the output and let
@@ -644,7 +647,8 @@ sub _format_sample_data : Private {
     $c->forward('_get_dt_data');
   }
   else {
-    $c->forward('_get_raw_data');
+    $c->stash->{output} = $c->stash->{samples};
+    # $c->forward('_get_raw_data');
   }
 }
 
@@ -782,10 +786,6 @@ sub _get_dt_data : Private {
     $c->stash->{output}->{recordsFiltered} = $count_rs->count;
   }
 
-  # build an array holding all of the rows in the paged, filtered, and sorted
-  # ResultSet
-  $c->forward('_munge_rs');
-
   # build the data structure that we need to return to DataTables on the front
   # end
   $c->stash->{output}->{draw}              = $c->stash->{format_params}->{draw};
@@ -799,43 +799,54 @@ sub _get_dt_data : Private {
 
 #-------------------------------------------------------------------------------
 
+# sub _get_raw_data : Private {
+#   my ( $self, $c ) = @_;
+#
+#   # body
+# }
+
+#-------------------------------------------------------------------------------
+
 # convert the ResultSet into a data structure that we can serialise
-sub _munge_rs : Private {
+
+sub _do_munge_rs : Private {
   my ( $self, $c ) = @_;
 
+  # build an array holding all of the rows in the paged, filtered, and sorted
+  # ResultSet
   my @samples = ();
   foreach my $row ( $c->stash->{rs}->all ) {
-    my $sample = [];
-    push @$sample, $row->get_column($_) for @{ $self->returned_columns };
+    my %sample = map { $_ => $row->get_column($_) } @{ $self->returned_columns };
 
     my $amr_data = [];
     push @$amr_data, { $_->get_columns } for $row->get_amr->all;
-    push @$sample, $amr_data;
+    $sample{amr} = $amr_data;
 
-    push @samples, $sample;
+    push @samples, \%sample;
   }
 
   $c->stash( samples => \@samples );
 }
 
-#-------------------------------------------------------------------------------
-
-# format the sample data as a simple JSON data structure
-sub _get_raw_data : Private {
-  my ( $self, $c ) = @_;
-
-  $c->log->debug( '_get_raw_data: returning raw data' )
-    if $c->debug;
-
-  # TODO switch to using "_munge_rs"
-  my @samples = ();
-  foreach my $row ( $c->stash->{rs}->all ) {
-    my %sample = map { $_ => $row->get_column($_) } @{ $self->returned_columns };
-    push @samples, \%sample;
-  }
-
-  $c->stash->{output} = \@samples;
-}
+# sub _do_munge_rs : Private {
+#   my ( $self, $c ) = @_;
+#
+#   # build an array holding all of the rows in the paged, filtered, and sorted
+#   # ResultSet
+#   my @samples = ();
+#   foreach my $row ( $c->stash->{rs}->all ) {
+#     my $sample = [];
+#     push @$sample, $row->get_column($_) for @{ $self->returned_columns };
+#
+#     my $amr_data = [];
+#     push @$amr_data, { $_->get_columns } for $row->get_amr->all;
+#     push @$sample, $amr_data;
+#
+#     push @samples, $sample;
+#   }
+#
+#   $c->stash( samples => \@samples );
+# }
 
 #-------------------------------------------------------------------------------
 
