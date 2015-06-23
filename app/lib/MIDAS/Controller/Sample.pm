@@ -21,22 +21,7 @@ has '_filter_columns' => (
   }
 );
 
-# thse are the columns that will be returned by "_get_sample_data"
-has 'returned_columns' => (
-  is      => 'ro',
-  default => sub {
-    [ qw(
-      sample_id
-      manifest_id
-      scientific_name
-      tax_id
-      collection_date
-      collected_at
-    ) ];
-  }
-);
-
-BEGIN { extends 'MIDAS::Base::Controller::Restful' }
+BEGIN { extends 'MIDAS::Base::Controller::Restful'; }
 
 =head1 NAME
 
@@ -419,6 +404,173 @@ sub paged_samples_from_organism_GET_html {
 }
 
 #-------------------------------------------------------------------------------
+#- samples with given AMR ------------------------------------------------------
+#-------------------------------------------------------------------------------
+
+=head2 samples_with_susceptibility : Chained('/') CaptureArgs(0) Does('~NeedsAuth')
+
+This is the beginning of a chain that returns information for samples that
+are either susceptible, intermediate or resistant to one or more antimicrobial
+compounds.
+
+It sets up parameters that are applicable to the actions that format sample
+data, and sets a couple of stash parameters that are generally useful.
+
+Requires login (for requests from a browser) or "Authorization" header (for
+REST calls).
+
+=cut
+
+# this is patterned on "sub samples". See that action for comments too
+
+sub samples_with_susceptibility : Chained('/')
+                                  PathPart('samples_with_susceptibility')
+                                  CaptureArgs(1)
+                                  Does('~NeedsAuth') {
+  my ( $self, $c, $sir ) = @_;
+
+  if ( $sir !~ m/^[SIR]$/ ) {
+    $c->stash(
+      title        => 'Samples',
+      template     => 'pages/samples.tt',
+      jscontroller => 'samples',
+      error        => 'Not a valid susceptibility code',
+    );
+    return;
+  }
+
+  $c->forward('_stash_params');
+
+  my $susceptibility = $sir eq 'S' ? 'susceptible'
+                     : $sir eq 'I' ? 'intermediate'
+                     : $sir eq 'R' ? 'resistent'
+                     : '';
+
+  $c->stash(
+    title          => 'Samples from $organism',
+    template       => 'pages/samples.tt',
+    jscontroller   => 'samples',
+    rs             => $c->model->schema->get_samples_by_amr($sir),
+    full_rs        => $c->model->schema->get_samples_by_amr($sir),
+    sir            => $sir,
+    susceptibility => $susceptibility,
+  );
+
+  $c->log->debug( "samples_with_susceptibility: looking for samples with susceptibility code |$sir|" )
+    if $c->debug;
+
+  # flag the response for download if the "dl" param is set
+  $c->res->header('Content-disposition', qq(attachment; filename="${susceptibility}_samples"))
+    if $c->req->params->{dl};
+}
+
+#-------------------------------------------------------------------------------
+
+sub all_samples_with_susceptibility : Chained('samples_with_susceptibility')
+                                      PathPart('')
+                                      Args(0)
+                                      ActionClass('REST::ForBrowsers') { }
+
+#---------------------------------------
+
+sub all_samples_with_susceptibility_GET {
+  my ( $self, $c ) = @_;
+
+  # throw an error if there was a problem validating the organism name
+  if ( defined $c->stash->{error} or
+       not defined $c->stash->{sir} ) {
+    $self->status_bad_request(
+      $c,
+      message => $c->stash->{error} || 'Bad susceptibility code (must be one of "S", "I", or "R")'
+    );
+    return;
+  }
+
+  try {
+    $c->forward('_format_sample_data');
+    $self->status_ok(
+      $c,
+      entity => $c->stash->{output}
+    );
+  } catch {
+    $self->status_ok(
+      $c,
+      entity => { error => $_ }
+    );
+  };
+
+  $c->log->debug( 'all_samples_with_susceptibility_GET: returning raw data' )
+    if $c->debug;
+}
+
+#---------------------------------------
+
+sub all_samples_with_susceptibility_GET_html {
+  my ( $self, $c ) = @_;
+
+  $c->log->debug( 'all_samples_with_susceptibility_GET_html: returning HTML page' )
+    if $c->debug;
+}
+
+#-------------------------------------------------------------------------------
+
+# sub paged_samples_from_organism : Chained('samples_from_organism')
+#                                   PathPart('')
+#                                   Args(2)
+#                                   ActionClass('REST::ForBrowsers') {
+#   my ( $self, $c ) = @_;
+#
+#   $c->log->debug( 'paged_samples_from_organism: returning subset of samples from '
+#                   . $c->stash->{organism} )
+#     if $c->debug;
+# }
+
+#---------------------------------------
+
+# sub paged_samples_from_organism_GET {
+#   my ( $self, $c, $start, $length ) = @_;
+#
+#   # make sure the page limits are valid
+#   foreach my $limit ( $start, $length ) {
+#     unless ( $limit =~ m/^\d+$/ ) {
+#       $self->status_bad_request(
+#         $c,
+#         message => 'not a valid range (from/to)'
+#       );
+#       return;
+#     }
+#   }
+#
+#   $c->stash->{format_params}->{start}  = $start;
+#   $c->stash->{format_params}->{length} = $length;
+#
+#   try {
+#     $c->forward('_format_sample_data');
+#     $self->status_ok(
+#       $c,
+#       entity => $c->stash->{output}
+#     );
+#   } catch {
+#     $self->status_ok(
+#       $c,
+#       entity => { error => $_ }
+#     );
+#   };
+#
+#   $c->log->debug( 'paged_samples_from_organism_GET: returning raw data' )
+#     if $c->debug;
+# }
+
+#---------------------------------------
+
+# sub paged_samples_from_organism_GET_html {
+#   my ( $self, $c ) = @_;
+#
+#   $c->log->debug( 'paged_samples_from_organism_GET_html: returning HTML page' )
+#     if $c->debug;
+# }
+
+#-------------------------------------------------------------------------------
 #- single sample ---------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
@@ -538,7 +690,10 @@ sub summary : Chained('/')
 before summary => sub {
   my ( $self, $c ) = @_;
 
-  $c->stash( summary => $c->model->schema->get_sample_summary );
+  $c->stash(
+    summary      => $c->model->schema->get_sample_summary,
+    jscontroller => 'summary'
+  );
 };
 
 #---------------------------------------
@@ -799,14 +954,6 @@ sub _get_dt_data : Private {
 
 #-------------------------------------------------------------------------------
 
-# sub _get_raw_data : Private {
-#   my ( $self, $c ) = @_;
-#
-#   # body
-# }
-
-#-------------------------------------------------------------------------------
-
 # convert the ResultSet into a data structure that we can serialise
 
 sub _do_munge_rs : Private {
@@ -818,6 +965,11 @@ sub _do_munge_rs : Private {
   foreach my $row ( $c->stash->{rs}->all ) {
     my %sample = map { $_ => $row->get_column($_) } @{ $self->returned_columns };
 
+    # convert the GAZ term into the term description, which is a proxy for the
+    # location description
+    $sample{location} = $row->location_description->description
+      if defined $row->location && defined $row->location_description;
+
     my $amr_data = [];
     push @$amr_data, { $_->get_columns } for $row->get_amr->all;
     $sample{amr} = $amr_data;
@@ -827,26 +979,6 @@ sub _do_munge_rs : Private {
 
   $c->stash( samples => \@samples );
 }
-
-# sub _do_munge_rs : Private {
-#   my ( $self, $c ) = @_;
-#
-#   # build an array holding all of the rows in the paged, filtered, and sorted
-#   # ResultSet
-#   my @samples = ();
-#   foreach my $row ( $c->stash->{rs}->all ) {
-#     my $sample = [];
-#     push @$sample, $row->get_column($_) for @{ $self->returned_columns };
-#
-#     my $amr_data = [];
-#     push @$amr_data, { $_->get_columns } for $row->get_amr->all;
-#     push @$sample, $amr_data;
-#
-#     push @samples, $sample;
-#   }
-#
-#   $c->stash( samples => \@samples );
-# }
 
 #-------------------------------------------------------------------------------
 

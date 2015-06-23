@@ -41,5 +41,16 @@ table#samples {
     tr.amrR td { color: darken($brand-danger,  10%) }
   }
 
+  span.expansion a {
+    font-size: smaller;
+  }
+  span.fullLength {
+    display: none;
+  }
+}
+
+#scrollbox {
+  overflow-x: auto;
+  width: 100%;
 }
 

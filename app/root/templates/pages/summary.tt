@@ -11,59 +11,151 @@
     </strong> samples from
     <strong>[% summary.total_number_of_manifests %]</strong> manifests.
     You can <a href="[% c.uri_for('/samples', { dl => 1, 'content-type' => 'text/csv' } ) %]">
-      download all samples</a> in <abbr title="Comma Separated Values">CSV</abbr> format.
+      download all samples</a> in CSV format.
   </p>
 
-  <h2>Number of samples from each contributing site</h2>
+  <h2>Per organism</h2>
 
-  <table class="table table-striped table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Site</th>
-        <th>Number of samples (download as CSV)</th>
-      </tr>
-    </thead>
-    <tbody>
-      [% ca = summary.collected_at;
-      FOREACH site IN ca.keys.sort %]
-      <tr>
-        <td>
-          <a href="[% c.uri_for('/samples', { filter => site } ) %]">[% site %]</a>
-        </td>
-        <td>
-          <a href="[% c.uri_for('/samples', { dl => 1, filter => site, 'content-type' => 'text/csv' } ) %]">
-            [% ca.$site %]
-          </a>
-        </td>
-      </tr>
-      [% END %]
-    </tbody>
-  </table>
+  <div class="row">
 
-  <h2>Number of samples for each organism</h2>
+    <div class="col-md-6">
+      <table id="organism-table" class="table table-striped table-bordered table-condensed">
+        <thead>
+          <tr>
+            <th>Scientific name</th>
+            <th>Number of samples<br />(download as CSV)</th>
+          </tr>
+        </thead>
+        <tbody>
+          [% names = summary.scientific_names;
+          FOREACH name IN names.keys.sort;
+            name_encoded = name | uri %]
+          <tr>
+            <td>
+              <a title="See all samples from [% name %]"
+                 href="[% c.uri_for('/samples_from_organism', name_encoded ) %]">[% name %]</a>
+            </td>
+            <td>
+              <a title="Download all samples from [% name %]"
+                 href="[% c.uri_for('/samples_from_organism', name_encoded, { dl => 1, 'content-type' => 'text/csv' } ) %]">
+                [% names.$name %]</a>
+            </td>
+          </tr>
+          [% END %]
+        </tbody>
+      </table>
+    </div>
 
-  <table class="table table-striped table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Scientific name</th>
-        <th>Number of samples (download as CSV)</th>
-      </tr>
-    </thead>
-    <tbody>
-      [% names = summary.scientific_names;
-      FOREACH name IN names.keys.sort;
-        organism = name | uri %]
-      <tr>
-        <td>
-          <a href="[% c.uri_for('/samples_from_organism', organism ) %]">[% name %]</a>
-        </td>
-        <td>
-          <a href="[% c.uri_for('/samples_from_organism', organism, { dl => 1, 'content-type' => 'text/csv' } ) %]">
-            [% names.$name %]</a>
-        </td>
-      </tr>
-      [% END %]
-    </tbody>
-  </table>
+    <div class="col-md-6">
+      <p>
+        This table shows the number of samples in the database, grouped by
+        sample organism. You can sort the table by <a id="sort-species">species
+        name</a> or by the <a id="sort-num-samples">number of samples</a> from
+        each organism. Scroll the table to see all organisms. Clicking on the
+        links in the left column will take you to a page that shows an
+        interactive table with sample metadata for all of the samples from the
+        chosen organism. Clicking links in the right column will download a CSV
+        (Comma Separated Values) file containing the same data that you can see
+        in the page.
+      </p>
+    </div>
+
+  </div>
+
+  <h2>Antimicrobial susceptibility</h2>
+
+  <div class="row">
+
+    <div class="col-md-6">
+
+      <table class="table table-striped table-bordered table-condensed">
+        <thead>
+          <tr>
+            <th>Susceptibility</th>
+            <th>Number of samples<br />(download as CSV)</th>
+          </tr>
+        </thead>
+        <tbody>
+          [% susceptibility = {
+            S => 'susceptible',
+            I => 'intermediate',
+            R => 'resistant',
+          };
+          FOREACH sir IN [ 'S', 'I', 'R' ];
+            s_count = summary.sir_counts.$sir %]
+          <tr>
+            <td>
+              <a title="See all samples that have one or more [% susceptibility.$sir %] AMR results"
+                 href="[% c.uri_for('/samples_with_susceptibility', sir ) %]">[% susceptibility.$sir.ucfirst %]</a>
+              (<a href="[% c.uri_for('/samples_with_susceptibility', sir ) %]">[% sir %]</a>)
+            </td>
+            <td>
+              <a title="Download all samples that have one or more [% susceptibility.$sir %] AMR results"
+                 href="[% c.uri_for('/samples_with_susceptibility', sir, { dl => 1, 'content-type' => 'text/csv' } ) %]">
+                [% s_count %]</a>
+            </td>
+          </tr>
+          [% END %]
+        </tbody>
+      </table>
+    </div>
+
+    <div class="col-md-6">
+      <p>
+        This table shows the number of samples that have one or more
+        antimicrobial resistance test results with the given susceptibility.
+        For example, there are <strong>[% summary.sir_counts.R %]</strong>
+        samples that have at least one result showing resistance to a given
+        antimicrobial.  Note that a sample that shows resistance to one
+        compound may also have AMR results showing susceptibility (or
+        intermediate susceptibility) to other compounds.
+      </p>
+    </div>
+
+  </div>
+
+  <h2>Contributing site</h2>
+
+  <div class="row">
+
+    <div class="col-md-6">
+      <table class="table table-striped table-bordered table-condensed">
+        <thead>
+          <tr>
+            <th>Site</th>
+            <th>Number of samples<br />(download as CSV)</th>
+          </tr>
+        </thead>
+        <tbody>
+          [% ca = summary.collected_at;
+          FOREACH site IN ca.keys.sort;
+            site_string = site == 'UCL'
+                        ? 'UCL'
+                        : site.lower.ucfirst %]
+          <tr>
+            <td>
+              <a title="See all samples contributed by [% site_string %]"
+                 href="[% c.uri_for('/samples', { filter => site } ) %]">[% site_string %]</a>
+            </td>
+            <td>
+              <a title="Download all samples contributed by [% site_string %]"
+                 href="[% c.uri_for('/samples', { dl => 1, filter => site, 'content-type' => 'text/csv' } ) %]">
+                [% ca.$site %]
+              </a>
+            </td>
+          </tr>
+          [% END %]
+        </tbody>
+      </table>
+    </div>
+
+    <div class="col-md-6">
+      <p>
+        This table shows the number of samples that have been submitted by each
+        of the three sites in the consortium.
+      </p>
+    </div>
+
+  </div>
 
 </section>

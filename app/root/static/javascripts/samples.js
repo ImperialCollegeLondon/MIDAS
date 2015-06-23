@@ -17,6 +17,7 @@ var samples = (function() {
           equality,
           susceptibilityClass;
 
+      table.push( "<div class='row'><div class='col-md-6'>" );
       table.push( "<table class='amrData table table-striped table-condensed'>" );
       table.push( "<thead><tr>" );
       table.push( "<th>Compound name</th>" );
@@ -46,6 +47,7 @@ var samples = (function() {
       } );
 
       table.push( "</tbody></table>" );
+      table.push( "</div></div>" );
 
       return table.join("");
     },
@@ -72,7 +74,33 @@ var samples = (function() {
                      row.sample_id + "</a>";
             }
           },
-          { data: "manifest_id" },
+          {
+            // manifest_id
+            render: function(data, type, row, meta) {
+              return "<a title='Show only samples from this manifest' " +
+                     "href='/samples?filter=" + row.manifest_id + "'>" +
+                     row.manifest_id + "</a>";
+            }
+          },
+          { data: "raw_data_accession" },
+          { data: "sample_accession" },
+          {
+            // sample_description
+            render: function(data, type, row, meta) {
+              var op = row.sample_description || "";
+              if ( op.length > 10 ) {
+                op = "<span class='expansion truncated'>" + op.substr(0, 10) +
+                     "<a title='See more'>&hellip;</a>" +
+                     "</span>" +
+                     "<span class='expansion fullLength'>" + op +
+                     " <a title='See less'>(hide)</a>" +
+                     "</span>";
+              }
+              return op;
+            }
+          },
+          { data: "collected_at" },
+          { data: "tax_id",                 visible: false },
           {
             // scientific_name
             orderData: 2,
@@ -80,13 +108,20 @@ var samples = (function() {
               return row.scientific_name + " (" + row.tax_id + ")";
             }
           },
-          {
-            //  tax_id
-            data: "tax_id",
-            visible: false
-          },
+          { data: "collected_by",           visible: false },
+          { data: "source",                 visible: false },
           { data: "collection_date" },
-          { data: "collected_at" },
+          { data: "location" },
+          { data: "host_associated" },
+          { data: "specific_host" },
+          { data: "host_disease_status" },
+          { data: "host_isolation_source" },
+          { data: "patient_location" },
+          { data: "isolation_source",       visible: false },
+          { data: "serovar" },
+          { data: "other_classification",   visible: false },
+          { data: "strain" },
+          { data: "isolate",                visible: false },
           {
             // AMR data
             className: "amrCell text-center",
@@ -128,6 +163,14 @@ var samples = (function() {
             hasAMR.removeClass("fa-plus-square")
                   .addClass("fa-minus-square");
           }
+        } );
+
+        $("#samples span.expansion > a").on("click", function(e) {
+          var link = e.target,
+              parentSpan = link.closest("span"),
+              siblingSpan = $(parentSpan).siblings()[0];
+          $(parentSpan).toggle();
+          $(siblingSpan).toggle();
         } );
 
       } );

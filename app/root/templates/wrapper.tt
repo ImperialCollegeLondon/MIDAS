@@ -25,10 +25,10 @@
     <link href="/styles/contact-us.css" rel="stylesheet">
     <link href="/styles/validation.css" rel="stylesheet">
     <link href="/styles/samples.css" rel="stylesheet">
+    <link href="/styles/summary.css" rel="stylesheet">
     <link href="/styles/reset.css" rel="stylesheet">
     <link href="/styles/images.css" rel="stylesheet">
     <link href="/styles/vendor/dataTables.bootstrap.css" rel="stylesheet">
-    <link href="/styles/vendor/dataTables.tableTools.css" rel="stylesheet">
     <!-- endbuild -->
     <!-- <link href="/styles/vendor/jquery.dataTables.css" rel="stylesheet"> -->
 
@@ -78,9 +78,9 @@
     <script src="/javascripts/fourohfour.js"></script>
     <script src="/javascripts/validation.js"></script>
     <script src="/javascripts/samples.js"></script>
+    <script src="/javascripts/summary.js"></script>
     <script src="/javascripts/vendor/jquery.dataTables.js"></script>
     <script src="/javascripts/vendor/dataTables.bootstrap.js"></script>
-    <script src="/javascripts/vendor/dataTables.tableTools.js"></script>
     <!-- endbuild -->
 
   </body>
