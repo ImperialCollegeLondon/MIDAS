@@ -27,10 +27,8 @@ var samples = (function() {
       table.push( "<tbody>" );
 
       $.each( d.amr, function(i, amr) {
-        switch ( amr.susceptibility ) {
-          case "S": susceptibilityClass = "amrS"; break;
-          case "I": susceptibilityClass = "amrI"; break;
-          case "R": susceptibilityClass = "amrR";  break;
+        if ( amr.susceptibility.match("[SIR]") ) {
+          susceptibilityClass = "amr" + amr.susceptibility;
         }
         table.push( "<tr class='" + susceptibilityClass + "'>" );
         table.push( "<td class='amrName'>" + amr.antimicrobial_name + "</td>" );

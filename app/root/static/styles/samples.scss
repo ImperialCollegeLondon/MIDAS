@@ -1,7 +1,7 @@
 // samples.scss
 // jt6 20150529 WTSI
 //
-// rules for the samples page
+// rules for the samples (and sample) page
 
 @import "flatly/variables";
 
@@ -29,18 +29,6 @@ table#samples {
   i.hasAMR.fa-minus-square { color: #A00 } // dark red
   i.noAMR                  { color: #CCC } // greyed out
 
-  table.amrData {
-    td.amrName {
-      text-transform: capitalize;
-    }
-    td.amrSIR {
-      margin-left: 6px;
-    }
-    tr.amrS td { color: darken($brand-success, 10%) }
-    tr.amrI td { color: darken($brand-warning, 10%) }
-    tr.amrR td { color: darken($brand-danger,  10%) }
-  }
-
   span.expansion a {
     font-size: smaller;
   }
@@ -49,8 +37,36 @@ table#samples {
   }
 }
 
+table.amrData {
+  td.amrName {
+    text-transform: capitalize;
+  }
+  td.amrSIR {
+    margin-left: 6px;
+  }
+  tr.amrS td { color: darken($brand-success, 10%) }
+  tr.amrI td { color: darken($brand-warning, 10%) }
+  tr.amrR td { color: darken($brand-danger,  10%) }
+}
+
 #scrollbox {
   overflow-x: auto;
   width: 100%;
 }
 
+#sample {
+  table.two-column-narrow {
+    tr th:first-child,
+    tr td:first-child {
+      width: 30%;
+    }
+    tr th:last-child,
+    tr td:last-child {
+      width: 70%;
+    }
+  }
+  div.tooltip-inner {
+    text-align: left;
+    max-width: 400px;
+  }
+}

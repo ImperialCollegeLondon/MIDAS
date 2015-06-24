@@ -1,5 +1,28 @@
+[%
+tooltips = {
+  raw_data_accession      => "Accession for raw data i.e. fastq/bam files",
+  sample_accession        => "Accession for the sample",
+  sample_description      => "Free-text description of the sample",
+  collected_at            => 'ID of the institute that performed the study',
+  tax_id                  => 'The taxonomy ID of the organism that provided the sequenced genetic material',
+  scientific_name         => 'The full scientific name of the organism that provided the sequenced genetic material',
+  collected_by            => 'Name of person(s) who may be contacted in the case of queries about the sample',
+  source                  => 'Information about the source of the sample',
+  collection_date         => 'Date and time that the specimen was collected',
+  location                => 'Locality of isolation of the sampled organism',
+  host_associated         => 'Is the organism from which the sample was obtained associated with a host organism ?',
+  specific_host           => 'Natural (as opposed to laboratory) host to the organism from which the sample was obtained (or &quot;free-living&quot; if not host associated)',
+  host_disease_status     => 'Condition of host. One of &quot;diseased&quot;, &quot;healthy&quot; or &quot;carriage&quot;',
+  host_isolation_source   => 'Name of host tissue or organ sampled for analysis',
+  patient_location        => 'Describes the health care situation of a human host when the sample was obtained. One of &quot;inpatient&quot; or &quot;community&quot;',
+  isolation_source        => 'Describes the physical, environmental and/or local geographical source of the biological sample from which the sample was derived',
+  serovar                 => 'Serological variety of a species characterised by its antigenic properties',
+  other_classification    => 'Appropriate classification terms for the sample organism',
+  strain                  => 'Name of strain from which sample was obtained',
+  isolate                 => 'Name of isolate from which sample was obtained',
+} %]
 
-<section class="container">
+<section class="container" id="sample">
 
   <h1>Sample[% " " _ id %]</h1>
 
@@ -14,30 +37,82 @@
     </div>
   [% ELSE %]
 
-  <table class="table table-striped table-condensed">
-    <thead>
-      <tr>
-        <th class="text-right row-label">Field</th>
-        <th>Value</th>
-      </tr>
-    </thead>
-    <tbody>
-      [% fields = sample.fields;
-      FOREACH field IN sample.field_names %]
-      <tr>
-        <td class="text-right row-label">[% field %]</td>
-        <td>
-        [% IF fields.$field.defined;
-          fields.$field;
-        ELSE %]
-          <span class="na">n/a</span>
-        [% END %]
-        </td>
-      </tr>
-      [% END %]
-    </tbody>
-  </table>
+  <div class="row">
+    <div class="col-md-7">
+      <h2>Sample metadata</h2>
+      <table class="two-column-narrow table table-striped table-condensed">
+        <thead>
+          <tr>
+            <th class="text-right row-label">Field</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          [% fields = sample.fields;
+          FOREACH field IN sample.field_names;
+            field_name = field.replace('_', ' ').ucfirst;
+            tooltip_text = tooltips.$field;
+            %]
+            <tr>
+              <td class="text-right row-label">
+                <div data-toggle="tooltip"
+                     data-placement="right"
+                     title="[% tooltip_text %]">
+                  [% field_name %]
+                </div>
+              </td>
+              <td>
+              [% IF fields.$field.defined;
+                fields.$field;
+              ELSE %]
+                <span class="na">n/a</span>
+              [% END %]
+              </td>
+            </tr>
+          [% END %]
+        </tbody>
+      </table>
+    </div>
 
-  [% END %]
+    <div class="col-md-5">
+      <h2>Antimicrobial resistance</h2>
+
+      [% IF sample.antimicrobial_resistances %]
+        <table class="amrData table table-striped table-condensed">
+          <thead>
+            <th>Compound name</th>
+            <th>Susceptibility</th>
+            <th>MIC</th>
+          </thead>
+          <tbody>
+          [% FOREACH amr IN sample.antimicrobial_resistances;
+            SWITCH amr.equality;
+              CASE 'le'; equality = '&le;';
+              CASE 'lt'; equality = '&lt;';
+              CASE 'eq'; equality = '';
+              CASE 'gt'; equality = '&gt;';
+              CASE 'ge'; equality = '&ge;';
+            END;
+            susceptibilityClass = 'amr' _ amr.susceptibility
+              IF amr.susceptibility.match('[SIR]') %]
+            <tr class="[% susceptibilityClass %]">
+              <td class="amrName">[% amr.get_column('antimicrobial_name') %]</td>
+              <td class="amrSIR">[% amr.susceptibility %]</td>
+              <td class="amrMIC">[% equality; amr.mic %]</td>
+            </tr>
+          [% END %]
+          </tbody>
+        </table>
+      [% ELSE %]
+        <p class="na">
+          There are no antimicrobial resistance test results associated with
+          this sample.
+        </p>
+      [% END %]
+    </div>
+  </div>
+
+  [% END # of "IF error" %]
 
 </section>
+

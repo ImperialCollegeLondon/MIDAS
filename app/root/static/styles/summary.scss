@@ -5,11 +5,15 @@
 
 @import "flatly/variables";
 
-tr td:first-child {
-  width: 60%;
+#summary {
+  table.two-column-narrow {
+    tr th:first-child,
+    tr td:first-child {
+      width: 60%;
+    }
+    tr th:last-child,
+    tr td:last-child {
+      width: 40%;
+    }
+  }
 }
-
-tr td:last-child {
-  width: 40%;
-}
-
