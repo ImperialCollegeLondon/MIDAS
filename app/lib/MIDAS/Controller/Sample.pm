@@ -347,6 +347,13 @@ sub all_samples_from_organism_GET_html {
 
 #-------------------------------------------------------------------------------
 
+=head2 paged_samples_from_organism : Chained('samples_from_organism') PathPart('') Args(2) ActionClass('REST::ForBrowser')
+
+Returns a subset of samples, described by two arguments, C<$start> and
+C<$length>.
+
+=cut
+
 sub paged_samples_from_organism : Chained('samples_from_organism')
                                   PathPart('')
                                   Args(2)
@@ -409,12 +416,8 @@ sub paged_samples_from_organism_GET_html {
 
 =head2 samples_with_susceptibility : Chained('/') CaptureArgs(0) Does('~NeedsAuth')
 
-This is the beginning of a chain that returns information for samples that
-are either susceptible, intermediate or resistant to one or more antimicrobial
-compounds.
-
-It sets up parameters that are applicable to the actions that format sample
-data, and sets a couple of stash parameters that are generally useful.
+Returns information for samples that are either susceptible, intermediate or
+resistant to one or more antimicrobial compounds.
 
 Requires login (for requests from a browser) or "Authorization" header (for
 REST calls).
@@ -424,9 +427,9 @@ REST calls).
 # this is patterned on "sub samples". See that action for comments too
 
 sub samples_with_susceptibility : Chained('/')
-                                  PathPart('samples_with_susceptibility')
-                                  CaptureArgs(1)
-                                  Does('~NeedsAuth') {
+                                  Args(1)
+                                  Does('~NeedsAuth')
+                                  ActionClass('REST::ForBrowsers') {
   my ( $self, $c, $sir ) = @_;
 
   if ( $sir !~ m/^[SIR]$/ ) {
@@ -447,11 +450,11 @@ sub samples_with_susceptibility : Chained('/')
                      : '';
 
   $c->stash(
-    title          => 'Samples from $organism',
+    title          => 'Samples by AMR susceptibility',
     template       => 'pages/samples.tt',
     jscontroller   => 'samples',
-    rs             => $c->model->schema->get_samples_by_amr($sir),
-    full_rs        => $c->model->schema->get_samples_by_amr($sir),
+    rs             => $c->model->schema->get_samples_with_amr(sir => $sir),
+    full_rs        => $c->model->schema->get_samples_with_amr(sir => $sir),
     sir            => $sir,
     susceptibility => $susceptibility,
   );
@@ -464,16 +467,9 @@ sub samples_with_susceptibility : Chained('/')
     if $c->req->params->{dl};
 }
 
-#-------------------------------------------------------------------------------
-
-sub all_samples_with_susceptibility : Chained('samples_with_susceptibility')
-                                      PathPart('')
-                                      Args(0)
-                                      ActionClass('REST::ForBrowsers') { }
-
 #---------------------------------------
 
-sub all_samples_with_susceptibility_GET {
+sub samples_with_susceptibility_GET {
   my ( $self, $c ) = @_;
 
   # throw an error if there was a problem validating the organism name
@@ -499,76 +495,151 @@ sub all_samples_with_susceptibility_GET {
     );
   };
 
-  $c->log->debug( 'all_samples_with_susceptibility_GET: returning raw data' )
+  $c->log->debug( 'samples_with_susceptibility_GET: returning raw data' )
     if $c->debug;
 }
 
 #---------------------------------------
 
-sub all_samples_with_susceptibility_GET_html {
+sub samples_with_susceptibility_GET_html {
   my ( $self, $c ) = @_;
 
-  $c->log->debug( 'all_samples_with_susceptibility_GET_html: returning HTML page' )
+  $c->log->debug( 'samples_with_susceptibility_GET_html: returning HTML page' )
     if $c->debug;
 }
 
 #-------------------------------------------------------------------------------
+#- samples by antimicrobial compound -------------------------------------------
+#-------------------------------------------------------------------------------
 
-# sub paged_samples_from_organism : Chained('samples_from_organism')
-#                                   PathPart('')
-#                                   Args(2)
-#                                   ActionClass('REST::ForBrowsers') {
-#   my ( $self, $c ) = @_;
-#
-#   $c->log->debug( 'paged_samples_from_organism: returning subset of samples from '
-#                   . $c->stash->{organism} )
-#     if $c->debug;
-# }
+=head2 samples_by_antimicrobial : Chained('/') Args Does('~NeedsAuth') ActionClass('REST::ForBrowser')
+
+Returns samples that have AMR results for a given antimicrobial compound, e.g.
+give me all samples that are resistant to vancomycin.
+
+Takes two arguments:
+
+=over
+
+=item antimicrobial
+
+the name of the antimicrobial compound. Required
+
+=item sir
+
+the susceptibility code for returned samples. Must be one of C<S>, C<I> or
+C<R>. Optional.
+
+=back
+
+If C<sir> is not given, the returned samples will be those having any
+susceptibility to the specified antimicrobial.
+
+=cut
+
+sub samples_by_antimicrobial : Chained('/')
+                               Args
+                               Does('~NeedsAuth')
+                               ActionClass('REST::ForBrowsers') {
+  my ( $self, $c, $tainted_antimicrobial, $tainted_sir ) = @_;
+
+  $c->stash(
+    title        => 'Samples',
+    template     => 'pages/samples.tt',
+    jscontroller => 'samples',
+  );
+
+  unless ( defined $tainted_antimicrobial ) {
+    $c->stash( error => 'Must supply a valid antimicrobial compound name' );
+    return;
+  }
+
+  # arguments that we'll pass to the "get_samples_with_amr" method. If we
+  # blindly pass both compound name and SIR, we get into trouble if SIR
+  # is undef, because the param fails validation in the B::H::Schema method
+  my %rs_args = ();
+
+  my $antimicrobial;
+  if ( $tainted_antimicrobial =~ m/^([\w\-\/]+)$/ ) {
+    $antimicrobial = $1;
+    $rs_args{name} = $1;
+  }
+  else {
+    $c->stash( error => 'Not a valid antimicrobial compound name' );
+    return;
+  }
+
+  my $sir;
+  if ( defined $tainted_sir ) {
+    if ( $tainted_sir =~ m/^([SIR])$/ ) {
+      $sir = $1;
+      $rs_args{sir} = $1;
+    }
+    else {
+      $c->stash( error => 'Not a valid susceptibility code. Must be either S, I, or R' );
+      return;
+    }
+  }
+
+  $c->forward('_stash_params');
+
+  my $susceptibility = $sir eq 'S' ? 'susceptible to'
+                     : $sir eq 'I' ? 'with intermediate resistance to'
+                     : $sir eq 'R' ? 'resistent to'
+                     : 'any susceptibility to';
+
+  $c->stash(
+    title          => "Samples $susceptibility $antimicrobial",
+    rs             => $c->model->schema->get_samples_with_amr(%rs_args),
+    full_rs        => $c->model->schema->get_samples_with_amr(%rs_args),
+    antimicrobial  => $antimicrobial,
+    susceptibility => $susceptibility,
+  );
+
+  # flag the response for download if the "dl" param is set
+  $c->res->header('Content-disposition', qq(attachment; filename="samples"))
+    if $c->req->params->{dl};
+}
 
 #---------------------------------------
 
-# sub paged_samples_from_organism_GET {
-#   my ( $self, $c, $start, $length ) = @_;
-#
-#   # make sure the page limits are valid
-#   foreach my $limit ( $start, $length ) {
-#     unless ( $limit =~ m/^\d+$/ ) {
-#       $self->status_bad_request(
-#         $c,
-#         message => 'not a valid range (from/to)'
-#       );
-#       return;
-#     }
-#   }
-#
-#   $c->stash->{format_params}->{start}  = $start;
-#   $c->stash->{format_params}->{length} = $length;
-#
-#   try {
-#     $c->forward('_format_sample_data');
-#     $self->status_ok(
-#       $c,
-#       entity => $c->stash->{output}
-#     );
-#   } catch {
-#     $self->status_ok(
-#       $c,
-#       entity => { error => $_ }
-#     );
-#   };
-#
-#   $c->log->debug( 'paged_samples_from_organism_GET: returning raw data' )
-#     if $c->debug;
-# }
+sub samples_by_antimicrobial_GET {
+  my ( $self, $c ) = @_;
+
+  # throw an error if there was a problem validating params
+  if ( defined $c->stash->{error} ) {
+    $self->status_bad_request(
+      $c,
+      message => $c->stash->{error},
+    );
+    return;
+  }
+
+  try {
+    $c->forward('_format_sample_data');
+    $self->status_ok(
+      $c,
+      entity => $c->stash->{output}
+    );
+  } catch {
+    $self->status_ok(
+      $c,
+      entity => { error => $_ }
+    );
+  };
+
+  $c->log->debug( 'paged_samples_from_organism_GET: returning raw data' )
+    if $c->debug;
+}
 
 #---------------------------------------
 
-# sub paged_samples_from_organism_GET_html {
-#   my ( $self, $c ) = @_;
-#
-#   $c->log->debug( 'paged_samples_from_organism_GET_html: returning HTML page' )
-#     if $c->debug;
-# }
+sub samples_by_antimicrobial_GET_html {
+  my ( $self, $c ) = @_;
+
+  $c->log->debug( 'samples_by_antimicrobial_GET_html: returning HTML page' )
+    if $c->debug;
+}
 
 #-------------------------------------------------------------------------------
 #- single sample ---------------------------------------------------------------
@@ -683,18 +754,14 @@ calls).
 sub summary : Chained('/')
               Args(0)
               Does('~NeedsAuth')
-              ActionClass('REST::ForBrowsers') {}
-
-#---------------------------------------
-
-before summary => sub {
+              ActionClass('REST::ForBrowsers') {
   my ( $self, $c ) = @_;
 
   $c->stash(
     summary      => $c->model->schema->get_sample_summary,
     jscontroller => 'summary'
   );
-};
+}
 
 #---------------------------------------
 

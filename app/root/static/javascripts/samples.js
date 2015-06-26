@@ -54,9 +54,11 @@ var samples = (function() {
     setupTable: function() {
       /*jshint camelcase: false */
 
-      var samplesTable = $("#samples").DataTable( {
+      var samplesTable = $("#samples-table").DataTable( {
         // dom: "T<'clear'>lfrtip",
         serverSide: true,
+        stateSave: true,
+        stateDuration: -1,
         ajax: {
           url: window.location.href,
           data: function(d) {
@@ -70,6 +72,18 @@ var samples = (function() {
             render: function(data, type, row, meta) {
               return "<a href='/sample/" + row.sample_id + "'>" +
                      row.sample_id + "</a>";
+            }
+          },
+          {
+            // AMR data
+            className: "amrCell text-center",
+            orderable: false,
+            render: function(data, type, row, meta) {
+              if ( Object.keys(row.amr).length > 0 ) {
+                return "<i title='Sample has AMR data' class='hasAMR fa fa-plus-square'></i>";
+              } else {
+                return "<i title='No AMR data for sample' class='noAMR fa fa-times'></i>";
+              }
             }
           },
           {
@@ -119,19 +133,7 @@ var samples = (function() {
           { data: "serovar" },
           { data: "other_classification",   visible: false },
           { data: "strain" },
-          { data: "isolate",                visible: false },
-          {
-            // AMR data
-            className: "amrCell text-center",
-            orderable: false,
-            render: function(data, type, row, meta) {
-              if ( Object.keys(row.amr).length > 0 ) {
-                return "<i title='Sample has AMR data' class='hasAMR fa fa-plus-square'></i>";
-              } else {
-                return "<i title='No AMR data for sample' class='noAMR fa fa-times'></i>";
-              }
-            }
-          }
+          { data: "isolate",                visible: false }
         ]
       } );
 

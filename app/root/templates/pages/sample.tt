@@ -109,6 +109,10 @@ tooltips = {
           this sample.
         </p>
       [% END %]
+
+      <p>
+        Go <a id="return-link">back</a> to the previous page.
+      </p>
     </div>
   </div>
 

@@ -11,7 +11,14 @@ var summary = (function() {
 
     // set up the tables in the page
     setupTables: function() {
-      summary.organismTable = $("#organism-table").DataTable( {
+      summary.organismTable = $("#organism-table").dataTable( {
+        dom: "t",
+        scrollY: "20em",
+        paging: false,
+        ordering: true
+      } );
+
+      summary.compoundTable = $("#compound-table").dataTable( {
         dom: "t",
         scrollY: "20em",
         paging: false,
