@@ -132,31 +132,27 @@
           [% FOREACH antimicrobial_name IN summary.compound_counts.keys.sort %]
           <tr>
             <td>
-              <a data-toggle="tooltip"
-                 title="Show all samples with AMR results for [% antimicrobial_name %]"
+              <a title="Show all samples with AMR results for [% antimicrobial_name %]"
                  href="[% c.uri_for('/samples_by_antimicrobial', antimicrobial_name ) %]">
                 [% antimicrobial_name.ucfirst %]</a>
             </td>
             <td>
               [% IF summary.compound_counts.$antimicrobial_name.S %]
-              <a data-toggle="tooltip"
-                 title="Show samples that are susceptible to [% antimicrobial_name %]"
+              <a title="Show samples that are susceptible to [% antimicrobial_name %]"
                  href="[% c.uri_for('/samples_by_antimicrobial', antimicrobial_name, 'S' ) %]">
                 [% summary.compound_counts.$antimicrobial_name.S %]</a>
               [% ELSE %]0[%END %]
             </td>
             <td>
               [% IF summary.compound_counts.$antimicrobial_name.I %]
-              <a data-toggle="tooltip"
-                 title="Show samples that have intermediate susceptibility to [% antimicrobial_name %]"
+              <a title="Show samples that have intermediate susceptibility to [% antimicrobial_name %]"
                  href="[% c.uri_for('/samples_by_antimicrobial', antimicrobial_name, 'I' ) %]">
                 [% summary.compound_counts.$antimicrobial_name.I || 0 %]</a>
               [% ELSE %]0[%END %]
             </td>
             <td>
               [% IF summary.compound_counts.$antimicrobial_name.R %]
-              <a  data-toggle="tooltip"
-                 title="Show samples that are resistant to [% antimicrobial_name %]"
+              <a title="Show samples that are resistant to [% antimicrobial_name %]"
                  href="[% c.uri_for('/samples_by_antimicrobial', antimicrobial_name, 'R' ) %]">
                 [% summary.compound_counts.$antimicrobial_name.R || 0 %]</a>
               [% ELSE %]0[%END %]
@@ -169,8 +165,8 @@
 
     <div class="col-md-6">
       <p>
-        This table shows the antimicrobial susceptibility by compound. Links in
-        the first column will take you an interactive table showing all samples
+        This table shows antimicrobial susceptibility by compound. Links in the
+        first column will take you an interactive table showing all samples
         that have AMR results for the given antimicrobial. Links in the
         remaining columns show samples that have AMR results exhibiting
         susceptibility, intermediate susceptibility, or resistance to the given
