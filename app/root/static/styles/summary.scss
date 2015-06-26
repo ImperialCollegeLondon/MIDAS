@@ -1,0 +1,19 @@
+// summary.scss
+// jt6 20150623 WTSI
+//
+// rules for the samples summary page
+
+@import "flatly/variables";
+
+#summary {
+  table.two-column-narrow {
+    tr th:first-child,
+    tr td:first-child {
+      width: 60%;
+    }
+    tr th:last-child,
+    tr td:last-child {
+      width: 40%;
+    }
+  }
+}

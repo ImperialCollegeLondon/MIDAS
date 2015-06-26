@@ -27,8 +27,8 @@
         <div id="nav-tools" class="navbar-right col-md-6">
 
           [% IF c.user_exists %]
-          <div class="row">
-            <form class="navbar-form" role="search">
+          <form class="navbar-form" role="search">
+            <div class="row">
               <div class="col-md-10">
                   <div class="input-group input-group-sm pull-right">
                     <input type="text" class="form-control" placeholder="Search">
@@ -42,8 +42,8 @@
                         class="btn btn-default btn-sm"
                         type="button">Sign out</button>
               </div>
-            </form>
-          </div>
+            </div>
+          </form>
           <div class="row">
             <span class="signed-in col-md-offset-6 col-md-6 text-right">
               Signed in as

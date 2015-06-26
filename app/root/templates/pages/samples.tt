@@ -1,38 +1,94 @@
 
-<section class="container">
+<section class="container" id="samples">
 
-  <h1>HICF samples</h1>
+  [% IF error %]
 
-  <table id="samples" class="table table-striped table-condensed table-bordered">
-    <thead>
-      <tr>
-        <th scope="row">Sample ID</th>
-        <th>Manifest ID</th>
-        <th>Scientific name</th>
-        <th>NCBI tax ID</th>
-        <th>Collection date</th>
-        <th>Collected at</th>
-      </tr>
-    </thead>
-    <tbody>
-      [% FOREACH sample IN samples.all %]
-      <tr>
-        <td scope="row" data-search="[% sample.sample_id %]">
-          <a href="[% c.uri_for('/sample', sample.sample_id) %]">[% sample.sample_id %]</a>
-        </td>
-        <td>[% sample.manifest_id %]</td>
-        <td data-search="[% sample.scientific_name %]">
-          <a class="ext" href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id=[% sample.tax_id %]">[% sample.scientific_name %]</a>
-        </td>
-        <td data-search="[% sample.scientific_name %]">
-          <a class="ext" href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id=[% sample.tax_id %]">[% sample.tax_id %]</a>
-        </td>
-        <td>[% sample.collection_date %]</td>
-        <td>[% sample.collected_at %]</td>
-      </tr>
-      [% END %]
-    </tbody>
-  </table>
+    <h1>HICF samples</h1>
+
+    <div id="organism-name-error" class="panel panel-warning">
+      <div class="panel-heading">Error</div>
+      <div class="panel-body">
+        <span id="error-message">[% error %]</span>
+      </div>
+    </div>
+
+  [% ELSE %]
+
+    <h1>
+      HICF samples
+      [% # build the page title based on what we find in the stash. A bit ugly
+      IF organism;
+        " from $organism";
+        show_all = 1;
+      ELSIF susceptibility AND antimicrobial;
+        " $susceptibility $antimicrobial";
+        show_all = 1;
+      ELSIF susceptibility;
+        " with $susceptibility AMR results";
+        show_all = 1;
+      ELSIF format_params.filter_term;
+        ", filtered by '${format_params.filter_term}'";
+        show_all = 1;
+      END;
+      IF show_all %]
+      <small>(<a href="[% c.uri_for('/samples') %]">Show all samples</a>)</small>
+      [% END -%]
+    </h1>
+
+    <h1>[% pageTitle %]</h1>
+
+    <div id="scrollbox">
+      <table id="samples-table"
+             class="table table-striped table-condensed table-bordered">
+        <thead>
+          <tr>
+            <th scope="row">Sample ID</th>
+            <th>Has AMR<br />results</th>
+            <th>Manifest ID</th>
+            <th>Raw data accession</th>
+            <th>Sample accession</th>
+            <th>Description</th>
+            <th>Collected at</th>
+            <th>NCBI tax ID</th>
+            <th>Scientific name (NCBI tax ID)</th>
+            <th>Collected by</th>
+            <th>Source</th>
+            <th>Collection date</th>
+            <th>Location</th>
+            <th>Host associated</th>
+            <th>Specific host</th>
+            <th>Host disease status</th>
+            <th>Host isolation source</th>
+            <th>Patient location</th>
+            <th>Isolation source</th>
+            <th>Serovar</th>
+            <th>Other classification</th>
+            <th>Strain</th>
+            <th>Isolate</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+
+    <div id="download-buttons">
+      <span>Show <a href="[% c.uri_for('/samples') %]">all samples</a>.</span>
+      <span>Show a <a href="[% c.uri_for('/summary') %]">summary</a> of current data.</span>
+      <span>Download
+        <span id="filtered">filtered</span>
+        <span id="all">all</span>
+        data in the table:
+      </span>
+      <button class="table-download-link btn btn-default btn-sm"
+              data-format="text/csv"
+              type="button"
+              class="btn btn-default">CSV</button>
+      <button class="table-download-link btn btn-default btn-sm"
+              data-format="application/json"
+              type="button"
+              class="btn btn-default">JSON</button>
+    </div>
+
+  [% END # of "IF error" %]
 
 </section>
 

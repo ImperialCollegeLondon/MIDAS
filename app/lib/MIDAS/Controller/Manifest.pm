@@ -4,7 +4,7 @@ package MIDAS::Controller::Manifest;
 use Moose;
 use namespace::autoclean;
 
-BEGIN { extends 'MIDAS::Base::Controller::Restful' }
+BEGIN { extends 'MIDAS::Base::Controller::Restful'; }
 
 =head1 NAME
 
