@@ -23,42 +23,48 @@
       </ol>
       [% END # of IF breadcrumbs.defined %]
 
-      <div id="nav-tools" class="navbar-right col-md-6 [% ' signed-in' IF c.user_exists %]">
-        <div class="row">
-          [% IF c.user_exists %]
-          <button id="signOutButton"
-                  class="btn btn-default btn-sm pull-right"
-                  type="button">Sign out</button>
-          [% ELSE %]
-          <form class="navbar-form" role="signin">
-            <button id="signInButton"
-                    class="btn btn-default btn-sm pull-right[% ' disabled' IF c.config.disable_signin %]"
-                    type="button">Sign in</button>
-            </form>
-          [% END %]
-          <ul class="nav navbar-nav pull-right">
-            <li>
+      <div class="row">
+        <div id="nav-tools" class="navbar-right col-md-7[% ' signed-in' IF c.user_exists %]">
+          <div class="row">
+            <div class="col-md-12">
               [% IF c.user_exists %]
-              <a href="[% c.uri_for('/summary') %]">Summary</a>
+              <button id="signOutButton"
+                      class="btn btn-default btn-sm pull-right"
+                      type="button">Sign out</button>
               [% ELSE %]
-              <a class="disabled" title="Sign in to see sample data">Summary</a>
+              <form class="navbar-form" role="signin">
+                <button id="signInButton"
+                        class="btn btn-default btn-sm pull-right[% ' disabled' IF c.config.disable_signin %]"
+                        type="button">Sign in</button>
+              </form>
               [% END %]
-            </li>
-            <li><a href="[% c.uri_for('/validation') %]">Validation</a></li>
-            <li><a href="[% c.uri_for('/api') %]">API docs</a></li>
-            <li><a href="[% c.uri_for('/contact') %]">Contact us</a></li>
-          </ul>
+              <ul class="nav navbar-nav pull-right">
+                <li>
+                  [% IF c.user_exists %]
+                  <a href="[% c.uri_for('/summary') %]">Summary</a>
+                  [% ELSE %]
+                  <a class="disabled" title="Sign in to see sample data">Summary</a>
+                  [% END %]
+                </li>
+                <li><a href="[% c.uri_for('/validation') %]">Validation</a></li>
+                <li><a href="[% c.uri_for('/api') %]">API docs</a></li>
+                <li><a href="[% c.uri_for('/contact') %]">Contact us</a></li>
+              </ul>
+            </div>
+          </div>
+          [% IF c.user_exists %]
+          <div class="row">
+            <div class="col-md-12">
+              <span class="signed-in text-right pull-right">
+                Signed in as
+                <a class="navbar-link"
+                   href="[% c.uri_for_action('/account/account_page') %]">
+                  [% c.user.id %]</a>
+              </span>
+            </div>
+          </div>
+          [% END %]
         </div>
-        [% IF c.user_exists %]
-        <div class="row">
-          <span class="signed-in text-right pull-right">
-            Signed in as
-            <a class="navbar-link"
-               href="[% c.uri_for_action('/account/account_page') %]">
-              [% c.user.id %]</a>
-          </span>
-        </div>
-        [% END %]
       </div>
 
     </div><!-- /.navbar-collapse -->
