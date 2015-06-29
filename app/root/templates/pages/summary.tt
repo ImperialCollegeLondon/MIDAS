@@ -102,14 +102,14 @@
 
     <div class="col-md-6">
       <p>
-        This table shows the number of samples that have one or more
-        antimicrobial resistance test results with the given susceptibility.
-        For example, there are <strong>[% summary.sir_counts.R %]</strong>
-        samples that have at least one result showing resistance to a given
-        antimicrobial. Note that many samples have test results for multiple
-        antimicrobial compounds, so a sample that shows, for example,
-        resistance to one compound may also have AMR results showing
-        susceptibility or intermediate susceptibility to other compounds.
+        This shows the number of samples that have one or more antimicrobial
+        resistance test results with the given susceptibility. For example,
+        there are <strong>[% summary.sir_counts.R %]</strong> samples that have
+        at least one result showing resistance to a given antimicrobial. Note
+        that many samples have test results for multiple antimicrobial
+        compounds, so a sample that shows, for example, resistance to one
+        compound may also have AMR results showing susceptibility or
+        intermediate susceptibility to other compounds.
       </p>
     </div>
 
@@ -165,7 +165,7 @@
 
     <div class="col-md-6">
       <p>
-        This table shows antimicrobial susceptibility by compound. Links in the
+        Here we show antimicrobial susceptibility by compound. Links in the
         first column will take you an interactive table showing all samples
         that have AMR results for the given antimicrobial. Links in the
         remaining columns show samples that have AMR results exhibiting
