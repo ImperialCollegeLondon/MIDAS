@@ -759,6 +759,7 @@ sub summary : Chained('/')
 
   $c->stash(
     summary      => $c->model->schema->get_sample_summary,
+    breadcrumbs  => ['Summary'],
     jscontroller => 'summary'
   );
 }
