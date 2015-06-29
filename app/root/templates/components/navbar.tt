@@ -23,13 +23,6 @@
       </ol>
       [% END # of IF breadcrumbs.defined %]
 
-      [%# TODO add a menu here:
-
-          Sample summary (greyed out if user logged out)
-          Validation
-          API docs
-      %]
-
       <div id="nav-tools" class="navbar-right col-md-6 [% ' signed-in' IF c.user_exists %]">
         <div class="row">
           [% IF c.user_exists %]
@@ -43,6 +36,18 @@
                     type="button">Sign in</button>
             </form>
           [% END %]
+          <ul class="nav navbar-nav pull-right">
+            <li>
+              [% IF c.user_exists %]
+              <a href="[% c.uri_for('/summary') %]">Summary</a>
+              [% ELSE %]
+              <a class="disabled" title="Sign in to see sample data">Summary</a>
+              [% END %]
+            </li>
+            <li><a href="[% c.uri_for('/validation') %]">Validation</a></li>
+            <li><a href="[% c.uri_for('/api') %]">API docs</a></li>
+            <li><a href="[% c.uri_for('/contact') %]">Contact us</a></li>
+          </ul>
         </div>
         [% IF c.user_exists %]
         <div class="row">

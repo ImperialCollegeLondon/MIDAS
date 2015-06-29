@@ -33,6 +33,11 @@ a {
       content: "\f08e";
     }
   }
+
+  &.disabled {
+    color: #BBB !important;
+    cursor: not-allowed;
+  }
 }
 
 .navbar {
@@ -74,11 +79,20 @@ a {
     }
   }
 
-  #nav-tools {
-    margin-top: 12px;
-  }
   #nav-tools.signed-in {
-    margin-top: 20px;
+   margin-top: 8px;
+  }
+
+  #nav-tools {
+    button {
+      margin-top: 12px;
+    }
+    ol {
+      font-size: 13px;
+    }
+    li > a {
+      padding-bottom: 0px;
+    }
   }
 
 }
