@@ -18,7 +18,7 @@
 
   <div class="row">
 
-    <div class="col-md-6">
+    <div class="col-md-7">
       <table id="organism-table" class="two-column-narrow table table-striped table-bordered table-condensed">
         <thead>
           <tr>
@@ -46,7 +46,7 @@
       </table>
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-5">
       <p>
         This table shows the number of samples in the database, grouped by
         sample organism. You can sort the table by <a id="sort-species">species
@@ -66,7 +66,7 @@
 
   <div class="row">
 
-    <div class="col-md-6">
+    <div class="col-md-7">
 
       <table class="two-column-narrow table table-striped table-bordered table-condensed">
         <thead>
@@ -100,7 +100,7 @@
       </table>
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-5">
       <p>
         This shows the number of samples that have one or more antimicrobial
         resistance test results with the given susceptibility. For example,
@@ -117,7 +117,7 @@
 
   <div class="row">
 
-    <div class="col-md-6">
+    <div class="col-md-7">
       <table id="compound-table"
              class="table table-striped table-bordered table-condensed">
         <thead>
@@ -163,7 +163,7 @@
       </table>
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-5">
       <p>
         Here we show antimicrobial susceptibility by compound. Links in the
         first column will take you an interactive table showing all samples
@@ -181,7 +181,7 @@
 
   <div class="row">
 
-    <div class="col-md-6">
+    <div class="col-md-7">
       <table class="two-column-narrow table table-striped table-bordered table-condensed">
         <thead>
           <tr>
@@ -212,7 +212,7 @@
       </table>
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-5">
       <p>
         This table shows the number of samples that have been submitted by each
         of the three sites in the consortium.
