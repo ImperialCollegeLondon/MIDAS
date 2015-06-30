@@ -28,7 +28,10 @@
     <link href="/styles/summary.css" rel="stylesheet">
     <link href="/styles/reset.css" rel="stylesheet">
     <link href="/styles/images.css" rel="stylesheet">
+    <link href="/styles/api.css" rel="stylesheet">
     <link href="/styles/vendor/dataTables.bootstrap.css" rel="stylesheet">
+    <link href="/styles/vendor/prettify.css" rel="stylesheet">
+    <link href="/styles/vendor/jquery.tocify.css" rel="stylesheet">
     <!-- endbuild -->
     <!-- <link href="/styles/vendor/jquery.dataTables.css" rel="stylesheet"> -->
 
@@ -81,6 +84,9 @@
     <script src="/javascripts/summary.js"></script>
     <script src="/javascripts/vendor/jquery.dataTables.js"></script>
     <script src="/javascripts/vendor/dataTables.bootstrap.js"></script>
+    <script src="/javascripts/vendor/prettify.js"></script>
+    <script src="/javascripts/vendor/jquery-ui-1.9.1.custom.min.js"></script>
+    <script src="/javascripts/vendor/jquery.tocify.min.js"></script>
     <!-- endbuild -->
 
   </body>
