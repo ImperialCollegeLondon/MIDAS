@@ -167,6 +167,21 @@ sub all_samples_GET_html {
 
 =head2 paged_samples : Chained('samples') PathPath('') Args(2) ActionClass('REST::ForBrowsers')
 
+Returns a subset of samples, specified by two arguments:
+
+=over
+
+=item C<$start>
+
+the number of the first row to return. The first sample is number one (1),
+not zero (0).
+
+=item C<$length>
+
+the number of rows to return
+
+=back
+
 This is an end-point for a chain that returns information for samples from a
 specific organism. It defers to two methods, C<paged_samples_GET> to return
 information for a REST client, and C<paged_samples_GET_html> for a browser.
@@ -192,7 +207,7 @@ sub paged_samples_GET {
 
   # make sure the page limits are valid
   foreach my $limit ( $start, $length ) {
-    unless ( $limit =~ m/^\d+$/ ) {
+    unless ( $limit =~ m/^\d+$/ and $limit >= 1 ) {
       $self->status_bad_request(
         $c,
         message => 'not a valid range (from/to)'
@@ -201,7 +216,9 @@ sub paged_samples_GET {
     }
   }
 
-  $c->stash->{format_params}->{start}  = $start;
+  # the "start" argument is one-based, i.e. the first row is row 1, but
+  # the API is zero-based, i.e. the first row is row 0. Convert it here.
+  $c->stash->{format_params}->{start}  = $start - 1;
   $c->stash->{format_params}->{length} = $length;
 
   try {
@@ -569,7 +586,7 @@ sub samples_by_antimicrobial : Chained('/')
     return;
   }
 
-  my $sir;
+  my $sir = '';
   if ( defined $tainted_sir ) {
     if ( $tainted_sir =~ m/^([SIR])$/ ) {
       $sir = $1;
@@ -586,7 +603,7 @@ sub samples_by_antimicrobial : Chained('/')
   my $susceptibility = $sir eq 'S' ? 'susceptible to'
                      : $sir eq 'I' ? 'with intermediate resistance to'
                      : $sir eq 'R' ? 'resistent to'
-                     : 'any susceptibility to';
+                     : 'tested against';
 
   $c->stash(
     title          => "Samples $susceptibility $antimicrobial",
@@ -705,10 +722,18 @@ sub sample_GET {
   $c->log->debug( 'sample_GET' )
     if $c->debug;
 
+  my $sample = $c->stash->{sample};
+
+  my $amr_data = [];
+  push @$amr_data, { $_->get_columns } for $sample->get_amr->all;
+
+  my $fields = $sample->fields;
+  $fields->{amr} = $amr_data;
+
   if ( defined $c->stash->{sample} ) {
     $self->status_ok(
       $c,
-      entity => $c->stash->{sample}->fields
+      entity => $fields
     );
   }
   else {
@@ -760,7 +785,8 @@ sub summary : Chained('/')
   $c->stash(
     summary      => $c->model->schema->get_sample_summary,
     breadcrumbs  => ['Summary'],
-    jscontroller => 'summary'
+    jscontroller => 'summary',
+    template     => 'pages/summary.tt',
   );
 }
 
@@ -768,8 +794,6 @@ sub summary : Chained('/')
 
 sub summary_GET_html {
   my ( $self, $c ) = @_;
-
-  $c->stash( template => 'pages/summary.tt' );
 }
 
 #---------------------------------------
@@ -954,7 +978,9 @@ sub _do_sorting : Private {
     $sort_column_num = $1;
   }
 
-  my $sort_column_name = $self->returned_columns->[$sort_column_num];
+  # column numbers that come from DataTables are one-based, so we need to
+  # convert that to zero-based when looking up the column name
+  my $sort_column_name = $self->returned_columns->[$sort_column_num - 1];
 
   $c->log->debug( "_do_sorting: checking that we're allowed to sort on column "
                   . $sort_column_num )
@@ -973,12 +999,20 @@ sub _do_sorting : Private {
                   . "on column $sort_column_num ($sort_column_name)" )
     if $c->debug;
 
-  # we need to prefix the column name with "me", otherwise, because we're
+  # the "location" column is a special case. We don't actually want to sort
+  # on the contents of the column, because that's just a GAZ ID and is
+  # essentially meaningless. Instead we'll sort on the location description
+  # from the gazetteer table.
+  my $order_by_clause = ( $sort_column_name eq 'location' )
+                      ? { $sort_column_dir => "location_description.description" }
+                      : { $sort_column_dir => "me.$sort_column_name" };
+  # (we need to prefix the column name with "me", otherwise, because we're
   # joining the "sample" table to "antimicrobial_resistance", columns like
-  # "sample_id" will be ambiguous and will cause errors in the RDBMS
+  # "sample_id" will be ambiguous and will cause errors in the RDBMS)
+
   my $sorted_rs = $c->stash->{rs}->search_rs(
     undef,
-    { order_by => { $sort_column_dir => "me.$sort_column_name" } }
+    { order_by => $order_by_clause }
   );
 
   $c->stash( rs => $sorted_rs );
