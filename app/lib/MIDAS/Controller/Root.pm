@@ -89,9 +89,10 @@ sub api : Local Args(0) {
   my ( $self, $c ) = @_;
 
   $c->stash(
-    breadcrumbs => ['API'],
-    template    => 'pages/API.tt',
-    title       => 'API',
+    breadcrumbs  => ['API'],
+    template     => 'pages/API.tt',
+    title        => 'API',
+    jscontroller => 'api',
   );
 }
 
