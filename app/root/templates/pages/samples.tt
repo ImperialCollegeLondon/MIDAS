@@ -43,7 +43,6 @@
         <thead>
           <tr>
             <th scope="row">Sample ID</th>
-            <th>Has AMR<br />results</th>
             <th>Manifest ID</th>
             <th>Raw data accession</th>
             <th>Sample accession</th>
@@ -65,6 +64,7 @@
             <th>Other classification</th>
             <th>Strain</th>
             <th>Isolate</th>
+            <th>Has AMR<br />results</th>
           </tr>
         </thead>
       </table>

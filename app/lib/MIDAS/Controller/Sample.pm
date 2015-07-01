@@ -980,7 +980,7 @@ sub _do_sorting : Private {
 
   # column numbers that come from DataTables are one-based, so we need to
   # convert that to zero-based when looking up the column name
-  my $sort_column_name = $self->returned_columns->[$sort_column_num - 1];
+  my $sort_column_name = $self->returned_columns->[$sort_column_num];
 
   $c->log->debug( "_do_sorting: checking that we're allowed to sort on column "
                   . $sort_column_num )
