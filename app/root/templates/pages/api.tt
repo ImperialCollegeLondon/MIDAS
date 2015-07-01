@@ -145,8 +145,10 @@ compound_counts:
             <h3>Summary</h3>
 
             <p class="endpoint">
-              <samp>/summary</samp> &mdash; retrieves a summary of all of the
-              sample metadata currently available
+              <samp>/summary</samp>
+            </p>
+            <p>
+              Retrieves a summary of all of the sample metadata currently available
             </p>
 
             <h4>Results</h4>
@@ -263,7 +265,10 @@ compound_counts:
             <h3>All samples</h3>
 
             <p class="endpoint">
-              <samp>/samples</samp> &mdash; retrieves metadata for all samples in the database
+              <samp>/samples</samp>
+            </p>
+            <p>
+              Retrieves metadata for all samples in the database
             </p>
 
             <h4>Results</h4>
@@ -322,7 +327,9 @@ compound_counts:
 
             <p class="endpoint">
               <samp>/samples/<strong>&lt;start&gt;</strong>/<strong>&lt;num&gt;</strong></samp>
-              &mdash; retrieve metadata for a subset of samples
+            </p>
+            <p>
+              Retrieves metadata for a subset of samples
             </p>
 
             <h4>Arguments</h4>
@@ -355,8 +362,10 @@ compound_counts:
             <h3>Single sample</h3>
 
             <p class="endpoint">
-              <samp>/sample/<strong>&lt;sample ID&gt;</strong></samp> &mdash;
-              retrieves metadata for a single sample
+              <samp>/sample/<strong>&lt;sample ID&gt;</strong></samp>
+            </p>
+            <p>
+              Retrieves metadata for a single sample
             </p>
 
             <h4>Arguments</h4>
@@ -463,8 +472,10 @@ compound_counts:
             <h3>Samples by organism</h3>
 
             <p class="endpoint">
-              <samp>/samples/<strong>&lt;organism&gt;</strong></samp> &mdash;
-              returns all samples from the specified organism
+              <samp>/samples/<strong>&lt;organism&gt;</strong></samp>
+            </p>
+            <p>
+              Returns all samples from the specified organism
             </p>
 
             <h4>Arguments</h4>
@@ -490,7 +501,9 @@ compound_counts:
 
             <p class="endpoint">
               <samp>/samples/<strong>&lt;organism&gt;</strong>/<strong>&lt;start&gt;</strong>/<strong>&lt;num&gt;</strong></samp>
-              &mdash; returns a page of samples from the specified organism
+            </p>
+            <p>
+              Returns a page of samples from the specified organism
             </p>
 
             <h4>Arguments</h4>
@@ -523,8 +536,10 @@ compound_counts:
             <h3>Samples by antimicrobial susceptibility</h3>
 
             <p class="endpoint">
-              <samp>/samples_with_susceptibility/<strong>&lt;susceptibility&gt;</strong></samp> &mdash;
-              returns all samples that have antimicrobial resistance test results
+              <samp>/samples_with_susceptibility/<strong>&lt;susceptibility&gt;</strong></samp>
+            </p>
+            <p>
+              Returns all samples that have antimicrobial resistance test results
               with the given susceptibility
             </p>
 
@@ -549,8 +564,10 @@ compound_counts:
             </p>
 
             <p class="endpoint">
-              <samp>/samples_by_antimicrobial/<strong>&lt;name&gt;</strong>/<strong>&lt;?susceptibility&gt;</strong></samp> &mdash;
-              retrieves samples that have antimicrobial resistance test results
+              <samp>/samples_by_antimicrobial/<strong>&lt;name&gt;</strong>/<strong>&lt;?susceptibility&gt;</strong></samp>
+            </p>
+            <p>
+              Retrieves samples that have antimicrobial resistance test results
               against the specified antimicrobial and with the given susceptibility
             </p>
 
