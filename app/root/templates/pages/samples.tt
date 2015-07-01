@@ -15,8 +15,7 @@
   [% ELSE %]
 
     <h1>
-      HICF samples
-      [% # build the page title based on what we find in the stash. A bit ugly
+      HICF samples[% # build the page title based on what we find in the stash. A bit ugly
       IF organism;
         " from $organism";
         show_all = 1;
