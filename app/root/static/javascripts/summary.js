@@ -13,7 +13,7 @@ var summary = (function() {
     setupTables: function() {
       summary.organismTable = $("#organism-table").dataTable( {
         dom: "t",
-        scrollY: "20em",
+        // scrollY: "20em",
         paging: false,
         ordering: true
       } );
