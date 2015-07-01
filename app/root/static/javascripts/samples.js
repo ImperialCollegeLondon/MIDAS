@@ -58,7 +58,7 @@ var samples = (function() {
         // dom: "T<'clear'>lfrtip",
         serverSide: true,
         stateSave: true,
-        stateDuration: -1,
+        stateDuration: 300,// -1 for session duration
         ajax: {
           url: window.location.href,
           data: function(d) {
