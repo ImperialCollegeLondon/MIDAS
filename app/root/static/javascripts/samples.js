@@ -100,10 +100,9 @@ var samples = (function() {
             }
           },
           { data: "collected_at" },
-          { data: "tax_id" }, //                 visible: false },
+          { data: "tax_id",                  visible: false },
           {
             // scientific_name
-            orderData: 2,
             render: function(data, type, row, meta) {
               return row.scientific_name + " (" + row.tax_id + ")";
             }
