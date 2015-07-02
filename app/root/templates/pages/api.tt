@@ -1,0 +1,632 @@
+
+<article id="api-docs" class="container">
+
+  <div class="row">
+
+      <div class="col-md-9">
+
+        <h1>API</h1>
+
+        <p>
+          The MIDAS website includes a RESTful API that allows you to query and
+          download sample metadata programmatically. This page explains how to
+          use the API and describes the data that may be retrieved.
+        </p>
+        <p>
+          <strong>Please note</strong> that the server keeps a detailed audit log of
+          all requests to the API.
+        </p>
+
+        <section>
+
+          <h2>Authentication</h2>
+
+          <p>
+            When you were given an account on the MIDAS website, you will have
+            been provided with a username, password and API key. The API key is
+            used to authenticate requests to the RESTful API. Every request to
+            the API must have an <code>Authorization</code> header, which gives
+            your username and API key. The required format is
+            <samp>&lt;username&gt;:&lt;API key&gt;</samp>:
+          </p>
+          <pre>
+$ curl -i -H "Authorization: jtate:Fj8Iwkfd36oI032gfj2982sze8oPje4U" \
+  -H "Accept: application/json" https://www.midasuk/org/summary
+HTTP/1.0 200 OK
+Date: Mon, 29 Jun 2015 13:05:13 GMT
+Content-Type: application/json
+Content-Length: 1487
+
+{"collected_at":{"UCL":"856","CAMBRIDGE":"902","OXFORD":"893"},"total_number_of_manifests":44,"total_numb
+[%#
+er_of_samples":12066,"scientific_names":{"Pseudomonas aeruginosa":"105","mixed culture":"542","H1N2 subty
+pe":"450","Mycobacterium tuberculosis":"341","Influenzavirus A":"781","H1N1 subtype":"91","Mycobacterium
+abscessus":"154","unidentified influenza virus":"304","Mycobacterium xenopi":"305","Enterococcus faecalis
+":"231","Mycobacterium gordonae":"40"},"sir_counts":{"R":"6054","I":"355","S":"4690"},"compound_counts":{
+"streptomycin":{"R":"14","S":"22"},"teicoplanin":{"S":"72","R":"58"},"gentamicin":{"R":"67","S":"63"},"
+ampicillin":{"R":"2","S":"128"},"erythromycin":{"R":"96","I":"25","S":"9"},"tetracycline":{"R":"23","S"
+  :"13"},"vancomycin":{"R":"62","S":"68"},"clindamycin":{"R":"34","S":"2"},"ciprofloxacin":{"S":"36","R":
+"58"}}}-%]
+...</pre>
+
+          <p>
+            If you don't provide the <code>Authorization</code> header you will receive a
+            <samp>401 Unauthorized</samp> response:
+          </p>
+          <pre>
+$ curl -i -H "Accept: application/json" https://www.midasuk/org/summary
+HTTP/1.0 401 Unauthorized
+Date: Mon, 29 Jun 2015 13:15:16 GMT
+Content-Length: 62
+
+Must supply username and API key in the "Authorization" header
+</pre>
+
+          <p>
+            If you give an invalid or incorrect username or key, you will also
+            receive a <samp>401 Unauthorized</samp> response:
+          </p>
+          <pre>
+$ curl -i -H "Accept: application/json" -H "Authorization: bad#user: " https://www.midasuk/org/summary
+HTTP/1.0 401 Unauthorized
+Date: Mon, 29 Jun 2015 13:24:18 GMT
+Content-Length: 60
+
+Malformed "Authorization" header; must be "username:api_key"
+</pre>
+
+        </section>
+
+        <section>
+
+          <h2>Formats</h2>
+
+          <p>
+            The API can return data in several formats: <code>text/csv</code>,
+            <code>application/json</code>, and <code>text/yaml</code>. Note that some
+            endpoints, notably the sample summary, will not return data in CSV
+            format, because the output can't easily be converted to a simple tabular
+            format.
+          </p>
+          <p>
+            You can specify the format that you want in two ways, using the
+            <code>Accept</code> header:
+          </p>
+
+          <pre>
+$ curl -i -H "Authorization: jtate:$API_KEY" -H "<strong>Accept: application/json</strong>" https://www.midasuk/org/summary
+HTTP/1.0 200 OK
+Date: Mon, 29 Jun 2015 13:05:43 GMT
+Content-Type: application/json
+Content-Length: 1487
+
+{"collected_at":{"UCL":"856","CAMBRIDGE":"902","OXFORD":"893"},"total_number_of_manifests":44,"total_numb
+...</pre>
+
+          <p>
+            Or using a URL parameter:
+          </p>
+
+          <pre>
+$ curl -i -H "Authorization: jtate:$API_KEY" "https://www.midasuk/org/summary?<strong>content-type=text/yaml</strong>"
+HTTP/1.0 200 OK
+Date: Tue, 30 Jun 2015 08:30:41 GMT
+Content-Type: text/yaml; charset=UTF-8
+Content-Length: 1480
+
+---
+collected_at:
+  CAMBRIDGE: 902
+  OXFORD: 893
+  UCL: 856
+compound_counts:
+  ampicillin:
+    R: 20
+    S: 18
+  ciprofloxacin:
+    R: 5
+    S: 63
+...</pre>
+
+          <p>
+            If you don't specify a content type, the server will assume that it is
+            returning data to a browser and will format your results as
+            <code>text/html</code>.
+          </p>
+
+        </section>
+
+        <section>
+
+          <h2>Endpoints</h2>
+
+          <section>
+
+            <h3>Summary</h3>
+
+            <p class="endpoint">
+              <samp>/summary</samp>
+            </p>
+            <p>
+              Retrieves a summary of all of the sample metadata currently available
+            </p>
+
+            <h4>Results</h4>
+
+            <p>
+              The sections in the response are:
+            </p>
+            <dl class="dl-horizontal">
+              <dt>collected_at</dt>
+              <dd>
+                the number of samples collected at each of the HICF member institutions
+              </dd>
+              <dt>total_number_of_manifests</dt>
+              <dd>
+                the number of sample manifests that have been loaded
+              </dd>
+              <dt>total_number_of_samples</dt>
+              <dd>
+                the total number of samples that have been loaded
+              </dd>
+              <dt>scientific_names</dt>
+              <dd>
+                the scientific names and number of samples collected from sampled organisms
+              </dd>
+              <dt>scientific_names</dt>
+              <dd>the number of samples collected from each organism</dd>
+              <dt>sir_counts</dt>
+              <dd>
+                the number of samples which have antimicrobial resistance test
+                results showing susceptibility (S), intermeditate susceptibility (I),
+                or resistance (R) to one or more antimicrobials
+              </dd>
+              <dt>compound_counts</dt>
+              <dd>
+                the number of samples exhibiting susceptibility, intermediate
+                susceptibility, or resistance to the specified antimicrobial
+              </dd>
+            </dl>
+
+            <h4>Example output</h4>
+
+            <pre class="prettyprint pre-scrollable">
+{
+  "collected_at": {
+    "UCL": "856",
+    "CAMBRIDGE": "902",
+    "OXFORD": "893"
+  },
+  "total_number_of_manifests": 44,
+  "total_number_of_samples": 12066,
+  "scientific_names": {
+    "Pseudomonas aeruginosa": "105",
+    "mixed culture": "542",
+    "H1N2 subtype": "450",
+    "Mycobacterium tuberculosis": "341",
+    "Influenzavirus A": "781",
+    "H1N1 subtype": "91",
+    "Mycobacterium abscessus": "154",
+    "unidentified influenza virus": "304",
+    "Mycobacterium xenopi": "305",
+    "Enterococcus faecalis": "231",
+    "Mycobacterium gordonae": "40"
+  },
+  "sir_counts": {
+    "R": "6054",
+    "I": "355",
+    "S": "4690"
+  },
+  "compound_counts": {
+    "streptomycin": {
+      "R": "41",
+      "S": "122"
+    },
+    "teicoplanin": {
+      "S": "95",
+      "R": "42"
+    },
+    "gentamicin": {
+      "R": "58",
+      "S": "68"
+    },
+    "ampicillin": {
+      "R": "2",
+      "S": "28"
+    },
+    "erythromycin": {
+      "R": "96",
+      "I": "25",
+      "S": "9"
+    },
+    "tetracycline": {
+      "R": "23",
+      "S": "13"
+    },
+    "vancomycin": {
+      "R": "62",
+      "S": "68"
+    },
+    "clindamycin": {
+      "R": "34",
+      "S": "2"
+    },
+    "ciprofloxacin": {
+      "S": "36",
+      "R": "58"
+    }
+  }
+}</pre>
+
+          </section>
+
+          <section>
+
+            <h3>All samples</h3>
+
+            <p class="endpoint">
+              <samp>/samples</samp>
+            </p>
+            <p>
+              Retrieves metadata for all samples in the database
+            </p>
+
+            <h4>Results</h4>
+
+            <p>
+              The returned metadata fields are described in the
+              <a class="dl" href="[% c.uri_for('/resources/validator/HICF_checklist/midas_manifest_v3.xlsx') %]">
+                manifest template</a> and the
+              <a class="dl" href="[% c.uri_for('/resources/validator/HICF_checklist/HICF_checklist.conf') %]">
+                HICF checklist</a>. Results are ordered by ascending sample ID.
+            </p>
+
+            <h4>Example output</h4>
+
+            <pre class="prettyprint pre-scrollable">
+[
+  {
+    "host_associated": "yes",
+    "source": null,
+    "sample_description": null,
+    "other_classification": null,
+    "sample_id": "155",
+    "sample_accession": "0",
+    "host_isolation_source": "BTO:0000155",
+    "host_disease_status": "diseased",
+    "scientific_name": "unidentified influenza virus",
+    "amr": [],
+    "raw_data_accession": "4543s.fas",
+    "location": "London",
+    "tax_id": "11309",
+    "patient_location": "inpatient",
+    "specific_host": "Homo sapiens",
+    "collected_at": "CAMBRIDGE",
+    "manifest_id": "A465A9E0-09FD-11E5-A371-14A80E07C9D0",
+    "serovar": "not available: not collected",
+    "isolate": null,
+    "collection_date": "2014-10-25",
+    "collected_by": "not available: not collected",
+    "strain": null,
+    "isolation_source": null
+  },
+  {
+    "patient_location": "inpatient",
+    "specific_host": "Homo sapiens",
+    "collected_at": "CAMBRIDGE",
+    "tax_id": "11309",
+    "location": "London",
+    "raw_data_accession": "4543s.fas",
+    "scientific_name": "unidentified influenza virus",
+    "amr": [],
+    "collected_by": "not available: not collected",
+    "isolation_source": null,
+    "strain": null,
+    "isolate": null,
+...</pre>
+
+            <p class="endpoint">
+              <samp>/samples/<strong>&lt;start&gt;</strong>/<strong>&lt;num&gt;</strong></samp>
+            </p>
+            <p>
+              Retrieves metadata for a subset of samples
+            </p>
+
+            <h4>Arguments</h4>
+
+            <ul class="list-unstyled">
+              <li><strong>start</strong> &mdash; first row to return</li>
+              <li><strong>num</strong> &mdash; number of rows to return</li>
+            </ul>
+
+            <p>
+              Both <strong>&lt;start&gt;</strong> and <strong>&lt;num&gt;</strong> must be
+              &ge; 1.
+            </p>
+
+            <h4>Results</h4>
+
+            <p>
+              The returned metadata fields are identical to those returned by
+              <samp>/samples</samp>, as described in the
+              <a class="dl" href="[% c.uri_for('/resources/validator/HICF_checklist/midas_manifest_v3.xlsx') %]">
+                manifest template</a> and the
+              <a class="dl" href="[% c.uri_for('/resources/validator/HICF_checklist/HICF_checklist.conf') %]">
+                HICF checklist</a>. Results are ordered by ascending sample ID.
+            </p>
+
+          </section>
+
+          <section>
+
+            <h3>Single sample</h3>
+
+            <p class="endpoint">
+              <samp>/sample/<strong>&lt;sample ID&gt;</strong></samp>
+            </p>
+            <p>
+              Retrieves metadata for a single sample
+            </p>
+
+            <h4>Arguments</h4>
+
+            <ul class="list-unstyled">
+              <li>
+                <strong>sample ID</strong> &mdash; the ID of the sample to be
+                returned
+              </li>
+            </ul>
+
+            <h4>Results</h4>
+
+            <p>
+              The returned metadata fields are described in the
+              <a class="dl" href="[% c.uri_for('/resources/validator/HICF_checklist/midas_manifest_v3.xlsx') %]">
+                manifest template</a> and the
+              <a class="dl" href="[% c.uri_for('/resources/validator/HICF_checklist/HICF_checklist.conf') %]">
+                HICF checklist</a>.
+            </p>
+
+            <h4>Example output</h4>
+
+            <pre class="prettyprint pre-scrollable">
+{
+  "sample_accession": "B23546",
+  "other_classification": null,
+  "specific_host": "Homo sapiens",
+  "source": null,
+  "collected_by": null,
+  "amr": [
+    {
+      "diagnostic_centre": null,
+      "created_at": "2015-06-10 09:10:40",
+      "antimicrobial_name": "ampicillin",
+      "equality": "ge",
+      "deleted_at": null,
+      "mic": "20",
+      "sample_id": "1",
+      "susceptibility": "R"
+    },
+    {
+      "sample_id": "1",
+      "mic": "12",
+      "susceptibility": "S",
+      "diagnostic_centre": null,
+      "created_at": "2015-06-10 09:10:40",
+      "antimicrobial_name": "erythromycin",
+      "equality": "eq",
+      "deleted_at": null
+    },
+    {
+      "sample_id": "1",
+      "mic": "500",
+      "susceptibility": "R",
+      "created_at": "2015-06-10 09:10:40",
+      "diagnostic_centre": null,
+      "equality": "ge",
+      "deleted_at": null,
+      "antimicrobial_name": "streptomycin"
+    },
+    {
+      "diagnostic_centre": null,
+      "created_at": "2015-06-10 09:10:40",
+      "antimicrobial_name": "tetracycline",
+      "equality": "le",
+      "deleted_at": null,
+      "sample_id": "1",
+      "mic": "10",
+      "susceptibility": "S"
+    },
+    {
+      "mic": "10",
+      "sample_id": "1",
+      "susceptibility": "R",
+      "diagnostic_centre": null,
+      "created_at": "2015-06-10 09:10:40",
+      "antimicrobial_name": "vancomycin",
+      "deleted_at": null,
+      "equality": "eq"
+    }
+  ],
+  "host_associated": "yes",
+  "sample_description": "WGS of streptococcus",
+  "location": "GAZ:00444180",
+  "antimicrobial_resistance": "ampicillin;R;ge20,erythromycin;S;12,streptomycin;R;ge500,tetracycline;S;le10,vancomycin;R;eq10",
+  "patient_location": "inpatient",
+  "scientific_name": "Streptococcus pneumoniae",
+  "isolate": null,
+  "tax_id": "197911",
+  "raw_data_accession": "A00924940",
+  "collected_at": "UCL",
+  "strain": "not available; not collected",
+  "isolation_source": null,
+  "host_disease_status": "carriage",
+  "serovar": "not available: not collected",
+  "collection_date": "2014-09-12",
+  "host_isolation_source": "temporarily obscured"
+}</pre>
+          </section>
+
+          <section>
+
+            <h3>Samples by organism</h3>
+
+            <p class="endpoint">
+              <samp>/samples/<strong>&lt;organism&gt;</strong></samp>
+            </p>
+            <p>
+              Returns all samples from the specified organism
+            </p>
+
+            <h4>Arguments</h4>
+
+            <ul class="list-unstyled">
+              <li>
+                <strong>organism</strong> &mdash; either the scientific name of
+                the organism, e.g. <em>Influenzavirus A</em>, or its NCBI
+                taxonomy ID, e.g. <em>197911</em>
+              </li>
+            </ul>
+
+            <h4>Results</h4>
+
+            <p>
+              The returned metadata fields are identical to those returned by
+              <samp>/samples</samp>, as described in the
+              <a class="dl" href="[% c.uri_for('/resources/validator/HICF_checklist/midas_manifest_v3.xlsx') %]">
+                manifest template</a> and the
+              <a class="dl" href="[% c.uri_for('/resources/validator/HICF_checklist/HICF_checklist.conf') %]">
+                HICF checklist</a>. Results are ordered by ascending sample ID.
+            </p>
+
+            <p class="endpoint">
+              <samp>/samples/<strong>&lt;organism&gt;</strong>/<strong>&lt;start&gt;</strong>/<strong>&lt;num&gt;</strong></samp>
+            </p>
+            <p>
+              Returns a page of samples from the specified organism
+            </p>
+
+            <h4>Arguments</h4>
+
+            <ul class="list-unstyled">
+              <li>
+                <strong>organism</strong> &mdash; either the scientific name,
+                e.g. <em>Influenzavirus A</em>, or NCBI taxonomy ID, e.g.
+                <em>197911</em> of the organism
+              </li>
+              <li><strong>start</strong> &mdash; the number of the first row to return</li>
+              <li><strong>num</strong> &mdash; number of rows to return</li>
+            </ul>
+
+            <h4>Results</h4>
+
+            <p>
+              The returned metadata fields are identical to those returned by
+              <samp>/samples</samp>, as described in the
+              <a class="dl" href="[% c.uri_for('/resources/validator/HICF_checklist/midas_manifest_v3.xlsx') %]">
+                manifest template</a> and the
+              <a class="dl" href="[% c.uri_for('/resources/validator/HICF_checklist/HICF_checklist.conf') %]">
+                HICF checklist</a>. Results are ordered by ascending sample ID.
+            </p>
+
+          </section>
+
+          <section>
+
+            <h3>Samples by antimicrobial susceptibility</h3>
+
+            <p class="endpoint">
+              <samp>/samples_with_susceptibility/<strong>&lt;susceptibility&gt;</strong></samp>
+            </p>
+            <p>
+              Returns all samples that have antimicrobial resistance test results
+              with the given susceptibility
+            </p>
+
+            <h4>Arguments</h4>
+
+            <ul class="list-unstyled">
+              <li>
+                <strong>susceptibility</strong> &mdash; either <samp>S</samp>,
+                <samp>I</samp>, or <samp>R</samp>
+              </li>
+            </ul>
+
+            <h4>Results</h4>
+
+            <p>
+              The returned metadata fields are identical to those returned by
+              <samp>/samples</samp>, as described in the
+              <a class="dl" href="[% c.uri_for('/resources/validator/HICF_checklist/midas_manifest_v3.xlsx') %]">
+                manifest template</a> and the
+              <a class="dl" href="[% c.uri_for('/resources/validator/HICF_checklist/HICF_checklist.conf') %]">
+                HICF checklist</a>. Results are ordered by ascending sample ID.
+            </p>
+
+            <p class="endpoint">
+              <samp>/samples_by_antimicrobial/<strong>&lt;name&gt;</strong>/<strong>&lt;?susceptibility&gt;</strong></samp>
+            </p>
+            <p>
+              Retrieves samples that have antimicrobial resistance test results
+              against the specified antimicrobial and with the given susceptibility
+            </p>
+
+            <h4>Arguments</h4>
+
+            <ul class="list-unstyled">
+              <li>
+                <strong>name</strong> &mdash; antimicrobial compound name
+              </li>
+              <li>
+                <strong>susceptibility</strong> &mdash; either <samp>S</samp>,
+                <samp>I</samp>, or <samp>R</samp>. <strong>Optional</strong>
+              </li>
+            </ul>
+
+            <p>
+              If <strong>&lt;susceptibility&gt;</strong> is not given, the API will
+              return all samples that have antimicrobial resistance test results
+              against the specified compound, regardless of the organism's
+              susceptibility to the compound.
+            </p>
+
+            <h4>Results</h4>
+
+            <p>
+              The returned metadata fields are identical to those returned by
+              <samp>/samples</samp>, as described in the
+              <a class="dl" href="[% c.uri_for('/resources/validator/HICF_checklist/midas_manifest_v3.xlsx') %]">
+                manifest template</a> and the
+              <a class="dl" href="[% c.uri_for('/resources/validator/HICF_checklist/HICF_checklist.conf') %]">
+                HICF checklist</a>. Results are ordered by ascending sample ID.
+            </p>
+
+          </section>
+
+        </section>
+
+      [%#
+      +-----------------------------------------------------+
+      | /summary                                            |
+      | /samples                                            |
+      | /samples/*/*                                        |
+      | /sample/*                                           |
+      | /samples_from_organism/*                            |
+      | /samples_from_organism/*/*/*                        |
+      | /samples_with_susceptibility/*                      |
+      | /samples_by_antimicrobial/...                       |
+      |                                                     |
+      | /manifest/*                                         |
+      | /manifests                                          |
+      | /validate/*                                         |
+      | /validate                                           |
+      '-----------------------------------------------------+
+      %]
+
+    </div>
+
+    <div id="toc"></div>
+
+  </div>
+</article>
+

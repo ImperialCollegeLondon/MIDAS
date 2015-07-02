@@ -188,7 +188,7 @@ around execute => sub {
 
       # there should be an authorization header which looks like:
       # Authorization: <username>:<api_key>
-      unless ( $auth_header =~ m/^([^:]+):([A-Za-z0-9]+)$/ ) {
+      unless ( $auth_header =~ m/^([[a-z\-\_\.]+):([A-Za-z0-9]{32})$/ ) {
         $c->log->error( 'around execute: malformed authorization header' )
           if $c->debug;
         $c->res->status(401); # Unauthorized

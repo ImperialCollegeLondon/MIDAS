@@ -24,46 +24,46 @@
       [% END # of IF breadcrumbs.defined %]
 
       <div class="row">
-        <div id="nav-tools" class="navbar-right col-md-6">
-
-          [% IF c.user_exists %]
-          <form class="navbar-form" role="search">
-            <div class="row">
-              <div class="col-md-10">
-                  <div class="input-group input-group-sm pull-right">
-                    <input type="text" class="form-control" placeholder="Search">
-                    <span class="input-group-btn">
-                      <button class="btn btn-default btn-sm disabled" type="button">Search</button>
-                    </span>
-                  </div><!-- /input-group -->
-              </div>
-              <div class="col-md-2 pull-right">
-                <button id="signOutButton"
-                        class="btn btn-default btn-sm"
-                        type="button">Sign out</button>
-              </div>
-            </div>
-          </form>
+        <div id="nav-tools" class="navbar-right col-md-7[% ' signed-in' IF c.user_exists %]">
           <div class="row">
-            <span class="signed-in col-md-offset-6 col-md-6 text-right">
-              Signed in as
-              <a class="navbar-link"
-                 href="[% c.uri_for_action('/account/account_page') %]">
-                [% c.user.id %]</a>
-            </span>
-          </div>
-          [% ELSE %]
-          <div class="row">
-            <div class="col-md-offset-10 col-md-2 pull-right">
+            <div class="col-md-12">
+              [% IF c.user_exists %]
+              <button id="signOutButton"
+                      class="btn btn-default btn-sm pull-right"
+                      type="button">Sign out</button>
+              [% ELSE %]
               <form class="navbar-form" role="signin">
                 <button id="signInButton"
-                        class="btn btn-default btn-sm[% IF c.config.disable_signin %] disabled[% END %]"
+                        class="btn btn-default btn-sm pull-right[% ' disabled' IF c.config.disable_signin %]"
                         type="button">Sign in</button>
               </form>
+              [% END %]
+              <ul class="nav navbar-nav pull-right">
+                <li>
+                  [% IF c.user_exists %]
+                  <a href="[% c.uri_for('/summary') %]">Summary</a>
+                  [% ELSE %]
+                  <a class="disabled" title="Sign in to see sample data">Summary</a>
+                  [% END %]
+                </li>
+                <li><a href="[% c.uri_for('/validation') %]">Validation</a></li>
+                <li><a href="[% c.uri_for('/api') %]">API docs</a></li>
+                <li><a href="[% c.uri_for('/contact') %]">Contact us</a></li>
+              </ul>
+            </div>
+          </div>
+          [% IF c.user_exists %]
+          <div class="row">
+            <div class="col-md-12">
+              <span class="signed-in text-right pull-right">
+                Signed in as
+                <a class="navbar-link"
+                   href="[% c.uri_for_action('/account/account_page') %]">
+                  [% c.user.id %]</a>
+              </span>
             </div>
           </div>
           [% END %]
-
         </div>
       </div>
 

@@ -1,0 +1,65 @@
+
+// api.scss
+// jt6 20150629 WTSI
+//
+// rules that are applicable to the API documentation page
+
+@import "flatly/variables";
+
+$link-color: #1686ba; // rgba(22, 134, 186, 1);
+$link-hover-color: darken($link-color, 20%);
+$reverse-link-hover-color: darken(#FFF, 20%);
+$nav-bg-color: #2c3e50;
+
+#api-docs {
+  samp {
+    border: 1px solid #BBB;
+    border-radius: 4px;
+    padding: 2px;
+    font-size: 14px;
+    background-color: #f6f6f6;
+  }
+
+  pre > strong {
+    color: #844;
+  }
+
+  .dl-horizontal {
+    dt {
+      width: 200px;
+    }
+    dd {
+      margin-left: 210px;
+    }
+  }
+
+  p.endpoint {
+    margin-top: 28px;
+    margin-bottom: 14px;
+    font-size: 16px;
+
+    samp {
+      font-size: inherit;
+    }
+  }
+
+  #toc {
+    width: 22%;
+    background-color: #FFF;
+    margin-left: 70%;
+    margin-top: 1em;
+    border-color: $nav-bg-color;
+    border-radius: 4px;
+
+    li.active {
+      background-color: $nav-bg-color;
+      a {
+        color: #FFF;
+      }
+    }
+
+    ul.tocify-subheader {
+      display: block;
+    }
+  }
+}

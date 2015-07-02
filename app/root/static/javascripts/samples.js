@@ -17,7 +17,7 @@ var samples = (function() {
           equality,
           susceptibilityClass;
 
-      table.push( "<div class='row'><div class='col-md-6'>" );
+      table.push( "<div class='row'><div class='col-md-offset-5 col-md-3'>" );
       table.push( "<table class='amrData table table-striped table-condensed'>" );
       table.push( "<thead><tr>" );
       table.push( "<th>Compound name</th>" );
@@ -58,7 +58,7 @@ var samples = (function() {
         // dom: "T<'clear'>lfrtip",
         serverSide: true,
         stateSave: true,
-        stateDuration: -1,
+        stateDuration: 300,// -1 for session duration
         ajax: {
           url: window.location.href,
           data: function(d) {
@@ -72,18 +72,6 @@ var samples = (function() {
             render: function(data, type, row, meta) {
               return "<a href='/sample/" + row.sample_id + "'>" +
                      row.sample_id + "</a>";
-            }
-          },
-          {
-            // AMR data
-            className: "amrCell text-center",
-            orderable: false,
-            render: function(data, type, row, meta) {
-              if ( Object.keys(row.amr).length > 0 ) {
-                return "<i title='Sample has AMR data' class='hasAMR fa fa-plus-square'></i>";
-              } else {
-                return "<i title='No AMR data for sample' class='noAMR fa fa-times'></i>";
-              }
             }
           },
           {
@@ -112,16 +100,15 @@ var samples = (function() {
             }
           },
           { data: "collected_at" },
-          { data: "tax_id",                 visible: false },
+          { data: "tax_id",                  visible: false },
           {
             // scientific_name
-            orderData: 2,
             render: function(data, type, row, meta) {
               return row.scientific_name + " (" + row.tax_id + ")";
             }
           },
-          { data: "collected_by",           visible: false },
-          { data: "source",                 visible: false },
+          { data: "collected_by" }, //          visible: false },
+          { data: "source" }, //                visible: false },
           { data: "collection_date" },
           { data: "location" },
           { data: "host_associated" },
@@ -129,11 +116,23 @@ var samples = (function() {
           { data: "host_disease_status" },
           { data: "host_isolation_source" },
           { data: "patient_location" },
-          { data: "isolation_source",       visible: false },
+          { data: "isolation_source" }, //      visible: false },
           { data: "serovar" },
-          { data: "other_classification",   visible: false },
+          { data: "other_classification" }, //  visible: false },
           { data: "strain" },
-          { data: "isolate",                visible: false }
+          { data: "isolate" }, //               visible: false }
+          {
+            // AMR data
+            className: "amrCell text-center",
+            orderable: false,
+            render: function(data, type, row, meta) {
+              if ( Object.keys(row.amr).length > 0 ) {
+                return "<i title='Sample has AMR data' class='hasAMR fa fa-plus-square'></i>";
+              } else {
+                return "<i title='No AMR data for sample' class='noAMR fa fa-times'></i>";
+              }
+            }
+          }
         ]
       } );
 

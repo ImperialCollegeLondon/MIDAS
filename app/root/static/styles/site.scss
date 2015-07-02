@@ -1,6 +1,6 @@
 
 // site.scss
-// jt6 20111418 WTSI
+// jt6 20150218 WTSI
 //
 // rules that are applicable to the whole site
 
@@ -17,9 +17,9 @@ a {
     color: $link-hover-color;
   }
 
-  // add a FA icon to a link to denote a URL for an external site
   $icon-font-size: 0.6em;
 
+  // add a FA icon to a link to denote a URL for an external site
   &.ext {
     position: relative;
     padding-right: $icon-font-size;
@@ -32,6 +32,27 @@ a {
       right: 0;
       content: "\f08e";
     }
+  }
+
+  // add a FA icon to a link to denote a URL that will trigger a download
+  // (not sure how obvious that will be...)
+  &.dl {
+    position: relative;
+    padding-right: $icon-font-size;
+
+    &:before {
+      position: absolute;
+      font-family: FontAwesome;
+      vertical-align: super;
+      font-size: $icon-font-size;
+      right: 0;
+      content: "\f063";
+    }
+  }
+
+  &.disabled {
+    color: #BBB !important;
+    cursor: not-allowed;
   }
 }
 
@@ -74,8 +95,20 @@ a {
     }
   }
 
+  #nav-tools.signed-in {
+    margin-top: 8px;
+  }
+
   #nav-tools {
-    margin-top: 12px;
+    button {
+      margin-top: 12px;
+    }
+    ol {
+      font-size: 13px;
+    }
+    li > a {
+      padding-bottom: 0px;
+    }
   }
 
 }

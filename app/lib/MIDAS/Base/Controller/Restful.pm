@@ -26,7 +26,7 @@ data properly.
 # callback for "text/csv", which points to the bespoke method here
 
 __PACKAGE__->config(
-  default   => 'text/html',
+  # default   => 'text/html',
   stash_key => 'output',
   map       => {
     'text/html'          => [ 'View', 'HTML' ],
@@ -97,6 +97,13 @@ has 'returned_columns' => (
 # callback to render a data structure as CSV
 sub _render_csv {
   my ( $data, $controller, $c ) = @_;
+
+  # some data, such as the summary information, can't really be serialised to
+  # CSV because it's not a simple list of columns
+  unless ( ref $data eq 'ARRAY' ) {
+    $c->res->status(415); # Unsupported Media Type
+    return 'Cannot serialise this output as text/csv; try application/json';
+  }
 
   # use the fields that the controller says it will return
   my @keys = @{ $controller->returned_columns };
