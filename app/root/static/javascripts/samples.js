@@ -54,6 +54,27 @@ var samples = (function() {
     setupTable: function() {
       /*jshint camelcase: false */
 
+      var renderer = function(data, type, row, meta) {
+        var rv;
+        switch ( data ) {
+          case "not available: not collected":
+          case "not available: restricted access":
+          case "not available: to be reported later":
+          case "not applicable":
+          case "obscured":
+          case "temporarily obscured":
+            rv = "<span class='na'>"+data+"</span>";
+            break;
+          case null:
+          case "":
+            rv = "<span class='na'>n/a</span>";
+            break;
+          default:
+            rv = data;
+        }
+        return rv;
+      };
+
       var samplesTable = $("#samples-table").DataTable( {
         // dom: "T<'clear'>lfrtip",
         serverSide: true,
@@ -64,6 +85,12 @@ var samples = (function() {
           data: function(d) {
             // add a param to signify that this request comes from DataTables
             d._dt = 1;
+          },
+          error: function(e) {
+            if ( e.status === 401 ) {
+              alert("Your session has expired. Please sign in again.");
+              location.reload(true);
+            }
           }
         },
         columns: [
@@ -82,8 +109,8 @@ var samples = (function() {
                      row.manifest_id + "</a>";
             }
           },
-          { data: "raw_data_accession" },
-          { data: "sample_accession" },
+          { data: "raw_data_accession", render: renderer },
+          { data: "sample_accession",   render: renderer },
           {
             // sample_description
             render: function(data, type, row, meta) {
@@ -99,28 +126,28 @@ var samples = (function() {
               return op;
             }
           },
-          { data: "collected_at" },
-          { data: "tax_id",                  visible: false },
+          { data: "collected_at", render: renderer },
+          { data: "tax_id", visible: false },
           {
             // scientific_name
             render: function(data, type, row, meta) {
               return row.scientific_name + " (" + row.tax_id + ")";
             }
           },
-          { data: "collected_by" }, //          visible: false },
-          { data: "source" }, //                visible: false },
-          { data: "collection_date" },
-          { data: "location" },
-          { data: "host_associated" },
-          { data: "specific_host" },
-          { data: "host_disease_status" },
-          { data: "host_isolation_source" },
-          { data: "patient_location" },
-          { data: "isolation_source" }, //      visible: false },
-          { data: "serovar" },
-          { data: "other_classification" }, //  visible: false },
-          { data: "strain" },
-          { data: "isolate" }, //               visible: false }
+          { data: "collected_by",            render: renderer },
+          { data: "source",                  render: renderer },
+          { data: "collection_date",         render: renderer },
+          { data: "location",                render: renderer },
+          { data: "host_associated",         render: renderer },
+          { data: "specific_host",           render: renderer },
+          { data: "host_disease_status",     render: renderer },
+          { data: "host_isolation_source",   render: renderer },
+          { data: "patient_location",        render: renderer },
+          { data: "isolation_source",        render: renderer },
+          { data: "serovar",                 render: renderer },
+          { data: "other_classification",    render: renderer },
+          { data: "strain",                  render: renderer },
+          { data: "isolate",                 render: renderer },
           {
             // AMR data
             className: "amrCell text-center",

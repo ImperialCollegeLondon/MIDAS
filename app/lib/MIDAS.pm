@@ -22,7 +22,7 @@ use Catalyst qw/
     Cache
     Authentication
     Session
-    Session::Store::File
+    Session::Store::DBIC
     Session::State::Cookie
     Static::Simple
 /;
@@ -172,6 +172,7 @@ __PACKAGE__->config(
   'Plugin::Session' => {
     cookie_secure   => 1,
     cookie_httponly => 1,    # this is the default but let's make it explicit
+    dbic_class      => 'UserDB::MidasSession',
   },
 
   # filter debug logs to remove passwords
