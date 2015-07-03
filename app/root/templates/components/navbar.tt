@@ -56,10 +56,8 @@
           <div class="row">
             <div class="col-md-12">
               <span class="signed-in text-right pull-right">
-                Signed in as
                 <a class="navbar-link"
-                   href="[% c.uri_for_action('/account/account_page') %]">
-                  [% c.user.id %]</a>
+                   href="[% c.uri_for_action('/account/account_page') %]">Account management</a>
               </span>
             </div>
           </div>
