@@ -28,13 +28,29 @@
       ELSIF format_params.filter_term;
         ", filtered by '${format_params.filter_term}'";
         show_all = 1;
-      END;
-      IF show_all %]
-      <small>(<a href="[% c.uri_for('/samples') %]">Show all samples</a>)</small>
-      [% END -%]
+      END -%]
     </h1>
 
-    <h1>[% pageTitle %]</h1>
+    <div id="download-buttons">
+      <p>
+        Scroll or drag the table to see all columns.
+        Show <a href="[% c.uri_for('/samples') %]">all samples</a>.
+        Show a <a href="[% c.uri_for('/summary') %]">summary</a> of current data.
+      </p>
+      <span>Download
+        <span id="filtered">the data that you have filtered from</span>
+        <span id="all">all of the data in</span>
+        this table<span id="filtered-count"></span>:
+      </span>
+      <button class="table-download-link btn btn-default btn-sm"
+              data-format="text/csv"
+              type="button"
+              class="btn btn-default">CSV</button>
+      <button class="table-download-link btn btn-default btn-sm"
+              data-format="application/json"
+              type="button"
+              class="btn btn-default">JSON</button>
+    </div>
 
     <div id="scrollbox">
       <table id="samples-table"
@@ -67,24 +83,6 @@
           </tr>
         </thead>
       </table>
-    </div>
-
-    <div id="download-buttons">
-      <span>Show <a href="[% c.uri_for('/samples') %]">all samples</a>.</span>
-      <span>Show a <a href="[% c.uri_for('/summary') %]">summary</a> of current data.</span>
-      <span>Download
-        <span id="filtered">filtered</span>
-        <span id="all">all</span>
-        data in the table:
-      </span>
-      <button class="table-download-link btn btn-default btn-sm"
-              data-format="text/csv"
-              type="button"
-              class="btn btn-default">CSV</button>
-      <button class="table-download-link btn btn-default btn-sm"
-              data-format="application/json"
-              type="button"
-              class="btn btn-default">JSON</button>
     </div>
 
   [% END # of "IF error" %]
