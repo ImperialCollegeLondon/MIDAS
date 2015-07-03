@@ -166,7 +166,7 @@ var samples = (function() {
       // add a listener to show AMR data for samples that possess it
       samplesTable.on("draw", function() {
 
-        $("#samples tbody").on("click", "td.amrCell", function() {
+        $("#samples-table tbody").on("click", "td.amrCell", function() {
           var tr,
               row,
               hasAMR = $(this).children(".hasAMR");
@@ -191,7 +191,7 @@ var samples = (function() {
           }
         } );
 
-        $("#samples span.expansion > a").on("click", function(e) {
+        $("#samples-table span.expansion > a").on("click", function(e) {
           var link = e.target,
               parentSpan = link.closest("span"),
               siblingSpan = $(parentSpan).siblings()[0];
@@ -201,23 +201,32 @@ var samples = (function() {
 
       } );
 
-      // listen for changes to the "search" input that filters the table and show/hide
-      // the text in the "Download data" label
-      $("#samples_filter input").on("input change", function(e) {
-        var filterTerm = $(e.target).val();
-        if ( filterTerm === undefined || filterTerm === "" ) {
-          $("#filtered").hide();
-          $("#all").show();
-        } else {
+      // listen for a re-draw; check the input that filters the table and
+      // show/hide the text in the "Download data" label
+      samplesTable.on("draw.dt", function(e, settings) {
+        if ( samplesTable.search() !== "" ) {
+          var filteredCount = samplesTable.page.info().recordsDisplay;
           $("#filtered").show();
+          $("#filtered-count").html(" (" + filteredCount + " rows)").show();
           $("#all").hide();
+        } else {
+          $("#filtered").hide();
+          $("#filtered-count").hide();
+          $("#all").show();
         }
       } );
+
+      // make the table draggable
+      $("#samples-table_wrapper").draggable({
+        cursor: "move",
+        scroll: true,
+        axis:   "x"
+      });
 
       // listen for clicks on the download buttons. If there's a click, we build the
       // URL to download the specified format, then tell the browser to retrieve it
       $("button.table-download-link").on("click", function(e) {
-        var filterTerm = $("#samples_filter input").val(),
+        var filterTerm = $("#samples-table_filter input").val(),
             dlFormat   = e.target.dataset.format,
             dlURL      = window.location.href;
         dlURL += "?dl=1";
