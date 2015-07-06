@@ -11,6 +11,7 @@ ok( request('/validation')->is_success, 'validation page succeeds' );
 ok( request('/validation/')->is_success, 'validation page succeeds with trailing slash' );
 ok( request('/privacy')->is_success, 'privacy page succeeds' );
 ok( request('/login')->is_success, 'login page succeeds' );
+ok( request('/api')->is_success, 'API page succeeds' );
 ok( action_notfound('/nosuchpage'), 'non-existent page not found');
 
 my $content = get('/nosuchpage');
