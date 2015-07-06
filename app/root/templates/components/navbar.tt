@@ -34,7 +34,7 @@
               [% ELSE %]
               <form class="navbar-form" role="signin">
                 <button id="signInButton"
-                        class="btn btn-default btn-sm pull-right[% ' disabled' IF c.config.disable_signin %]"
+                        class="pull-right btn btn-default btn-sm[% ' disabled' IF c.config.disable_signin %]"
                         type="button">Sign in</button>
               </form>
               [% END %]
