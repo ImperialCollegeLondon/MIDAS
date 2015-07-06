@@ -625,7 +625,7 @@ compound_counts:
 
     </div>
 
-    <div id="toc"></div>
+    <div id="toc" class="col-md-3"></div>
 
   </div>
 </article>
