@@ -4,7 +4,7 @@
 //
 // see http://viget.com/inspire/extending-paul-irishs-comprehensive-dom-ready-execution
 
-/* global validation,fourohfour,account,samples,summary,login,prettyPrint */
+/* global validation,fourohfour,account,samples,summary,prettyPrint */
 /* exported HICF */
 
 var HICF = {
@@ -13,7 +13,6 @@ var HICF = {
       "use strict";
       // application-wide code
       // console.debug( "common.init: application-wide init code" );
-      login.wireButtons();
 
       // TODO could inline the trivial functions like "wireButtons" here,
       // TODO rather than having a separate controller for them, but it's
