@@ -15,6 +15,7 @@ BEGIN {
 copy 't/data/user.db', 'temp_user.db';
 
 my $mech = Test::WWW::Mechanize::Catalyst->new;
+$mech->add_header( 'Content-Type' => 'text/html' );
 
 $mech->get_ok('http://localhost/', 'check basic index page');
 $mech->title_is('MIDAS', 'check title');
@@ -31,7 +32,7 @@ is( scalar @links, 8, 'found expected number of external links (8)' );
 # $mech->links_ok( \@links, 'check all non-local links' );
 
 @links = $mech->find_all_links( url_regex=>qr/localhost/ );
-is( scalar @links, 4, 'found expected number of local links (4)' );
+is( scalar @links, 7, 'found expected number of local links (7)' );
 $mech->links_ok( \@links, 'check local links' );
 
 $mech->get_ok('http://localhost/login', 'got login page');
@@ -39,7 +40,8 @@ $mech->content_contains('Access to MIDAS data is currently', 'login page looks s
 $mech->content_lacks('You are already signed in', 'check we are not yet logged in');
 
 $mech->submit_form(
-  with_fields => {
+  form_number => 1,
+  fields => {
     username => 'testuser',
     password => 'password',
   }

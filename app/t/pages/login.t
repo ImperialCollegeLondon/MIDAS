@@ -15,6 +15,7 @@ BEGIN {
 copy 't/data/user.db', 'temp_user.db';
 
 my $mech = Test::WWW::Mechanize::Catalyst->new;
+$mech->add_header( 'Content-Type' => 'text/html' );
 
 $mech->get_ok('http://localhost/login', 'got login page');
 $mech->content_contains('Access to MIDAS data is currently', 'login page looks sensible');
@@ -38,16 +39,15 @@ $mech->content_contains($login_error_message, 'bad password produces same error 
 $mech->get_ok('http://localhost/login', 'got login page again');
 
 $mech->submit_form(
-  with_fields => {
+  form_number => 1,
+  fields => {
     username => 'testuser',
     password => 'password',
   }
 );
 
-$mech->content_like(qr/Microbial Diagnostics and.*?Surveillance \(MIDAS\)/s,
-  'redirected to index after successful login');
-$mech->content_contains('Signed in as', 'signed in');
-$mech->content_contains('testuser', 'signed in as "testuser"');
+$mech->content_contains('HICF sample summary', 'got summary page');
+$mech->content_contains('Account management', 'signed in');
 
 $mech->get_ok('http://localhost/login', 'got login page again');
 $mech->content_contains('You are already signed in', 'check we are now logged in');

@@ -17,14 +17,13 @@ BEGIN {
 copy 't/data/user.db', 'temp_user.db';
 copy 't/data/data.db', 'temp_data.db';
 
-# check the basic page contents
 my $mech = Test::WWW::Mechanize::Catalyst->new;
 $mech->add_header( 'Content-Type' => 'text/html' );
 
 # need to login first
 $mech->get_ok('/login', 'got login page');
 
-my $res = $mech->submit_form(
+$mech->submit_form(
   form_number => 1,
   fields => {
     username => 'testuser',

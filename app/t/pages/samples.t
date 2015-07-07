@@ -16,39 +16,28 @@ BEGIN {
 copy 't/data/user.db', 'temp_user.db';
 copy 't/data/data.db', 'temp_data.db';
 
-# check the basic page contents
 my $mech = Test::WWW::Mechanize::Catalyst->new;
+$mech->add_header( 'Content-Type' => 'text/html' );
 
-# need to login first
-$mech->get_ok('http://localhost/login', 'got login page again');
+# check that we need to login first
+$mech->get_ok('http://localhost/samples', 'visit samples page');
+$mech->content_contains('Access to MIDAS data is currently restricted',
+  'redirected to sign in page');
 
 $mech->submit_form(
-  with_fields => {
+  form_number => 1,
+  fields => {
     username => 'testuser',
     password => 'password',
   }
 );
 
-$mech->content_like(qr/Microbial Diagnostics and.*?Surveillance \(MIDAS\)/s,
-  'redirected to index after successful login');
-$mech->content_contains('Signed in as', 'signed in');
-$mech->content_contains('testuser', 'signed in as "testuser"');
+# were we redirected to the samples page ?
+$mech->content_contains('HICF samples', 'redirected to samples page');
 
-# and now check the samples page
-$mech->get_ok('http://localhost/samples', 'check validation page');
-$mech->get_ok('/samples', 'check validation page');
-$mech->title_like(qr/MIDAS.*?Samples/, 'check title');
-$mech->content_contains('HICF samples');
-
-TODO: {
-  local $TODO = 'need to add breadcrumbs';
-  $mech->content_contains('breadcrumb', 'found breadcrumbs');
-}
-
+$mech->title_like(qr/MIDAS.*?Samples/, 'title looks good');
+$mech->content_contains('samples-table', 'found samples table');
 $mech->content_lacks('Thomas Splettstoesser', 'virus image credit not found');
 
-is( $mech->scrape_text_by_id('samples'), 'Sample ID Manifest ID Scientific name NCBI tax ID Collection date Source 1 4162F712-1DD2-11B2-B17E-C09EFE1DC403 9606 1428658943 CAMBRIDGE', '"samples" table looks right');
-my @rows = $mech->scrape_text_by_attr('scope', 'row');
-is( scalar @rows, 2, 'got header and one sample row' );
 done_testing;
 
