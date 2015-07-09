@@ -7,7 +7,17 @@ module.exports = function(testSuite) {
 
     before( function() {
       casper.start("http://localhost:3001")
-            .thenOpen("http://localhost:3001/logout");
+      .viewport( 1100, 900 )
+      .on( 'page.error', function (msg, trace) {
+        this.echo( 'Browser JS error: ' + msg, 'ERROR' );
+      })
+      .on('remote.message', function(msg) {
+        this.echo('Debug: ' + msg);
+      })
+      .on('remote.alert', function(msg) {
+        this.echo('Alert: ' + msg);
+      })
+      .thenOpen("http://localhost:3001/logout");
     });
 
     // make sure the user is signed out first
@@ -36,7 +46,7 @@ module.exports = function(testSuite) {
 
     it("should be able to run tests requiring logged-in user", function() {
       casper.then(function() {
-        testSuite.call(casper);
+        testSuite.call();
       });
     });
 
