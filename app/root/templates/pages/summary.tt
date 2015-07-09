@@ -19,7 +19,8 @@
   <div class="row">
 
     <div class="col-md-7">
-      <table id="organism-table" class="two-column-narrow table table-striped table-bordered table-condensed">
+      <table id="organism-table"
+             class="two-column-narrow table table-striped table-bordered table-condensed">
         <thead>
           <tr>
             <th>Scientific name</th>
@@ -68,7 +69,8 @@
 
     <div class="col-md-7">
 
-      <table class="two-column-narrow table table-striped table-bordered table-condensed">
+      <table id="susceptibility-table"
+             class="two-column-narrow table table-striped table-bordered table-condensed">
         <thead>
           <tr>
             <th>Susceptibility</th>
@@ -182,7 +184,8 @@
   <div class="row">
 
     <div class="col-md-7">
-      <table class="two-column-narrow table table-striped table-bordered table-condensed">
+      <table id="sites-table"
+             class="two-column-narrow table table-striped table-bordered table-condensed">
         <thead>
           <tr>
             <th>Site</th>
