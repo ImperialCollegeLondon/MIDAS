@@ -22,7 +22,7 @@ describe("Validation page", function() {
   });
 
   it("should validate valid upload", function() {
-    casper.page.uploadFile("#csv", "validation_valid.csv");
+    casper.page.uploadFile("#csv", "data/validation_valid.csv");
     casper.click("#validation-form > button", function() {
       this.waitUntilVisible("#validation-success")
       .then(function() {
@@ -33,7 +33,7 @@ describe("Validation page", function() {
   });
 
   it("should show error for invalid upload", function() {
-    casper.page.uploadFile("#csv", "validation_broken.csv");
+    casper.page.uploadFile("#csv", "data/validation_broken.csv");
     casper.click("#validation-form > button", function() {
       this.waitUntilVisible("#validation-error")
       .then(function() {
