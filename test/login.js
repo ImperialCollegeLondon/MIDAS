@@ -37,7 +37,7 @@ module.exports = function(testSuite) {
         "form[name='signin-form']".should.be.inDOM.and.be.visible;
         this.fill(
           "form[name='signin-form']",
-          { username: "testuser" 
+          { username: "testuser",
             password: "password" },
           true
         );
