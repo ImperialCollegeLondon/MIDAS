@@ -11,12 +11,14 @@ module.exports = function(testSuite) {
       .on( 'page.error', function (msg, trace) {
         this.echo( 'Browser JS error: ' + msg, 'ERROR' );
       })
-      .on('remote.message', function(msg) {
-        this.echo('Debug: ' + msg);
-      })
-      .on('remote.alert', function(msg) {
-        this.echo('Alert: ' + msg);
-      })
+      // uncomment to echo browser console debug messages and alerts to
+      // the shell that's running the tests
+      // .on('remote.message', function(msg) {
+      //   this.echo('Debug: ' + msg);
+      // })
+      // .on('remote.alert', function(msg) {
+      //   this.echo('Alert: ' + msg);
+      // })
       .thenOpen("http://localhost:3001/logout");
     });
 
