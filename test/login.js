@@ -1,6 +1,4 @@
 
-var config = require("./config.js");
-
 module.exports = function(testSuite) {
 
   describe("Sign in", function() {
@@ -39,8 +37,8 @@ module.exports = function(testSuite) {
         "form[name='signin-form']".should.be.inDOM.and.be.visible;
         this.fill(
           "form[name='signin-form']",
-          { username: config.user.username,
-            password: config.user.password },
+          { username: "testuser" 
+            password: "password" },
           true
         );
       });
