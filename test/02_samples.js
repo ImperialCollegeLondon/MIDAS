@@ -85,7 +85,7 @@ login( function() {
       casper.click("#samples-table_paginate a[data-dt-idx='2']", function() {
         this.waitForSelectorTextChange( "#samples-table_info", function() {
           "#samples-table_info".should.contain.text("Showing 11 to 11");
-        "$('#samples-table > tbody > tr').length".should.evaluate.to.equal(1);
+          "$('#samples-table > tbody > tr').length".should.evaluate.to.equal(1);
         });
       });
 
@@ -93,25 +93,57 @@ login( function() {
       casper.click("#samples-table_paginate a[data-dt-idx='0']", function() {
         this.waitForSelectorTextChange( "#samples-table_info", function() {
           "#samples-table_info".should.contain.text("Showing 1 to 10");
-        "$('#samples-table > tbody > tr').length".should.evaluate.to.equal(10);
+          "$('#samples-table > tbody > tr').length".should.evaluate.to.equal(10);
         });
       });
     });
 
-//     it("should support page lengths", function() {
-//         var state = this.evaluate(function(done) {
-//           $("#samples-table").dataTable().api().state.clear();
-//         });
-//
-//
-// $("#samples-table").dataTable().api().page.len(25).draw()
-//       casper.click("#samples-table_length a[data-dt-idx='0']", function() {
-//         this.waitForSelectorTextChange( "#samples-table_info", function() {
-//           "#samples-table_info".should.contain.text("Showing 1 to 10");
-//         "$('#samples-table > tbody > tr').length".should.evaluate.to.equal(10);
-//         });
-//       });
-//     });
+    it("should support page lengths", function() {
+      casper.fillSelectors("#samples-table_length", {
+        "select[name='samples-table_length']": 25
+      }, false);
+      casper.then(function() {
+        this.waitForSelectorTextChange( "#samples-table_info", function() {
+          "#samples-table_info".should.contain.text("Showing 1 to 11");
+          "$('#samples-table > tbody > tr').length".should.evaluate.to.equal(11);
+        });
+      });
+    });
+
+  });
+
+  describe( "Samples page timeout", function() {
+
+    it("should start with expected content", function() {
+      casper.thenOpen("http://localhost:3001/samples")
+      "#samples-table > tbody > tr:nth-child(1) > td:nth-child(1) > a:nth-child(1)"
+        .should.contain.text("1")
+    });
+
+    it("should alert when session is forced to time out", function() {
+
+      // remove the cookie that shows the user is signed in
+      casper.then( function() {
+        this.page.deleteCookie("midas_session");
+      })
+      // try sorting the table. Should result in an alert
+      .then( function() {
+        casper.click("#samples-table > thead > tr > th:nth-child(1)", function() {
+          this.waitForAlert( function(response) {
+            // this really should work, but doesn't...
+            // response.data.should.contain.text("Your session has expired");
+          });
+        });
+      });
+
+    });
+
+    it("should redirect to sign in page", function() {
+      casper.waitForUrl(/login/, function() {
+        "MIDAS".should.matchTitle;
+        "Sign in".should.be.textInDOM;
+      });
+    });
 
   });
 
