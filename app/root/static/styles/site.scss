@@ -72,6 +72,11 @@ a {
     }
   }
 
+  #signInButton,
+  #signOutButton {
+    margin-right: -15px;
+  }
+
   span.signed-in {
     color: #FFF;
     font-size: small;
@@ -93,10 +98,6 @@ a {
     .breadcrumb {
       margin-top: 20px;
     }
-  }
-
-  #nav-tools.signed-in {
-    margin-top: 8px;
   }
 
   #nav-tools {

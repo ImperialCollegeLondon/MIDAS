@@ -4,12 +4,12 @@ use strict;
 use warnings;
 
 use Test::More;
-use Test::Exception;
-use JSON;
 use File::Copy;
+use JSON;
 
 BEGIN {
-  $ENV{CATALYST_CONFIG_LOCAL_SUFFIX} = 'testing';
+  $ENV{MIDAS_CONFIG}                 = 't/data/testing.conf';
+  $ENV{CATALYST_CONFIG_LOCAL_SUFFIX} = 'sample';
   use_ok("Test::WWW::Mechanize::Catalyst" => 'MIDAS');
 }
 
@@ -17,36 +17,28 @@ BEGIN {
 copy 't/data/user.db', 'temp_user.db';
 copy 't/data/data.db', 'temp_data.db';
 
-# check the basic page contents
 my $mech = Test::WWW::Mechanize::Catalyst->new;
+$mech->add_header( 'Content-Type' => 'text/html' );
 
 # need to login first
-$mech->get_ok('http://localhost/login', 'got login page');
+$mech->get_ok('/login', 'got login page');
 
 $mech->submit_form(
-  with_fields => {
+  form_number => 1,
+  fields => {
     username => 'testuser',
     password => 'password',
   }
 );
 
-$mech->content_like(qr/Microbial Diagnostics and.*?Surveillance \(MIDAS\)/s,
-  'redirected to index after successful login');
-$mech->content_contains('Signed in as', 'signed in');
-$mech->content_contains('testuser', 'signed in as "testuser"');
+$mech->content_contains('Account management', 'signed in');
+$mech->content_like(qr/HICF sample summary/,
+  'redirected to summary after successful login');
 
 # finally, check the sample HTML page
 $mech->get_ok('/sample/1', 'check sample page with valid ID');
 $mech->title_like(qr/MIDAS.*?Sample 1/, 'check title');
 $mech->content_contains('Sample 1');
-
-# and the sample data when retrieved as JSON
-$mech->get_ok('/sample/1?content-type=application/json', 'check sample JSON');
-my $json = JSON->new;
-my $json_data_structure;
-lives_ok { $json_data_structure = $json->decode($mech->content) }
-  'no error when decoding JSON response';
-is ref $json_data_structure, 'HASH', 'got data structure when decoding JSON';
 
 # check with invalid sample IDs
 $mech->get_ok('/sample/XXXXXX', 'check sample page with bad ID');

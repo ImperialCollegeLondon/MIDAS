@@ -5,13 +5,16 @@ use warnings;
 
 use Test::More;
 use Test::Exception;
-use JSON;
 use HTTP::Request::Common;
 use File::Copy;
+use JSON;
+
+BEGIN {
+  $ENV{MIDAS_CONFIG}                 = 't/data/testing.conf';
+  $ENV{CATALYST_CONFIG_LOCAL_SUFFIX} = 'rest';
+}
 
 use Catalyst::Test 'MIDAS';
-
-BEGIN { $ENV{CATALYST_CONFIG_LOCAL_SUFFIX} = 'testing'; }
 
 # clone the test databases, so that changes don't break the originals
 copy 't/data/user.db', 'temp_user.db';
@@ -23,26 +26,22 @@ my $res = request( GET '/account',
 );
 is $res->status_line, '401 Unauthorized', 'got 401 when auth header omitted';
 
+# bad API key
 $res = request( GET '/account',
   Authorization => 'testuser:11111111111111111111111111111111',
   Content_Type => 'application/json',
 );
 is $res->status_line, '401 Unauthorized', 'got 401 with incorrect API key';
 
+# bad "Authorization" header
 $res = request( GET '/account',
   Authorization => 'testuser#JSVVZjKQEUQGGnnKe1nS367BbMJESjJe',
   Content_Type => 'application/json',
 );
 is $res->status_line, '401 Unauthorized', 'got 401 with malformed header';
 
-$res = request( GET '/account',
-  Authorization => 'testuser:11111111111111111111111111111111',
-  Content_Type => 'application/json',
-);
-is $res->status_line, '401 Unauthorized', 'got 401 with incorrect API key';
-
-$res = request(
-  GET '/samples',
+# valid "Authorization" header and valid key
+$res = request( GET '/samples',
   Authorization => 'testuser:JSVVZjKQEUQGGnnKe1nS367BbMJESjJe',
   Content_Type => 'application/json',
 );

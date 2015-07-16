@@ -37,7 +37,10 @@
         auditing and accounting purposes.
       </p>
 
-      <form name="signin-form" class="form-horizontal" method="post">
+      <form name="signin-form"
+            class="form-horizontal"
+            action="[% c.uri_for('/login') %]"
+            method="post">
         <div class="form-group">
           <label for="username" class="col-md-2 control-label">Username</label>
           <div class="col-md-6">

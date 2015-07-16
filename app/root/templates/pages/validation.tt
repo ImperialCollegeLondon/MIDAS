@@ -1,4 +1,5 @@
-[%- contactUsURI = c.uri_for("/contact") %]
+[%- contactUsURI = c.uri_for("/contact");
+    midas_manifest = c.config.midas_manifest || "midas_manifest_v3.xlsx" %]
 
 <article class="container">
 
@@ -6,7 +7,8 @@
 
   <p>
     You can use this form to upload a sample manifest and validate it
-    against the <a href="[% c.uri_for('/resources/validator/HICF_checklist/HICF_checklist.conf') %]">
+    against the
+    <a class="ext" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/HICF_checklist.conf">
       HICF checklist</a>.
   </p>
   <p class="small">
@@ -38,7 +40,7 @@
       <div class="panel-heading">Invalid</div>
       <div class="panel-body">
         Your input file is <strong>not</strong> valid according to the
-        <a href="[% c.uri_for('/resources/validator/HICF_checklist/HICF_checklist.conf') %]">
+        <a class="ext" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/HICF_checklist.conf">
           HICF checklist</a>. You can download a copy of your file with
         validation error messages <a id="invalid-download" href="#">here</a>.
       </div>
@@ -65,32 +67,39 @@
     <h2>Install the perl module and script</h2>
 
     <p>
-      <a href="[% c.uri_for('/resources/validator/Bio-Metadata-Validator-1.151600.tar.gz') %]">
-        Download</a> the Perl module and script.
+      The perl module is available from
+      <a class="ext" href="https://github.com/sanger-pathogens/Bio-Metadata-Validator/">
+        GitHub</a>. You can either clone the repository or download it as a
+      <a class="dl" href="https://github.com/sanger-pathogens/Bio-Metadata-Validator/tarball/master">
+        tar ball</a>. Either way, the module needs to be built using
+      <a class="ext" href="http://dzil.org/">Dist::Zilla</a> before it can
+      be installed.
     </p>
     <p>
-      The usual way to install a Perl module is something like this:
-    </p>
-
-    <pre>
-shell% tar zxf Bio-Metadata-Validator-1.151600.tar.gz
-shell% cd Bio-Metadata-Validator-1.151600
-shell% perl Makefile.PL
-...
-shell% make install
-...</pre>
-
-    <p>
-      However, this module has quite a number of dependencies, so it may be
-      easier to use <code>cpanm</code> (see
+      The easiest way to install perl modules is probably to use
+      <code>cpanm</code> (see
       <a class="ext" href="https://github.com/miyagawa/cpanminus">
-        https://github.com/miyagawa/cpanminus</a>)
-      to install the tarball directly. <code>cpanm</code> will detect and install the
-      pre-requisites automatically:
+        https://github.com/miyagawa/cpanminus</a>). Once <code>cpanm</code>
+      is installed, you can use it to install <code>Dist::Zilla</code> and,
+      with <code>Dist::Zilla</code> available, you can unpack and build the
+      validator distribution:
     </p>
-
     <pre>
-shell% cpanm Bio-Metadata-Validator-1.151600.tar.gz
+shell% tar zxf sanger-pathogens-Bio-Metadata-Validator-xxxxxxx.tar.gz
+shell% cd sanger-pathogens-Bio-Metadata-Validator-xxxxxxx
+shell% dzil build
+[DZ] beginning to build Bio-Metadata-Validator
+[DZ] guessing dist's main_module is lib/Bio/Metadata/Validator.pm
+[DZ] writing Bio-Metadata-Validator in Bio-Metadata-Validator-x.xxxxxx
+[DZ] building archive with Archive::Tar::Wrapper
+[DZ] writing archive to Bio-Metadata-Validator-x.xxxxxx.tar.gz
+[DZ] built in Bio-Metadata-Validator-x.xxxxxx</pre>
+
+    <p>
+      You can now install the Bio-Metadata-Validator tar file:
+    </p>
+    <pre>
+shell% cpanm Bio-Metadata-Validator-x.xxxxxx.tar.gz
 ...</pre>
 
     <p>
@@ -183,13 +192,13 @@ shell% tar zxf taxdump.tar.gz names.dmp</pre>
     <p>
       If you are creating the CSV file using a script or similar, you can see an
       example file in the bundle containing the Perl module and README. You can
-      <a href="[% c.uri_for('/resources/validator/HICF_checklist.tar.gz') %]">download</a> a
-      tar archive containing the
-      <a href="[% c.uri_for('/resources/validator/HICF_checklist/midas_manifest_v3.xlsx') %]">
+      <a class="dl" href="https://github.com/sanger-pathogens/HICF_checklist/tarball/master">
+        download</a> a tar archive containing the
+      <a class="dl" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/[% midas_manifest %]">
         manifest template</a> and example manifests in
-      <a href="[% c.uri_for('/resources/validator/HICF_checklist/example_manifest.xlsx') %]">
+      <a class="dl" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/example_manifest.xlsx">
         Excel</a> and
-      <a href="[% c.uri_for('/resources/validator/HICF_checklist/example_manifest.csv') %]">
+      <a class="dl" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/example_manifest.csv">
         CSV</a> formats.
     </p>
 
@@ -200,7 +209,7 @@ shell% tar zxf taxdump.tar.gz names.dmp</pre>
 
     <p>
       Download the checklist
-      <a href="[% c.uri_for('/resources/validator/HICF_checklist/HICF_checklist.conf') %]">
+      <a class="ext" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/HICF_checklist.conf">
         configuration file</a>. It's easiest to run <code>validate_manifest</code>
       in the directory containing the config file, your manifest, and the
       ontology files ("envo-basic.obo", "BrendaTissueOBO", "gaz.obo").
@@ -208,7 +217,7 @@ shell% tar zxf taxdump.tar.gz names.dmp</pre>
 
     <pre>
 shell% validate_manifest -c HICF_checklist.conf example_manifest.csv
-'example_manifest.csv' is valid</pre>
+input data are valid</pre>
 
     <p>
       Error messages are appended to invalid rows as an extra column, so that you can
@@ -219,10 +228,11 @@ shell% validate_manifest -c HICF_checklist.conf example_manifest.csv
 
     <pre>
 shell% validate_manifest -c HICF_checklist.conf -o invalid_rows.csv -i broken_manifest.csv
-'broken_manifest.csv' is invalid. Found 1 invalid row.
+input data are invalid. Found 1 invalid row.
 wrote only invalid rows from validated file to 'invalid_rows.csv'.
 shell% less invalid_rows.csv
-1,1,Example description,CAMBRIDGE,703339,Staphylococcus aureus 04-02981,"Tate JG, Keane J",123,05/10/2013,GAZ:00444180,yes,Homo sapiens,healthy,BTO:0000645,inpatient,,I,,630,,"tetracyclin;S;40,erythromycin;R;50;Peru",,,,,, [value in field 'collection_date' is not valid]</pre>
+"raw data accession","sample accession","sample description","collected at","tax ID","scientific name","collected by",source,"collection date",location,"host associated","specific host","host disease status","host isolation source","patient location","isolation source",serovar,"other classification",strain,isolate,"antimicrobial resistance"
+ERR000001,ERS000001,"Example description",CAMBRIDGE,703339,"Staphylococcus aureus 04-02981","Tate JG, Keane J",123,05/10/2013,GAZ:00444180,yes,"Homo sapiens",healthy,BTO:0000645,inpatient,,I,,630,,"tetracyclin;S;40,erythromycin;R;50;Peru","[errors found on row 1] [value in field 'collection_date' is not valid]"</pre>
 
     <p>
       Scrolling to the end of the line you can see that there was a single
@@ -238,20 +248,21 @@ shell% less invalid_rows.csv
     <h2>Resources</h2>
 
     <p>
-      These tar archives contain the files that you will need to run the validator:
+      These GitHub repositories contain the files that you will need to run the
+      validator:
     </p>
 
     <dl class="dl-horizontal">
       <dt>
-        <a href="[% c.uri_for('/resources/validator/Bio-Metadata-Validator-1.151600.tar.gz') %]">
-          Bio-Metadata-Validator-1.151600.tar.gz</a>
+      <a class="ext" href="https://github.com/sanger-pathogens/Bio-Metadata-Validator">
+          Bio-Metadata-Validator</a>
       </dt>
       <dd>
         Perl module
       </dd>
       <dt>
-        <a href="[% c.uri_for('/resources/validator/HICF_checklist.tar.gz') %]">
-          HICF_checklist.tar.gz</a>
+        <a class="ext" href="https://github.com/sanger-pathogens/HICF_checklist">
+          HICF_checklist</a>
       </dt>
       <dd>
         Checklist and examples
@@ -260,7 +271,7 @@ shell% less invalid_rows.csv
 
 [% BLOCK manifest_links;
 files = {
-  'midas_manifest_v3.xlsx' => 'manifest template in Excel format',
+  $midas_manifest => 'manifest template in Excel format',
   'example_manifest.csv' => 'example of a valid manifest in CSV format',
   'example_manifest.xlsx' => 'example of a valid manifest in Excel format',
   'HICF_checklist.conf' => 'checklist configuration file',
@@ -269,7 +280,7 @@ files = {
   'invalid_rows.csv' => 'invalid rows found when validating <code>broken_manifest.csv</code>',
 };
 FOREACH file IN files.keys.sort -%]
-<dt><a href="[% c.uri_for('/resources/validator/HICF_checklist/' _ file) %]">[% file %]</a></dt>
+<dt><a class="ext" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/[% file %]">[% file %]</a></dt>
 <dd>[% files.$file %]</dd>
 [% END; # of FOREACH
 END -%]

@@ -24,19 +24,21 @@
       [% END # of IF breadcrumbs.defined %]
 
       <div class="row">
-        <div id="nav-tools" class="navbar-right col-md-7[% ' signed-in' IF c.user_exists %]">
+        <div id="nav-tools" class="navbar-right col-md-7">
           <div class="row">
             <div class="col-md-12">
               [% IF c.user_exists %]
-              <button id="signOutButton"
-                      class="btn btn-default btn-sm pull-right"
-                      type="button">Sign out</button>
+                <form class="navbar-form" action="[% c.uri_for('/logout') %]">
+                  <button id="signOutButton"
+                          class="pull-right btn btn-default btn-sm"
+                          type="submit">Sign out</button>
+                </form>
               [% ELSE %]
-              <form class="navbar-form" role="signin">
-                <button id="signInButton"
-                        class="btn btn-default btn-sm pull-right[% ' disabled' IF c.config.disable_signin %]"
-                        type="button">Sign in</button>
-              </form>
+                <form class="navbar-form" action="[% c.uri_for('/login') %]">
+                  <button id="signInButton"
+                          class="pull-right btn btn-default btn-sm[% ' disabled' IF c.config.disable_signin %]"
+                          type="submit">Sign in</button>
+                </form>
               [% END %]
               <ul class="nav navbar-nav pull-right">
                 <li>

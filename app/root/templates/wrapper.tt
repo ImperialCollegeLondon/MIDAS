@@ -76,7 +76,6 @@
 
     <!-- build:js({app/root/static,.tmp}) /javascripts/app.js -->
     <script src="/javascripts/util.js"></script>
-    <script src="/javascripts/login.js"></script>
     <script src="/javascripts/account.js"></script>
     <script src="/javascripts/fourohfour.js"></script>
     <script src="/javascripts/validation.js"></script>
