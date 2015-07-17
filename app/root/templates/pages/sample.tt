@@ -20,7 +20,22 @@ tooltips = {
   other_classification    => 'Appropriate classification terms for the sample organism',
   strain                  => 'Name of strain from which sample was obtained',
   isolate                 => 'Name of isolate from which sample was obtained',
-} %]
+};
+links = {
+  raw_data_accession      => "http://www.ebi.ac.uk/ena/data/view/%s",
+  sample_accession        => "http://www.ebi.ac.uk/ena/data/view/%s",
+  tax_id                  => "http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id=%s",
+  location                => "http://www.ebi.ac.uk/ontology-lookup/?termId=%s",
+  host_isolation_source   => "http://www.ebi.ac.uk/ontology-lookup/?termId=%s",
+};
+
+BLOCK addLink -%]
+  <a class="ext" href="[% url.replace('%s', id) %]">[% id %]</a>
+[%- END;
+
+# TODO add code to convert fields into links
+# TODO fix tooltips in sample page
+%]
 
 <section class="container" id="sample">
 
@@ -56,14 +71,18 @@ tooltips = {
             <tr>
               <td class="text-right row-label">
                 <div data-toggle="tooltip"
-                     data-placement="right"
+                     data-placement="bottom"
                      title="[% tooltip_text %]">
                   [% field_name %]
                 </div>
               </td>
               <td>
               [% IF fields.$field.defined;
-                fields.$field;
+                IF links.$field.defined;
+                  PROCESS addLink url=links.$field id=fields.$field;
+                ELSE;
+                  fields.$field;
+                END;
               ELSE %]
                 <span class="na">n/a</span>
               [% END %]
