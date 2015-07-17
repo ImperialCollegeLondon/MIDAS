@@ -109,13 +109,28 @@ var samples = (function() {
                      row.manifest_id + "</a>";
             }
           },
-          { data: "raw_data_accession", render: renderer },
-          { data: "sample_accession",   render: renderer },
+          {
+            // raw_data_accession
+            render: function(data, type, row, meta) {
+              return "<a class='ext' href='http://www.ebi.ac.uk/ena/data/view/" +
+                     row.raw_data_accession + "'>" + row.raw_data_accession + "</a>";
+            }
+          },
+          {
+            // sample_accession
+            render: function(data, type, row, meta) {
+              return "<a class='ext' href='http://www.ebi.ac.uk/ena/data/view/" +
+                     row.sample_accession + "'>" + row.sample_accession + "</a>";
+            }
+          },
           {
             // sample_description
             render: function(data, type, row, meta) {
               var op = row.sample_description || "";
-              if ( op.length > 10 ) {
+              if ( op.length < 1 ) {
+                op = "<span class='na'>n/a</span>";
+              }
+              else if ( op.length > 10 ) {
                 op = "<span class='expansion truncated'>" + op.substr(0, 10) +
                      "<a title='See more'>&hellip;</a>" +
                      "</span>" +
@@ -129,9 +144,11 @@ var samples = (function() {
           { data: "collected_at", render: renderer },
           { data: "tax_id", visible: false },
           {
-            // scientific_name
+            // scientific_name / tax_id
             render: function(data, type, row, meta) {
-              return row.scientific_name + " (" + row.tax_id + ")";
+              return "<a class='ext' href='http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id=" +
+                     row.tax_id + "'>" + row.scientific_name + "</a>" +
+                     " (" + row.tax_id + ")";
             }
           },
           { data: "collected_by",            render: renderer },
