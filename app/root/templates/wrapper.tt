@@ -71,8 +71,8 @@
     <script type="text/javascript" src="/zxtm/piwik2.js"></script>
     [% END -%]
 
+    [%# TODO get things like jquery from bower %]
     <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
     <!-- build:js({app/root/static,.tmp}) /javascripts/app.js -->
     <script src="/javascripts/util.js"></script>
@@ -87,6 +87,10 @@
     <script src="/javascripts/vendor/jquery-ui-1.9.1.custom.min.js"></script>
     <script src="/javascripts/vendor/jquery.tocify.min.js"></script>
     <!-- endbuild -->
+
+    [%# bootstrap.js needs to be loaded AFTER jquery.js and jquery-ui.js.
+        See http://stackoverflow.com/questions/17458224/uncaught-error-no-such-method-show-for-tooltip-widget-instance %]
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
   </body>
 
