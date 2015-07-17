@@ -31,11 +31,7 @@ links = {
 
 BLOCK addLink -%]
   <a class="ext" href="[% url.replace('%s', id) %]">[% id %]</a>
-[%- END;
-
-# TODO add code to convert fields into links
-# TODO fix tooltips in sample page
-%]
+[%- END %]
 
 <section class="container" id="sample">
 
