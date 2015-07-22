@@ -298,7 +298,7 @@ sub samples_from_organism : Chained('/')
   $c->forward('_stash_params');
 
   $c->stash(
-    title        => 'Samples from $organism',
+    title        => "Samples from $organism",
     template     => 'pages/samples.tt',
     jscontroller => 'samples',
     rs           => $c->model->schema->get_all_samples_from_organism($organism),

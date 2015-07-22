@@ -51,7 +51,8 @@ BLOCK addLink -%]
   <div class="row">
     <div class="col-md-7">
       <h2>Sample metadata</h2>
-      <table class="two-column-narrow table table-striped table-condensed">
+      <table id="metadata"
+             class="two-column-narrow table table-striped table-condensed">
         <thead>
           <tr>
             <th class="text-right row-label">Field</th>
@@ -93,7 +94,8 @@ BLOCK addLink -%]
       <h2>Antimicrobial resistance</h2>
 
       [% IF sample.antimicrobial_resistances %]
-        <table class="amrData table table-striped table-condensed">
+        <table id="amr"
+               class="amrData table table-striped table-condensed">
           <thead>
             <th>Compound name</th>
             <th>Susceptibility</th>
