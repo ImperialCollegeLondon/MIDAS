@@ -46,13 +46,15 @@ $nav-bg-color: #2c3e50;
   #toc {
     width: 22%;
     background-color: #FFF;
-    margin-left: 64%;
     margin-top: 1em;
     border-color: $nav-bg-color;
     border-radius: 4px;
     padding: 0px;
 
     li.active {
+      :hover {
+        background-color: $nav-bg-color;
+      }
       background-color: $nav-bg-color;
       a {
         color: #FFF;
