@@ -1,38 +1,38 @@
-[% midas_manifest = c.config.midas_manifest || "midas_manifest_v3.xlsx" %]
+[% midas_manifest = c.config.midas_manifest || "midas_manifest_v4.xlsx" %]
 
 <article id="api-docs" class="container">
 
   <div class="row">
 
-      <div class="col-md-9">
+    <div class="col-md-9">
 
-        <h1>API</h1>
+      <h1>API</h1>
+
+      <p>
+        The MIDAS website includes a RESTful API that allows you to query and
+        download sample metadata programmatically. This page explains how to
+        use the API and describes the data that may be retrieved.
+      </p>
+      <p>
+        <strong>Please note</strong> that the server keeps a detailed audit log of
+        all requests to the API.
+      </p>
+
+      <section>
+
+        <h2>Authentication</h2>
 
         <p>
-          The MIDAS website includes a RESTful API that allows you to query and
-          download sample metadata programmatically. This page explains how to
-          use the API and describes the data that may be retrieved.
+          When you were given an account on the MIDAS website, you will have
+          been provided with a username, password and API key. The API key is
+          used to authenticate requests to the RESTful API. Every request to
+          the API must have an <code>Authorization</code> header, which gives
+          your username and API key. The required format is
+          <samp>&lt;username&gt;:&lt;API key&gt;</samp>:
         </p>
-        <p>
-          <strong>Please note</strong> that the server keeps a detailed audit log of
-          all requests to the API.
-        </p>
-
-        <section>
-
-          <h2>Authentication</h2>
-
-          <p>
-            When you were given an account on the MIDAS website, you will have
-            been provided with a username, password and API key. The API key is
-            used to authenticate requests to the RESTful API. Every request to
-            the API must have an <code>Authorization</code> header, which gives
-            your username and API key. The required format is
-            <samp>&lt;username&gt;:&lt;API key&gt;</samp>:
-          </p>
-          <pre>
+        <pre>
 $ curl -i -H "Authorization: jtate:Fj8Iwkfd36oI032gfj2982sze8oPje4U" \
-  -H "Accept: application/json" https://www.midasuk/org/summary
+  -H "Accept: application/json" https://www.midasuk.org/summary
 HTTP/1.0 200 OK
 Date: Mon, 29 Jun 2015 13:05:13 GMT
 Content-Type: application/json
@@ -50,12 +50,12 @@ ampicillin":{"R":"2","S":"128"},"erythromycin":{"R":"96","I":"25","S":"9"},"tetr
 "58"}}}-%]
 ...</pre>
 
-          <p>
-            If you don't provide the <code>Authorization</code> header you will receive a
-            <samp>401 Unauthorized</samp> response:
-          </p>
-          <pre>
-$ curl -i -H "Accept: application/json" https://www.midasuk/org/summary
+        <p>
+          If you don't provide the <code>Authorization</code> header you will receive a
+          <samp>401 Unauthorized</samp> response:
+        </p>
+        <pre>
+$ curl -i -H "Accept: application/json" https://www.midasuk.org/summary
 HTTP/1.0 401 Unauthorized
 Date: Mon, 29 Jun 2015 13:15:16 GMT
 Content-Length: 62
@@ -63,12 +63,12 @@ Content-Length: 62
 Must supply username and API key in the "Authorization" header
 </pre>
 
-          <p>
-            If you give an invalid or incorrect username or key, you will also
-            receive a <samp>401 Unauthorized</samp> response:
-          </p>
-          <pre>
-$ curl -i -H "Accept: application/json" -H "Authorization: bad#user: " https://www.midasuk/org/summary
+        <p>
+          If you give an invalid or incorrect username or key, you will also
+          receive a <samp>401 Unauthorized</samp> response:
+        </p>
+        <pre>
+$ curl -i -H "Accept: application/json" -H "Authorization: bad#user: " https://www.midasuk.org/summary
 HTTP/1.0 401 Unauthorized
 Date: Mon, 29 Jun 2015 13:24:18 GMT
 Content-Length: 60
@@ -76,26 +76,26 @@ Content-Length: 60
 Malformed "Authorization" header; must be "username:api_key"
 </pre>
 
-        </section>
+      </section>
 
-        <section>
+      <section>
 
-          <h2>Formats</h2>
+        <h2>Formats</h2>
 
-          <p>
-            The API can return data in several formats: <code>text/csv</code>,
-            <code>application/json</code>, and <code>text/yaml</code>. Note that some
-            endpoints, notably the sample summary, will not return data in CSV
-            format, because the output can't easily be converted to a simple tabular
-            format.
-          </p>
-          <p>
-            You can specify the format that you want in two ways, using the
-            <code>Accept</code> header:
-          </p>
+        <p>
+          The API can return data in several formats: <code>text/csv</code>,
+          <code>application/json</code>, and <code>text/yaml</code>. Note that some
+          endpoints, notably the sample summary, will not return data in CSV
+          format, because the output can't easily be converted to a simple tabular
+          format.
+        </p>
+        <p>
+          You can specify the format that you want in two ways, using the
+          <code>Accept</code> header:
+        </p>
 
-          <pre>
-$ curl -i -H "Authorization: jtate:$API_KEY" -H "<strong>Accept: application/json</strong>" https://www.midasuk/org/summary
+        <pre>
+$ curl -i -H "Authorization: jtate:$API_KEY" -H "<strong>Accept: application/json</strong>" https://www.midasuk.org/summary
 HTTP/1.0 200 OK
 Date: Mon, 29 Jun 2015 13:05:43 GMT
 Content-Type: application/json
@@ -104,12 +104,12 @@ Content-Length: 1487
 {"collected_at":{"UCL":"856","CAMBRIDGE":"902","OXFORD":"893"},"total_number_of_manifests":44,"total_numb
 ...</pre>
 
-          <p>
-            Or using a URL parameter:
-          </p>
+        <p>
+          Or using a URL parameter:
+        </p>
 
-          <pre>
-$ curl -i -H "Authorization: jtate:$API_KEY" "https://www.midasuk/org/summary?<strong>content-type=text/yaml</strong>"
+        <pre>
+$ curl -i -H "Authorization: jtate:$API_KEY" "https://www.midasuk.org/summary?<strong>content-type=text/yaml</strong>"
 HTTP/1.0 200 OK
 Date: Tue, 30 Jun 2015 08:30:41 GMT
 Content-Type: text/yaml; charset=UTF-8
@@ -129,69 +129,69 @@ compound_counts:
     S: 63
 ...</pre>
 
-          <p>
-            If you don't specify a content type, the server will assume that it is
-            returning data to a browser and will format your results as
-            <code>text/html</code>.
-          </p>
+        <p>
+          If you don't specify a content type, the server will assume that it is
+          returning data to a browser and will format your results as
+          <code>text/html</code>.
+        </p>
 
-        </section>
+      </section>
+
+      <section>
+
+        <h2>Endpoints</h2>
 
         <section>
 
-          <h2>Endpoints</h2>
+          <h3>Summary</h3>
 
-          <section>
+          <p class="endpoint">
+            <samp>/summary</samp>
+          </p>
+          <p>
+            Retrieves a summary of all of the sample metadata currently available
+          </p>
 
-            <h3>Summary</h3>
+          <h4>Results</h4>
 
-            <p class="endpoint">
-              <samp>/summary</samp>
-            </p>
-            <p>
-              Retrieves a summary of all of the sample metadata currently available
-            </p>
+          <p>
+            The sections in the response are:
+          </p>
+          <dl class="dl-horizontal">
+            <dt>collected_at</dt>
+            <dd>
+              the number of samples collected at each of the HICF member institutions
+            </dd>
+            <dt>total_number_of_manifests</dt>
+            <dd>
+              the number of sample manifests that have been loaded
+            </dd>
+            <dt>total_number_of_samples</dt>
+            <dd>
+              the total number of samples that have been loaded
+            </dd>
+            <dt>scientific_names</dt>
+            <dd>
+              the scientific names and number of samples collected from sampled organisms
+            </dd>
+            <dt>scientific_names</dt>
+            <dd>the number of samples collected from each organism</dd>
+            <dt>sir_counts</dt>
+            <dd>
+              the number of samples which have antimicrobial resistance test
+              results showing susceptibility (S), intermeditate susceptibility (I),
+              or resistance (R) to one or more antimicrobials
+            </dd>
+            <dt>compound_counts</dt>
+            <dd>
+              the number of samples exhibiting susceptibility, intermediate
+              susceptibility, or resistance to the specified antimicrobial
+            </dd>
+          </dl>
 
-            <h4>Results</h4>
+          <h4>Example output</h4>
 
-            <p>
-              The sections in the response are:
-            </p>
-            <dl class="dl-horizontal">
-              <dt>collected_at</dt>
-              <dd>
-                the number of samples collected at each of the HICF member institutions
-              </dd>
-              <dt>total_number_of_manifests</dt>
-              <dd>
-                the number of sample manifests that have been loaded
-              </dd>
-              <dt>total_number_of_samples</dt>
-              <dd>
-                the total number of samples that have been loaded
-              </dd>
-              <dt>scientific_names</dt>
-              <dd>
-                the scientific names and number of samples collected from sampled organisms
-              </dd>
-              <dt>scientific_names</dt>
-              <dd>the number of samples collected from each organism</dd>
-              <dt>sir_counts</dt>
-              <dd>
-                the number of samples which have antimicrobial resistance test
-                results showing susceptibility (S), intermeditate susceptibility (I),
-                or resistance (R) to one or more antimicrobials
-              </dd>
-              <dt>compound_counts</dt>
-              <dd>
-                the number of samples exhibiting susceptibility, intermediate
-                susceptibility, or resistance to the specified antimicrobial
-              </dd>
-            </dl>
-
-            <h4>Example output</h4>
-
-            <pre class="prettyprint pre-scrollable">
+          <pre class="prettyprint pre-scrollable">
 {
   "collected_at": {
     "UCL": "856",
@@ -259,32 +259,32 @@ compound_counts:
   }
 }</pre>
 
-          </section>
+        </section>
 
-          <section>
+        <section>
 
-            <h3>All samples</h3>
+          <h3>All samples</h3>
 
-            <p class="endpoint">
-              <samp>/samples</samp>
-            </p>
-            <p>
-              Retrieves metadata for all samples in the database
-            </p>
+          <p class="endpoint">
+            <samp>/samples</samp>
+          </p>
+          <p>
+            Retrieves metadata for all samples in the database
+          </p>
 
-            <h4>Results</h4>
+          <h4>Results</h4>
 
-            <p>
-              The returned metadata fields are described in the
-              <a class="dl" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/[% midas_manifest %]">
-                manifest template</a> and the
-              <a class="ext" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/HICF_checklist.conf">
-                HICF checklist</a>. Results are ordered by ascending sample ID.
-            </p>
+          <p>
+            The returned metadata fields are described in the
+            <a class="dl" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/[% midas_manifest %]">
+              manifest template</a> and the
+            <a class="ext" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/HICF_checklist.conf">
+              HICF checklist</a>. Results are ordered by ascending sample ID.
+          </p>
 
-            <h4>Example output</h4>
+          <h4>Example output</h4>
 
-            <pre class="prettyprint pre-scrollable">
+          <pre class="prettyprint pre-scrollable">
 [
   {
     "host_associated": "yes",
@@ -326,71 +326,71 @@ compound_counts:
     "isolate": null,
 ...</pre>
 
-            <p class="endpoint">
-              <samp>/samples/<strong>&lt;start&gt;</strong>/<strong>&lt;num&gt;</strong></samp>
-            </p>
-            <p>
-              Retrieves metadata for a subset of samples
-            </p>
+          <p class="endpoint">
+            <samp>/samples/<strong>&lt;start&gt;</strong>/<strong>&lt;num&gt;</strong></samp>
+          </p>
+          <p>
+            Retrieves metadata for a subset of samples
+          </p>
 
-            <h4>Arguments</h4>
+          <h4>Arguments</h4>
 
-            <ul class="list-unstyled">
-              <li><strong>start</strong> &mdash; first row to return</li>
-              <li><strong>num</strong> &mdash; number of rows to return</li>
-            </ul>
+          <ul class="list-unstyled">
+            <li><strong>start</strong> &mdash; first row to return</li>
+            <li><strong>num</strong> &mdash; number of rows to return</li>
+          </ul>
 
-            <p>
-              Both <strong>&lt;start&gt;</strong> and <strong>&lt;num&gt;</strong> must be
-              &ge; 1.
-            </p>
+          <p>
+            Both <strong>&lt;start&gt;</strong> and <strong>&lt;num&gt;</strong> must be
+            &ge; 1.
+          </p>
 
-            <h4>Results</h4>
+          <h4>Results</h4>
 
-            <p>
-              The returned metadata fields are identical to those returned by
-              <samp>/samples</samp>, as described in the
-              <a class="dl" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/[% midas_manifest %]">
-                manifest template</a> and the
-              <a class="ext" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/HICF_checklist.conf">
-                HICF checklist</a>. Results are ordered by ascending sample ID.
-            </p>
+          <p>
+            The returned metadata fields are identical to those returned by
+            <samp>/samples</samp>, as described in the
+            <a class="dl" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/[% midas_manifest %]">
+              manifest template</a> and the
+            <a class="ext" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/HICF_checklist.conf">
+              HICF checklist</a>. Results are ordered by ascending sample ID.
+          </p>
 
-          </section>
+        </section>
 
-          <section>
+        <section>
 
-            <h3>Single sample</h3>
+          <h3>Single sample</h3>
 
-            <p class="endpoint">
-              <samp>/sample/<strong>&lt;sample ID&gt;</strong></samp>
-            </p>
-            <p>
-              Retrieves metadata for a single sample
-            </p>
+          <p class="endpoint">
+            <samp>/sample/<strong>&lt;sample ID&gt;</strong></samp>
+          </p>
+          <p>
+            Retrieves metadata for a single sample
+          </p>
 
-            <h4>Arguments</h4>
+          <h4>Arguments</h4>
 
-            <ul class="list-unstyled">
-              <li>
-                <strong>sample ID</strong> &mdash; the ID of the sample to be
-                returned
-              </li>
-            </ul>
+          <ul class="list-unstyled">
+            <li>
+              <strong>sample ID</strong> &mdash; the ID of the sample to be
+              returned
+            </li>
+          </ul>
 
-            <h4>Results</h4>
+          <h4>Results</h4>
 
-            <p>
-              The returned metadata fields are described in the
-              <a class="dl" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/[% midas_manifest %]">
-                manifest template</a> and the
-              <a class="ext" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/HICF_checklist.conf">
-                HICF checklist</a>.
-            </p>
+          <p>
+            The returned metadata fields are described in the
+            <a class="dl" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/[% midas_manifest %]">
+              manifest template</a> and the
+            <a class="ext" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/HICF_checklist.conf">
+              HICF checklist</a>.
+          </p>
 
-            <h4>Example output</h4>
+          <h4>Example output</h4>
 
-            <pre class="prettyprint pre-scrollable">
+          <pre class="prettyprint pre-scrollable">
 {
   "sample_accession": "B23546",
   "other_classification": null,
@@ -466,145 +466,145 @@ compound_counts:
   "collection_date": "2014-09-12",
   "host_isolation_source": "temporarily obscured"
 }</pre>
-          </section>
+        </section>
 
-          <section>
+        <section>
 
-            <h3>Samples by organism</h3>
+          <h3>Samples by organism</h3>
 
-            <p class="endpoint">
-              <samp>/samples/<strong>&lt;organism&gt;</strong></samp>
-            </p>
-            <p>
-              Returns all samples from the specified organism
-            </p>
+          <p class="endpoint">
+            <samp>/samples/<strong>&lt;organism&gt;</strong></samp>
+          </p>
+          <p>
+            Returns all samples from the specified organism
+          </p>
 
-            <h4>Arguments</h4>
+          <h4>Arguments</h4>
 
-            <ul class="list-unstyled">
-              <li>
-                <strong>organism</strong> &mdash; either the scientific name of
-                the organism, e.g. <em>Influenzavirus A</em>, or its NCBI
-                taxonomy ID, e.g. <em>197911</em>
-              </li>
-            </ul>
+          <ul class="list-unstyled">
+            <li>
+              <strong>organism</strong> &mdash; either the scientific name of
+              the organism, e.g. <em>Influenzavirus A</em>, or its NCBI
+              taxonomy ID, e.g. <em>197911</em>
+            </li>
+          </ul>
 
-            <h4>Results</h4>
+          <h4>Results</h4>
 
-            <p>
-              The returned metadata fields are identical to those returned by
-              <samp>/samples</samp>, as described in the
-              <a class="dl" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/midas_manifest_v3.xlsx">
-                manifest template</a> and the
-              <a class="ext" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/HICF_checklist.conf">
-                HICF checklist</a>. Results are ordered by ascending sample ID.
-            </p>
+          <p>
+            The returned metadata fields are identical to those returned by
+            <samp>/samples</samp>, as described in the
+            <a class="dl" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/midas_manifest_v3.xlsx">
+              manifest template</a> and the
+            <a class="ext" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/HICF_checklist.conf">
+              HICF checklist</a>. Results are ordered by ascending sample ID.
+          </p>
 
-            <p class="endpoint">
-              <samp>/samples/<strong>&lt;organism&gt;</strong>/<strong>&lt;start&gt;</strong>/<strong>&lt;num&gt;</strong></samp>
-            </p>
-            <p>
-              Returns a page of samples from the specified organism
-            </p>
+          <p class="endpoint">
+            <samp>/samples/<strong>&lt;organism&gt;</strong>/<strong>&lt;start&gt;</strong>/<strong>&lt;num&gt;</strong></samp>
+          </p>
+          <p>
+            Returns a page of samples from the specified organism
+          </p>
 
-            <h4>Arguments</h4>
+          <h4>Arguments</h4>
 
-            <ul class="list-unstyled">
-              <li>
-                <strong>organism</strong> &mdash; either the scientific name,
-                e.g. <em>Influenzavirus A</em>, or NCBI taxonomy ID, e.g.
-                <em>197911</em> of the organism
-              </li>
-              <li><strong>start</strong> &mdash; the number of the first row to return</li>
-              <li><strong>num</strong> &mdash; number of rows to return</li>
-            </ul>
+          <ul class="list-unstyled">
+            <li>
+              <strong>organism</strong> &mdash; either the scientific name,
+              e.g. <em>Influenzavirus A</em>, or NCBI taxonomy ID, e.g.
+              <em>197911</em> of the organism
+            </li>
+            <li><strong>start</strong> &mdash; the number of the first row to return</li>
+            <li><strong>num</strong> &mdash; number of rows to return</li>
+          </ul>
 
-            <h4>Results</h4>
+          <h4>Results</h4>
 
-            <p>
-              The returned metadata fields are identical to those returned by
-              <samp>/samples</samp>, as described in the
-              <a class="dl" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/[% midas_manifest %]">
-                manifest template</a> and the
-              <a class="ext" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/HICF_checklist.conf">
-                HICF checklist</a>. Results are ordered by ascending sample ID.
-            </p>
-
-          </section>
-
-          <section>
-
-            <h3>Samples by antimicrobial susceptibility</h3>
-
-            <p class="endpoint">
-              <samp>/samples_with_susceptibility/<strong>&lt;susceptibility&gt;</strong></samp>
-            </p>
-            <p>
-              Returns all samples that have antimicrobial resistance test results
-              with the given susceptibility
-            </p>
-
-            <h4>Arguments</h4>
-
-            <ul class="list-unstyled">
-              <li>
-                <strong>susceptibility</strong> &mdash; either <samp>S</samp>,
-                <samp>I</samp>, or <samp>R</samp>
-              </li>
-            </ul>
-
-            <h4>Results</h4>
-
-            <p>
-              The returned metadata fields are identical to those returned by
-              <samp>/samples</samp>, as described in the
-              <a class="dl" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/[% midas_manifest %]">
-                manifest template</a> and the
-              <a class="ext" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/HICF_checklist.conf">
-                HICF checklist</a>. Results are ordered by ascending sample ID.
-            </p>
-
-            <p class="endpoint">
-              <samp>/samples_by_antimicrobial/<strong>&lt;name&gt;</strong>/<strong>&lt;?susceptibility&gt;</strong></samp>
-            </p>
-            <p>
-              Retrieves samples that have antimicrobial resistance test results
-              against the specified antimicrobial and with the given susceptibility
-            </p>
-
-            <h4>Arguments</h4>
-
-            <ul class="list-unstyled">
-              <li>
-                <strong>name</strong> &mdash; antimicrobial compound name
-              </li>
-              <li>
-                <strong>susceptibility</strong> &mdash; either <samp>S</samp>,
-                <samp>I</samp>, or <samp>R</samp>. <strong>Optional</strong>
-              </li>
-            </ul>
-
-            <p>
-              If <strong>&lt;susceptibility&gt;</strong> is not given, the API will
-              return all samples that have antimicrobial resistance test results
-              against the specified compound, regardless of the organism's
-              susceptibility to the compound.
-            </p>
-
-            <h4>Results</h4>
-
-            <p>
-              The returned metadata fields are identical to those returned by
-              <samp>/samples</samp>, as described in the
-              <a class="dl" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/[% midas_manifest %]">
-                manifest template</a> and the
-              <a class="ext" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/HICF_checklist.conf">
-                HICF checklist</a>. Results are ordered by ascending sample ID.
-            </p>
-
-          </section>
+          <p>
+            The returned metadata fields are identical to those returned by
+            <samp>/samples</samp>, as described in the
+            <a class="dl" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/[% midas_manifest %]">
+              manifest template</a> and the
+            <a class="ext" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/HICF_checklist.conf">
+              HICF checklist</a>. Results are ordered by ascending sample ID.
+          </p>
 
         </section>
+
+        <section>
+
+          <h3>Samples by antimicrobial susceptibility</h3>
+
+          <p class="endpoint">
+            <samp>/samples_with_susceptibility/<strong>&lt;susceptibility&gt;</strong></samp>
+          </p>
+          <p>
+            Returns all samples that have antimicrobial resistance test results
+            with the given susceptibility
+          </p>
+
+          <h4>Arguments</h4>
+
+          <ul class="list-unstyled">
+            <li>
+              <strong>susceptibility</strong> &mdash; either <samp>S</samp>,
+              <samp>I</samp>, or <samp>R</samp>
+            </li>
+          </ul>
+
+          <h4>Results</h4>
+
+          <p>
+            The returned metadata fields are identical to those returned by
+            <samp>/samples</samp>, as described in the
+            <a class="dl" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/[% midas_manifest %]">
+              manifest template</a> and the
+            <a class="ext" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/HICF_checklist.conf">
+              HICF checklist</a>. Results are ordered by ascending sample ID.
+          </p>
+
+          <p class="endpoint">
+            <samp>/samples_by_antimicrobial/<strong>&lt;name&gt;</strong>/<strong>&lt;?susceptibility&gt;</strong></samp>
+          </p>
+          <p>
+            Retrieves samples that have antimicrobial resistance test results
+            against the specified antimicrobial and with the given susceptibility
+          </p>
+
+          <h4>Arguments</h4>
+
+          <ul class="list-unstyled">
+            <li>
+              <strong>name</strong> &mdash; antimicrobial compound name
+            </li>
+            <li>
+              <strong>susceptibility</strong> &mdash; either <samp>S</samp>,
+              <samp>I</samp>, or <samp>R</samp>. <strong>Optional</strong>
+            </li>
+          </ul>
+
+          <p>
+            If <strong>&lt;susceptibility&gt;</strong> is not given, the API will
+            return all samples that have antimicrobial resistance test results
+            against the specified compound, regardless of the organism's
+            susceptibility to the compound.
+          </p>
+
+          <h4>Results</h4>
+
+          <p>
+            The returned metadata fields are identical to those returned by
+            <samp>/samples</samp>, as described in the
+            <a class="dl" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/[% midas_manifest %]">
+              manifest template</a> and the
+            <a class="ext" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/HICF_checklist.conf">
+              HICF checklist</a>. Results are ordered by ascending sample ID.
+          </p>
+
+        </section>
+
+      </section>
 
       [%#
       +-----------------------------------------------------+
@@ -624,10 +624,13 @@ compound_counts:
       '-----------------------------------------------------+
       %]
 
+    </div>[%# end of "col-md-9" %]
+
+    <div class="col-md-3">
+      <div id="toc"></div>
     </div>
 
-    <div id="toc" class="col-md-3"></div>
+  </div>[%# end of "row" %]
 
-  </div>
 </article>
 
