@@ -239,9 +239,8 @@ sub return_validated_file : Chained('/') PathPart('validate') Args(1) {
     return;
   }
 
-  my $validated_filename  = 'validated_' . $file_hash->{filename};
-  my $compressed_contents = $file_hash->{contents};
-  my $validated_contents  = Compress::Zlib::memGunzip( $file_hash->{contents} );
+  my $validated_filename = 'validated_' . $file_hash->{filename};
+  my $validated_contents = Compress::Zlib::memGunzip( $file_hash->{contents} );
 
   unless ( $validated_contents ) {
     $c->log->error("Didn't get validated file contents from cache");
