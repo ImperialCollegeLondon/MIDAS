@@ -6,6 +6,7 @@ use namespace::autoclean;
 
 use Data::UUID;
 use Try::Tiny;
+use Compress::Zlib;
 
 use Bio::Metadata::Checklist;
 use Bio::Metadata::Reader;
@@ -169,11 +170,13 @@ sub validate_upload : Chained('/') PathPart('validate') Args(0) {
     $c->log->debug( 'file was INvalid' )
       if $c->debug;
 
-    my $file_contents = $manifest->get_csv;
+    my $validated_csv = $manifest->get_csv;
+    my $file_contents = Compress::Zlib::memGzip($validated_csv);
+
     unless ( $file_contents ) {
-      $c->log->error("Couldn't read uploaded file: $!");
+      $c->log->error("Couldn't retrieve or compress validated file: $!");
       $c->res->status(500); # internal server error
-      $c->res->body("Couldn't read your CSV file");
+      $c->res->body("Couldn't save your validated CSV file");
       return;
     }
 
@@ -237,7 +240,7 @@ sub return_validated_file : Chained('/') PathPart('validate') Args(1) {
   }
 
   my $validated_filename = 'validated_' . $file_hash->{filename};
-  my $validated_contents = $file_hash->{contents};
+  my $validated_contents = Compress::Zlib::memGunzip( $file_hash->{contents} );
 
   unless ( $validated_contents ) {
     $c->log->error("Didn't get validated file contents from cache");
