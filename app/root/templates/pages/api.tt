@@ -179,7 +179,7 @@ compound_counts:
             <dt>sir_counts</dt>
             <dd>
               the number of samples which have antimicrobial resistance test
-              results showing susceptibility (S), intermeditate susceptibility (I),
+              results showing susceptibility (S), intermediate susceptibility (I),
               or resistance (R) to one or more antimicrobials
             </dd>
             <dt>compound_counts</dt>
@@ -281,6 +281,22 @@ compound_counts:
             <a class="ext" href="https://raw.githubusercontent.com/sanger-pathogens/HICF_checklist/master/HICF_checklist.conf">
               HICF checklist</a>. Results are ordered by ascending sample ID.
           </p>
+
+          <p>
+            Results may be filtered by adding one or more <code>filter</code>
+            parameters to the URL, e.g.
+          </p>
+
+          <pre>
+$ curl -i -H "Authorization: jtate:Fj8Iwkfd36oI032gfj2982sze8oPje4U" \
+  -H "Accept: application/json" 'https://www.midasuk.org/samples?filter=avium&amp;filter=2013'
+HTTP/1.0 200 OK
+Date: Mon, 29 Jun 2015 13:24:20 GMT
+Content-Type: application/json
+Content-Length: 3312
+
+[{"host_associated":"yes","amr":[],"other_classification":null,"specific_host":"Homo sapiens","sample_id
+...</pre>
 
           <h4>Example output</h4>
 
