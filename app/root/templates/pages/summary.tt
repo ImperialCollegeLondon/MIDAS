@@ -198,8 +198,8 @@
           </tr>
         </thead>
         <tbody>
-          [% ca = summary.collected_at;
-          FOREACH site IN ca.keys.sort;
+          [% sb = summary.submitted_by;
+          FOREACH site IN sb.keys.sort;
             site_string = site == 'UCL'
                         ? 'UCL'
                         : site.lower.ucfirst %]
@@ -211,7 +211,7 @@
             <td>
               <a title="Download all samples contributed by [% site_string %]"
                  href="[% c.uri_for('/samples', { dl => 1, filter => site, 'content-type' => 'text/csv' } ) %]">
-                [% ca.$site %]
+                [% sb.$site %]
               </a>
             </td>
           </tr>

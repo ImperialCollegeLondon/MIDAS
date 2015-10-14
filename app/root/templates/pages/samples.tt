@@ -1,4 +1,3 @@
-
 <section class="container" id="samples">
 
   [% IF error %]
@@ -61,6 +60,7 @@
             <th>Manifest ID</th>
             <th>Raw data accession</th>
             <th>Sample accession</th>
+            <th>Donor ID</th>
             <th>Description</th>
             <th>Collected at</th>
             <th>NCBI tax ID</th>
