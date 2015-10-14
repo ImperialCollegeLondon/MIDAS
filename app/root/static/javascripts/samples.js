@@ -21,13 +21,14 @@ var samples = (function() {
       table.push( "<table class='amrData table table-striped table-condensed'>" );
       table.push( "<thead><tr>" );
       table.push( "<th>Compound name</th>" );
-      table.push( "<th><abbr title='Susceptible (S), Intermediate (I), Resistant (R)'>Susceptibility</abbr></th>" );
+      table.push( "<th><abbr title='Susceptible (S), Intermediate (I), Resistant (R), Unknown (U)'>Susceptibility</abbr></th>" );
       table.push( "<th><abbr title='Minimum Inhibitory Concentration'>MIC</abbr> (<abbr title='milligrammes per litre'>mg/l</abbr>)</th>" );
+      table.push( "<th>Method</th>" );
       table.push( "</tr></thead>" );
       table.push( "<tbody>" );
 
       $.each( d.amr, function(i, amr) {
-        if ( amr.susceptibility.match("[SIR]") ) {
+        if ( amr.susceptibility.match("[SIRU]") ) {
           susceptibilityClass = "amr" + amr.susceptibility;
         }
         table.push( "<tr class='" + susceptibilityClass + "'>" );
@@ -41,6 +42,7 @@ var samples = (function() {
           case "ge": equality = "&ge;"; break;
         }
         table.push( "<td class='amrMIC'>" + equality + amr.mic + "</td>" );
+        table.push( "<td class='amrMethod'>" + amr.method + "</td>" );
         table.push( "</tr>" );
       } );
 
@@ -123,6 +125,7 @@ var samples = (function() {
                      row.sample_accession + "'>" + row.sample_accession + "</a>";
             }
           },
+          { data: "donor_id", render: renderer },
           {
             // sample_description
             render: function(data, type, row, meta) {
@@ -141,7 +144,7 @@ var samples = (function() {
               return op;
             }
           },
-          { data: "collected_at", render: renderer },
+          { data: "submitted_by", render: renderer },
           { data: "tax_id", visible: false },
           {
             // scientific_name / tax_id
@@ -154,7 +157,8 @@ var samples = (function() {
           { data: "collected_by",            render: renderer },
           { data: "source",                  render: renderer },
           { data: "collection_date",         render: renderer },
-          { data: "location",                render: renderer },
+          { data: "location", visible: false },
+          { data: "location_description",    render: renderer },
           { data: "host_associated",         render: renderer },
           { data: "specific_host",           render: renderer },
           { data: "host_disease_status",     render: renderer },
@@ -245,14 +249,23 @@ var samples = (function() {
       $("button.table-download-link").on("click", function(e) {
         var filterTerm = $("#samples-table_filter input").val(),
             dlFormat   = e.target.dataset.format,
-            dlURL      = window.location.href;
-        dlURL += "?dl=1";
-        dlURL += "&content-type=" + encodeURIComponent(dlFormat);
+            dlURL      = window.location.href,
+            uri        = "",
+            params     = {
+              "dl":           1,
+              "content-type": dlFormat
+            };
+
         if ( filterTerm !== undefined && filterTerm !== "" ) {
-          dlURL += "&filter=" + encodeURIComponent(filterTerm);
+          params.filter = encodeURIComponent(filterTerm);
         }
-        console.debug( "redirecting to " + dlURL );
-        window.location.href = dlURL;
+        if ( dlURL.indexOf("?") === -1 ) {
+          uri = dlURL + "?" + $.param( params );
+        } else {
+          uri = dlURL + "&" + $.param( params );
+        }
+        console.debug( "redirecting to: %s", uri );
+        window.location.href = uri;
       } );
 
     }

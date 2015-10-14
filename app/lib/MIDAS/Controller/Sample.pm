@@ -13,10 +13,14 @@ has '_filter_columns' => (
   default => sub {
     [ qw(
       manifest_id
+      raw_data_accession
+      sample_accession
+      donor_id
+      description
       scientific_name
       tax_id
       collection_date
-      collected_at
+      submitted_by
     ) ];
   }
 );
@@ -92,7 +96,7 @@ sub samples : Chained('/')
   # filtered and sorted, while the other will be kept untouched and used to
   # calculate things like the number of samples in the whole dataset.
   #
-  # DBIC is (hopefully) smart enough not to instantiate the object or run the
+  # DBIC is (hopefully) smart enough not to populate the object or run the
   # query to retrieve all samples unless requested, so at this point we're just
   # storing a reference to a small DBIC object that doesn't contain any data.
 
@@ -820,13 +824,21 @@ sub _stash_params : Private {
     if $c->debug;
 
   # we need to handle filter terms coming from either DataTables or from
-  # the download link that we build in the page
-  my $tainted_filter_term = $c->req->params->{'search[value]'} ||
-                            $c->req->params->{filter} ||
-                            '';
-  my $filter_term;
-  if ( $tainted_filter_term =~ m/^([\w\-]+)$/ ) {
-    $filter_term = $1;
+  # the download link that we build in the page. Also, we could end up with
+  # two "filter" terms, one from the URL, where we've filtered to, say, a
+  # manifest, and one from the DataTables search box. We need to apply both
+  # filters to get the same content as DataTables gets in the browser
+
+  my @tainted_filter_terms = (
+    $c->req->params->{'search[value]'},
+    ref $c->req->params->{filter} eq 'ARRAY'
+      ? @{ $c->req->params->{filter} }
+      :    $c->req->params->{filter}
+  );
+
+  my @filter_terms;
+  for ( @tainted_filter_terms ) {
+    push @filter_terms, $1 if ( defined $_ and m/^([\w\-]+)$/ );
   }
 
   # we're only accepting sort params from DataTables
@@ -857,7 +869,7 @@ sub _stash_params : Private {
   # data, either for display or for downloading in raw JSON format (or whatever
   # is specified by the content-type URI param)
   my $format_params = {
-    filter_term     => $filter_term,
+    filter_terms    => \@filter_terms,
     sort_column_num => $sort_column_num,
     sort_column_dir => $sort_column_dir,
     draw            => $draw,
@@ -880,9 +892,9 @@ sub _format_sample_data : Private {
   # we can take advantage of DBIC here by simply stacking up the modifications
   # to the query and letting it build a final SQL query that encompasses all of
   # them
-  $c->forward('_do_paging');    # chop the RS down to the required page
   $c->forward('_do_filtering'); # filter the RS
   $c->forward('_do_sorting');   # sort it
+  $c->forward('_do_paging');    # chop the RS down to the required page
   $c->forward('_do_munge_rs');  # convert the RS into a regular data structure.
                                 # The output of "_do_munge_rs" is stored in
                                 # $c->stash->{samples}
@@ -901,58 +913,35 @@ sub _format_sample_data : Private {
 
 #-------------------------------------------------------------------------------
 
-# retrieve a ResultSet containing the specified rows
-sub _do_paging : Private {
-  my ( $self, $c ) = @_;
-
-  my $start  = $c->stash->{format_params}->{start};
-  my $length = $c->stash->{format_params}->{length};
-
-  $c->log->debug( '_do_paging: checking bounds...' )
-    if $c->debug;
-
-  # DataTables tells us the range that it wants as "start/length", while DBIC
-  # selects its ranges as "from - to". This is where the conversion happens
-
-  return unless defined $start;
-  return unless $start =~ m/^(\d+)$/;
-  my $from = $1;
-
-  return unless defined $length;
-  return unless $length =~ m/^(\d+)$/;
-  my $to = $start + $1 - 1;
-
-  $c->log->debug( "_do_paging: retrieving rows $from - $to" )
-    if $c->debug;
-
-  my $sliced_rs = $c->stash->{rs}->slice($from, $to);
-
-  $c->stash( rs => $sliced_rs );
-}
-
-#-------------------------------------------------------------------------------
-
 # filter the resultset
 sub _do_filtering : Private {
   my ( $self, $c ) = @_;
 
-  my $filter_term = $c->stash->{format_params}->{filter_term};
+  my $filtered_rs = $c->stash->{rs};
 
-  return if not defined $filter_term;
-  return if $filter_term eq '';
+  foreach my $filter_term ( @{ $c->stash->{format_params}->{filter_terms} } ) {
 
-  $c->log->debug( "_do_filtering: retrieving rows matching |$filter_term|" )
-    if $c->debug;
+    next unless $filter_term;
 
-  # apply the filter to the range ResultSet, so that we end up with the set
-  # of filtered samples
-  my $filtered_rs = $c->model->schema->filter_rs(
-    $c->stash->{rs},
-    $self->_filter_columns,
-    $filter_term,
+    $c->log->debug( "_do_filtering: retrieving rows matching |$filter_term|" )
+      if $c->debug;
+
+    # apply the filter to the range ResultSet, so that we end up with the set
+    # of filtered samples
+    my $input_rs = $filtered_rs;
+    $filtered_rs = $c->model->schema->filter_rs(
+      $input_rs,
+      $self->_filter_columns,
+      $filter_term,
+    );
+  }
+
+  $c->stash(
+    rs     => $filtered_rs,
+    output => { recordsFiltered => $filtered_rs->count },
+    # (used by DataTables to work out how many rows in the dataset, how many
+    # its showing, etc.)
   );
-
-  $c->stash( rs => $filtered_rs );
 }
 
 #-------------------------------------------------------------------------------
@@ -1020,44 +1009,38 @@ sub _do_sorting : Private {
 
 #-------------------------------------------------------------------------------
 
-# format the sample data for a DataTables table
-sub _get_dt_data : Private {
-  my ( $self, $c, $draw, $filter ) = @_;
+# retrieve a ResultSet containing the specified rows
+sub _do_paging : Private {
+  my ( $self, $c ) = @_;
 
-  $c->log->debug( '_get_dt_data: returning data to DataTables' )
+  my $start  = $c->stash->{format_params}->{start};
+  my $length = $c->stash->{format_params}->{length};
+
+  $c->log->debug( '_do_paging: checking bounds...' )
     if $c->debug;
 
-  # if we're filtering the dataset, we need to apply the filter to the ResultSet
-  # containing all samples, so that we can count how many samples that leaves
-  # us with
-  my $filter_term = $c->stash->{format_params}->{filter_term};
+  # DataTables tells us the range that it wants as "start/length", while DBIC
+  # selects its ranges as "from - to". This is where the conversion happens
 
-  if ( defined $filter_term and $filter_term ne '' ) {
-    $c->log->debug( '_get_dt_data: counting unfiltered rows' )
-      if $c->debug;
-    my $count_rs = $c->model->schema->filter_rs(
-      $c->stash->{full_rs},
-      $self->_filter_columns,
-      $filter_term,
-    );
-    $c->stash->{output}->{recordsFiltered} = $count_rs->count;
-  }
+  return unless defined $start;
+  return unless $start =~ m/^(\d+)$/;
+  my $from = $1;
 
-  # build the data structure that we need to return to DataTables on the front
-  # end
-  $c->stash->{output}->{draw}              = $c->stash->{format_params}->{draw};
-  $c->stash->{output}->{recordsTotal}      = $c->stash->{full_rs}->count;
-  $c->stash->{output}->{recordsFiltered} ||= $c->stash->{output}->{recordsTotal};
-  $c->stash->{output}->{data}              = $c->stash->{samples};
+  return unless defined $length;
+  return unless $length =~ m/^(\d+)$/;
+  my $to = $start + $1 - 1;
 
-  $c->log->debug( '_get_dt_data: built output' )
+  $c->log->debug( "_do_paging: retrieving rows $from - $to" )
     if $c->debug;
+
+  my $sliced_rs = $c->stash->{rs}->slice($from, $to);
+
+  $c->stash( rs => $sliced_rs );
 }
 
 #-------------------------------------------------------------------------------
 
 # convert the ResultSet into a data structure that we can serialise
-
 sub _do_munge_rs : Private {
   my ( $self, $c ) = @_;
 
@@ -1069,7 +1052,7 @@ sub _do_munge_rs : Private {
 
     # convert the GAZ term into the term description, which is a proxy for the
     # location description
-    $sample{location} = $row->location_description->description
+    $sample{location_description} = $row->location_description->description
       if defined $row->location && defined $row->location_description;
 
     my $amr_data = [];
@@ -1080,6 +1063,32 @@ sub _do_munge_rs : Private {
   }
 
   $c->stash( samples => \@samples );
+}
+
+#-------------------------------------------------------------------------------
+
+# format the sample data for a DataTables table
+sub _get_dt_data : Private {
+  my ( $self, $c, $draw, $filter ) = @_;
+
+  $c->log->debug( '_get_dt_data: returning data to DataTables' )
+    if $c->debug;
+
+  # build the data structure that we need to return to DataTables on the front
+  # end
+  $c->stash->{output}->{draw}              = $c->stash->{format_params}->{draw};
+  $c->stash->{output}->{recordsTotal}      = $c->stash->{full_rs}->count;
+  $c->stash->{output}->{data}              = $c->stash->{samples};
+
+  # if the dataset was filtered (in _do_filtering), the recordsFiltered value
+  # will already have been added. If not, it needs to be set to the total
+  # number of records in the dataset, so that DataTables will correctly set the
+  # message below the table to say that there was no filtering
+  # $c->stash->{output}->{recordsFiltered} = $c->stash->{output}->{recordsTotal}
+  #   if not defined $c->stash->{output}->{recordsFiltered};
+
+  $c->log->debug( '_get_dt_data: built output' )
+    if $c->debug;
 }
 
 #-------------------------------------------------------------------------------

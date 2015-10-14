@@ -38,7 +38,7 @@ Date: Mon, 29 Jun 2015 13:05:13 GMT
 Content-Type: application/json
 Content-Length: 1487
 
-{"collected_at":{"UCL":"856","CAMBRIDGE":"902","OXFORD":"893"},"total_number_of_manifests":44,"total_numb
+{"submitted_by":{"UCL":"856","CAMBRIDGE":"902","OXFORD":"893"},"total_number_of_manifests":44,"total_numb
 [%#
 er_of_samples":12066,"scientific_names":{"Pseudomonas aeruginosa":"105","mixed culture":"542","H1N2 subty
 pe":"450","Mycobacterium tuberculosis":"341","Influenzavirus A":"781","H1N1 subtype":"91","Mycobacterium
@@ -101,7 +101,7 @@ Date: Mon, 29 Jun 2015 13:05:43 GMT
 Content-Type: application/json
 Content-Length: 1487
 
-{"collected_at":{"UCL":"856","CAMBRIDGE":"902","OXFORD":"893"},"total_number_of_manifests":44,"total_numb
+{"submitted_by":{"UCL":"856","CAMBRIDGE":"902","OXFORD":"893"},"total_number_of_manifests":44,"total_numb
 ...</pre>
 
         <p>
@@ -116,7 +116,7 @@ Content-Type: text/yaml; charset=UTF-8
 Content-Length: 1480
 
 ---
-collected_at:
+submitted_by:
   CAMBRIDGE: 902
   OXFORD: 893
   UCL: 856
@@ -158,7 +158,7 @@ compound_counts:
             The sections in the response are:
           </p>
           <dl class="dl-horizontal">
-            <dt>collected_at</dt>
+            <dt>submitted_by</dt>
             <dd>
               the number of samples collected at each of the HICF member institutions
             </dd>
@@ -193,7 +193,7 @@ compound_counts:
 
           <pre class="prettyprint pre-scrollable">
 {
-  "collected_at": {
+  "submitted_by": {
     "UCL": "856",
     "CAMBRIDGE": "902",
     "OXFORD": "893"
@@ -302,7 +302,7 @@ compound_counts:
     "tax_id": "11309",
     "patient_location": "inpatient",
     "specific_host": "Homo sapiens",
-    "collected_at": "CAMBRIDGE",
+    "submitted_by": "CAMBRIDGE",
     "manifest_id": "A465A9E0-09FD-11E5-A371-14A80E07C9D0",
     "serovar": "not available: not collected",
     "isolate": null,
@@ -314,7 +314,7 @@ compound_counts:
   {
     "patient_location": "inpatient",
     "specific_host": "Homo sapiens",
-    "collected_at": "CAMBRIDGE",
+    "submitted_by": "CAMBRIDGE",
     "tax_id": "11309",
     "location": "London",
     "raw_data_accession": "4543s.fas",
@@ -399,7 +399,7 @@ compound_counts:
   "collected_by": null,
   "amr": [
     {
-      "diagnostic_centre": null,
+      "method": null,
       "created_at": "2015-06-10 09:10:40",
       "antimicrobial_name": "ampicillin",
       "equality": "ge",
@@ -412,7 +412,7 @@ compound_counts:
       "sample_id": "1",
       "mic": "12",
       "susceptibility": "S",
-      "diagnostic_centre": null,
+      "method": null,
       "created_at": "2015-06-10 09:10:40",
       "antimicrobial_name": "erythromycin",
       "equality": "eq",
@@ -423,13 +423,13 @@ compound_counts:
       "mic": "500",
       "susceptibility": "R",
       "created_at": "2015-06-10 09:10:40",
-      "diagnostic_centre": null,
+      "method": null,
       "equality": "ge",
       "deleted_at": null,
       "antimicrobial_name": "streptomycin"
     },
     {
-      "diagnostic_centre": null,
+      "method": null,
       "created_at": "2015-06-10 09:10:40",
       "antimicrobial_name": "tetracycline",
       "equality": "le",
@@ -442,7 +442,7 @@ compound_counts:
       "mic": "10",
       "sample_id": "1",
       "susceptibility": "R",
-      "diagnostic_centre": null,
+      "method": null,
       "created_at": "2015-06-10 09:10:40",
       "antimicrobial_name": "vancomycin",
       "deleted_at": null,
@@ -458,7 +458,7 @@ compound_counts:
   "isolate": null,
   "tax_id": "197911",
   "raw_data_accession": "A00924940",
-  "collected_at": "UCL",
+  "submitted_by": "UCL",
   "strain": "not available; not collected",
   "isolation_source": null,
   "host_disease_status": "carriage",
