@@ -183,10 +183,6 @@ var samples = (function() {
         ]
       } );
 
-      samplesTable.buttons().container().appendTo(
-        $(".col-sm-6:eq(0)", samplesTable.table().container() )
-      );
-
       // add a listener to show AMR data for samples that possess it
       samplesTable.on("draw", function() {
 
