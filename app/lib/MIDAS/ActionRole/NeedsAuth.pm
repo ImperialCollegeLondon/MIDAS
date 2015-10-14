@@ -119,7 +119,7 @@ around execute => sub {
   # make sure it's not possible to sign in if sign-ins are turned off in the
   # config. Just unceremoniously dump the request.
   if ( $c->config->{disable_signin} ) {
-    $c->log->debug( 'around execute: authenticated through the browser' )
+    $c->log->debug( 'around execute: sign-ins are disabled by the configuration' )
       if $c->debug;
     $c->res->status(403); # Forbidden
     $c->res->body('Sign-ins are disabled');
