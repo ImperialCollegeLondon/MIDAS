@@ -68,6 +68,7 @@
             <th>Collected by</th>
             <th>Source</th>
             <th>Collection date</th>
+            <th>GAZ term</th>
             <th>Location</th>
             <th>Host associated</th>
             <th>Specific host</th>
