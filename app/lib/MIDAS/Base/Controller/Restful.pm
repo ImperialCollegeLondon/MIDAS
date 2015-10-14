@@ -68,8 +68,9 @@ has 'returned_columns' => (
       manifest_id
       raw_data_accession
       sample_accession
+      donor_id
       sample_description
-      collected_at
+      submitted_by
       tax_id
       scientific_name
       collected_by
@@ -142,7 +143,7 @@ sub _format_amr {
                    .  ( $amr->{equality} eq 'eq' ? '' : $amr->{equality} )
                    .  $amr->{mic};
 
-    $amr_string .= ';' . $amr->{diagnostic_centre} if $amr->{diagnostic_centre};
+    $amr_string .= ';' . $amr->{method} if $amr->{method};
 
     push @amrs, $amr_string;
   }
