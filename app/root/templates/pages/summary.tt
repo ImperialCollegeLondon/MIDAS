@@ -10,7 +10,8 @@
         [% summary.total_number_of_samples %]</a>
     </strong> samples from
     <strong>[% summary.total_number_of_manifests %]</strong> manifests.
-    You can <a href="[% c.uri_for('/samples', { dl => 1, 'content-type' => 'text/csv' } ) %]">
+    You can <a class="dl"
+      href="[% c.uri_for('/samples', { dl => 1, 'content-type' => 'text/csv' } ) %]">
       download all samples</a> in CSV format.
   </p>
 
