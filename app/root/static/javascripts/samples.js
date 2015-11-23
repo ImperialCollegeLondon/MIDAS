@@ -69,6 +69,7 @@ var samples = (function() {
             break;
           case null:
           case "":
+          case undefined:
             rv = "<span class='na'>n/a</span>";
             break;
           default:
