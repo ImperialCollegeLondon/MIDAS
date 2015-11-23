@@ -24,7 +24,7 @@
       ELSIF susceptibility;
         " with $susceptibility AMR results";
         show_all = 1;
-      ELSIF format_params.filter_terms;
+      ELSIF format_params.filter_terms.size;
         ", filtered by '" _ format_params.filter_terms.join("', '") _ "'";
         show_all = 1;
       END -%]
