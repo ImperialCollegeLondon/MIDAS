@@ -216,7 +216,6 @@ sub _build_query : Private {
   if ( $query{collection_date}  or
        $query{collected_before} or
        $query{collected_after} ) {
-    $query{collection_date} = [ '-and' ];
     if ( $query{collection_date} ) {
       my $date = delete $query{collection_date};
       push @{ $query{collection_date} }, { '=', $date };
@@ -229,6 +228,7 @@ sub _build_query : Private {
       my $after_date = delete $query{collected_after};
       push @{ $query{collection_date} }, { '>=', $after_date };
     }
+    unshift @{ $query{collection_date} }, '-and';
   }
 
   return \%query;
