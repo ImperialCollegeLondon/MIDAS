@@ -26,6 +26,7 @@
     <link href="/styles/validation.css" rel="stylesheet">
     <link href="/styles/samples.css" rel="stylesheet">
     <link href="/styles/summary.css" rel="stylesheet">
+    <link href="/styles/search.css" rel="stylesheet">
     <link href="/styles/reset.css" rel="stylesheet">
     <link href="/styles/images.css" rel="stylesheet">
     <link href="/styles/api.css" rel="stylesheet">

@@ -1,0 +1,27 @@
+// search.scss
+// jt6 20160413 WTSI
+//
+// rules for the search page
+
+@import "flatly/variables";
+
+#search {
+  ul.left {
+    float: left;
+    width: 20em;
+  }
+
+  .clear {
+    clear: left;
+  }
+
+  div.example-panel {
+    position: relative;
+    span.label {
+      position: absolute;
+      right: 0px;
+      font-size: 85%;
+    }
+  }
+}
+

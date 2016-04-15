@@ -48,6 +48,13 @@
                   <a class="disabled" title="Sign in to see sample data">Summary</a>
                   [% END %]
                 </li>
+                <li>
+                  [% IF c.user_exists %]
+                  <a href="[% c.uri_for('/search') %]">Search</a>
+                  [% ELSE %]
+                  <a class="disabled" title="Sign in to search data">Search</a>
+                  [% END %]
+                </li>
                 <li><a href="[% c.uri_for('/validation') %]">Validation</a></li>
                 <li><a href="[% c.uri_for('/api') %]">API docs</a></li>
                 <li><a href="[% c.uri_for('/contact') %]">Contact us</a></li>
