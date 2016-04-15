@@ -23,18 +23,6 @@ This is a L<Catalyst::Controller> to handle searching of HICF sample data.
 =cut
 
 #-------------------------------------------------------------------------------
-#- private attributes  ---------------------------------------------------------
-#-------------------------------------------------------------------------------
-
-has '_csv' => (
-  is      => 'ro',
-  lazy    => 1,
-  default => sub {
-    Text::CSV_XS->new( { blank_is_undef => 1 } );
-  },
-);
-
-#-------------------------------------------------------------------------------
 #- public actions --------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
@@ -48,8 +36,41 @@ the queries and returns results as a CSV file.
 =cut
 
 sub search : Global
+             ActionClass('REST::ForBrowsers')
              Does('~NeedsAuth') {
   my ( $self, $c ) = @_;
+
+  $c->log->debug( 'in "search"' )
+    if $c->debug;
+}
+
+#---------------------------------------
+
+# this is the endpoint if the request for "/search" comes from a browser.
+# We just render the page with the search for and documentation
+
+sub search_GET_html {
+  my ( $self, $c ) = @_;
+
+  $c->stash(
+    title        => 'Search',
+    template     => 'pages/search.tt',
+  );
+
+  $c->log->debug( 'in "search_GET_html": showing search form' )
+    if $c->debug;
+}
+
+#---------------------------------------
+
+# this is the end point if this is a POST request, from a form or
+# REST client. This action runs the searches
+
+sub search_POST {
+  my ( $self, $c ) = @_;
+
+  $c->log->debug( 'in "search_POST"; running searches' )
+    if $c->debug;
 
   # was there actually an upload ?
   my $upload = $c->req->upload('query');
@@ -192,8 +213,14 @@ sub _build_query : Private {
 
   # convert "collected_before" and "collected_after" into inequalities
   # against the "collection_date" database column
-  if ( $query{collected_before} or $query{collected_after} ) {
+  if ( $query{collection_date}  or
+       $query{collected_before} or
+       $query{collected_after} ) {
     $query{collection_date} = [ '-and' ];
+    if ( $query{collection_date} ) {
+      my $date = delete $query{collection_date};
+      push @{ $query{collection_date} }, { '=', $date };
+    }
     if ( $query{collected_before} ) {
       my $before_date = delete $query{collected_before};
       push @{ $query{collection_date} }, { '<', $before_date };
