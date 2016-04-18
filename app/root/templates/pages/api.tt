@@ -620,6 +620,51 @@ Content-Length: 3312
 
         </section>
 
+        <section>
+
+          <h3>Bulk searching</h3>
+
+          <p class="endpoint">
+            <samp>/search</samp>
+          </p>
+          <p>
+            Uploads a CSV file defining a set of searches and returns 
+            metadata for matching samples, also in CSV format. See
+            <a href="[% c.uri_for('/search') %]">Search</a> documentation (must
+            be signed in).
+          </p>
+
+          <h4>Arguments</h4>
+
+          <ul class="list-unstyled">
+            <li>
+              <strong>query</strong> &mdash; file upload
+            </li>
+          </ul>
+
+          <h4>Results</h4>
+
+          <p>
+            The returned metadata fields are the same as those returned by
+            <samp>/samples</samp>, but the only available format is CSV.
+          </p>
+
+          <h4>Example input</h4>
+
+          <pre class="prettyprint pre-scrollable">
+submitted_by,collected_after,collected_before
+CAMBRIDGE,2013-10-01,2014-06-01</pre>
+
+          <h4>Example output</h4>
+
+          <pre class="prettyprint pre-scrollable">
+sample_id,manifest_id,raw_data_accession,sample_accession,donor_id,sample_description,submitted_by,tax_id,scientific_name,collected_by,source,collection_date,location,host_associated,specific_host,host_disease_status,host_isolation_source,patient_location,isolation_source,serovar,other_classification,strain,isolate,amr,query_number
+12332,8879DC0F-9AB4-443E-9A90-D8EF8892A20B,SRR1735577,SAMN02995393,D00554664,"Whole genome sequencing of mycobacteria",OXFORD,1764,"Mycobacterium abscessus",,,2012-14-10,GAZ:00456742,yes,"Homo sapiens",carriage,BTO:001297,inpatient,,"not available: not collected","not available: not collected",F54667,,,1
+12332,8879DC0F-9AB4-443E-9A90-D8EF8892A20B,SRR1735509,SAMN02995363,D00054336,"Whole genome sequencing of mycobacteria",OXFORD,1764,"Mycobacterium abscessus",,,2012-14-06,GAZ:00567427,yes,"Homo sapiens",carriage,BTO:001297,inpatient,,"not available: not collected","not available: not collected",F54667,,,1
+...  </pre>
+
+        </section>
+
       </section>
 
       [%#

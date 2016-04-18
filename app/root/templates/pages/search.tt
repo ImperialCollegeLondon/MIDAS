@@ -9,7 +9,11 @@
     another CSV file, suitable for viewing directly in Excel.
   </p>
 
-  <form id="upload-form" action="/search" method="post" enctype="multipart/form-data">
+  <form id="upload-form"
+        name="upload-form"
+        action="/search"
+        method="post"
+        enctype="multipart/form-data">
     <div class="form-group">
       <input type="file" name="query" id="query">
     </div>
@@ -116,13 +120,13 @@ scientific_name,collected_after,collected_before
   <h4>Find all Mycobacterium avium samples deposited by WTSI</h4>
 
   <p>
-    Search the <code>collected_by</code> and <code>tax_id</code> fields:
+    Search the <code>submitted_by</code> and <code>tax_id</code> fields:
   </p>
 
   <div class="example-panel">
     <span class="label label-primary">Example input</span>
     <pre>
-collected_by,tax_id
+submitted_by,tax_id
 CAMBRIDGE,1764</pre>
   </div>
 
@@ -136,7 +140,7 @@ CAMBRIDGE,1764</pre>
   <div class="example-panel">
     <span class="label label-primary">Example input</span>
     <pre>
-collected_by,scientific_name
+submitted_by,scientific_name
 CAMBRIDGE,"Acinetobacter baumannii"</pre>
   </div>
 
@@ -145,7 +149,7 @@ CAMBRIDGE,"Acinetobacter baumannii"</pre>
   <div class="example-panel">
     <span class="label label-primary">Example input</span>
     <pre>
-collected_by,scientific_name,host_isolation_source
+submitted_by,scientific_name,host_isolation_source
 OXFORD,"Staphylococcus aureus",BTO:0000089</pre>
   </div>
 
