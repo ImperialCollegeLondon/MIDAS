@@ -77,7 +77,5 @@ is $human, 4, 'all rows have human data';
 
 # TODO add tests for more methods
 
-$DB::single = 1;
-
 done_testing;
 
