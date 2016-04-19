@@ -628,7 +628,7 @@ Content-Length: 3312
             <samp>/search</samp>
           </p>
           <p>
-            Uploads a CSV file defining a set of searches and returns 
+            Uploads a CSV file defining a set of searches and returns
             metadata for matching samples, also in CSV format. See
             <a href="[% c.uri_for('/search') %]">Search</a> documentation (must
             be signed in).
