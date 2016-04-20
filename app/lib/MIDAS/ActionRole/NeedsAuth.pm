@@ -141,6 +141,24 @@ around execute => sub {
     $c->log->debug( 'around execute: authenticated through the browser' )
       if $c->debug;
 
+    # because catalyst's authentication system doesn't check if the user has
+    # "deleted_at" defined, it will still let someone login with a deleted
+    # password. So, here we do that check and see if the user is deleted, and
+    # if so, we explicitly log them out and redirect to the login page
+    if ( $c->user->get_object->is_deleted ) {
+      $c->log->error('attempt to login with a deleted username "' . $c->user->get('username') . '"' );
+
+      $c->logout;
+      my $message = ( $self->attributes->{LoginRedirectMessage}[0] )
+                  ? $self->attributes->{LoginRedirectMessage}[0]
+                  : 'You need to login to view this page';
+
+      # hand off to the controller that we get from CatalystX::SimpleLogin
+      $c->controller('Login')->login_redirect( $c, $message, @args );
+      $c->detach;
+      return;
+    }
+
     # user details come from $c->user...
     $log_name     = $c->user->get('username');
     $log_email    = $c->user->get('email');
@@ -201,7 +219,7 @@ around execute => sub {
       my $api_key  = $2;
 
       # look up the user and confirm the API key matches
-      my $user = $c->model('UserDB::User')->find($username);
+      my $user = $c->model('UserDB')->schema->find_user($username);
 
       unless ( defined $user ) {
         $c->log->error( 'around execute: no such user' )
