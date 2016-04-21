@@ -107,6 +107,15 @@ around execute => sub {
   my $self = shift;
   my ( $controller, $c, @args ) = @_;
 
+  # if the option "disable_authentication" is set to true in the config,
+  # entirely disable the rest of this method and just continue on with the
+  # request
+  if ( $c->config->{disable_authentication} ) {
+    $c->log->debug( 'around execute: authentication disabled' )
+      if $c->debug;
+    return $self->$orig(@_);
+  }
+
   if ( $self->_previous_request == $c->req ) {
     $c->log->debug( 'around execute: already authenticated this request' )
       if $c->debug;

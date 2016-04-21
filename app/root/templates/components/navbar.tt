@@ -27,29 +27,31 @@
         <div id="nav-tools" class="navbar-right col-md-7">
           <div class="row">
             <div class="col-md-12">
-              [% IF c.user_exists %]
-                <form class="navbar-form" action="[% c.uri_for('/logout') %]">
-                  <button id="signOutButton"
-                          class="pull-right btn btn-default btn-sm"
-                          type="submit">Sign out</button>
-                </form>
-              [% ELSE %]
-                <form class="navbar-form" action="[% c.uri_for('/login') %]">
-                  <button id="signInButton"
-                          class="pull-right btn btn-default btn-sm[% ' disabled' IF c.config.disable_signin %]"
-                          type="submit">Sign in</button>
-                </form>
-              [% END %]
+              [% IF NOT c.config.disable_authentication;
+                IF c.user_exists %]
+                  <form class="navbar-form" action="[% c.uri_for('/logout') %]">
+                    <button id="signOutButton"
+                            class="pull-right btn btn-default btn-sm"
+                            type="submit">Sign out</button>
+                  </form>
+                [% ELSE %]
+                  <form class="navbar-form" action="[% c.uri_for('/login') %]">
+                    <button id="signInButton"
+                            class="pull-right btn btn-default btn-sm[% ' disabled' IF c.config.disable_signin %]"
+                            type="submit">Sign in</button>
+                  </form>
+                [% END;
+              END %]
               <ul class="nav navbar-nav pull-right">
                 <li>
-                  [% IF c.user_exists %]
+                  [% IF c.user_exists OR c.config.disable_authentication %]
                   <a href="[% c.uri_for('/summary') %]">Summary</a>
                   [% ELSE %]
                   <a class="disabled" title="Sign in to see sample data">Summary</a>
                   [% END %]
                 </li>
                 <li>
-                  [% IF c.user_exists %]
+                  [% IF c.user_exists OR c.config.disable_authentication %]
                   <a href="[% c.uri_for('/search') %]">Search</a>
                   [% ELSE %]
                   <a class="disabled" title="Sign in to search data">Search</a>
@@ -61,7 +63,7 @@
               </ul>
             </div>
           </div>
-          [% IF c.user_exists %]
+          [% IF c.user_exists AND NOT c.config.disable_authentication %]
           <div class="row">
             <div class="col-md-12">
               <span class="signed-in text-right pull-right">
