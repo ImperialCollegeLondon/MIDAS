@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More;
+use Test::More tests => 9;
 use File::Copy;
 
 BEGIN {
@@ -12,6 +12,7 @@ BEGIN {
 }
 
 # clone the test database, so that changes don't break the original
+copy 't/data/data.db', 'temp_data.db';
 copy 't/data/user.db', 'temp_user.db';
 
 my $mech = Test::WWW::Mechanize::Catalyst->new;
@@ -29,5 +30,5 @@ $mech->content_contains('Accounts are disabled', 'password reset page disabled')
 $mech->get_ok('http://localhost/summary', 'got summary page');
 $mech->content_contains('HICF sample summary', 'summary page loads without authentication');
 
-done_testing;
+# done_testing;
 
