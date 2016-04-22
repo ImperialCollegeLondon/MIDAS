@@ -10,7 +10,7 @@
 
     <div class="col-sm-offset-2 col-sm-10">
 
-      [% IF c.config.disable_signin %]
+      [% IF c.config.disable_signin OR c.config.disable_authentication %]
 
       <h2>
         Sign in disabled
