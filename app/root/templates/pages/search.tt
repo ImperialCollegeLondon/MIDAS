@@ -20,6 +20,66 @@
     <button type="submit" class="btn btn-default btn-sm">Search</button>
   </form>
 
+  <button id="send-to-microreact-button" type="button" class="btn btn-default btn-sm" onclick="sendToMicroreact()">Send to Microreact</button>
+  <form id="microreact-upload-form" action="https://microreact.org/upload" method="post" target="_blank">
+    <input type="hidden" name="data" />
+    <input type="hidden" name="name" value="MIDAS search results" />
+    <input type="hidden" name="description" value="" />
+    <input type="hidden" name="timeline_field" value="collection_date" />
+    <input type="hidden" name="timeline_format" value="YYYY" />
+  </form>
+  <script>
+    GAZ_LOCATIONS = {"GAZ:00000892":{"name":"Lima Region","latitude":-12.2720956,"longitude":-76.2710833},"GAZ:00002641":{"name":"England","latitude":52.3555177,"longitude":-1.1743197},"GAZ:00003623":{"name":"Dublin City","latitude":40.0992294,"longitude":-83.1140771},"GAZ:00003664":{"name":"City of Cardiff","latitude":51.48158100000001,"longitude":-3.17909},"GAZ:00003672":{"name":"London","latitude":51.5073509,"longitude":-0.1277583},"GAZ:00003679":{"name":"City of Newcastle Upon Tyne","latitude":54.978252,"longitude":-1.61778},"GAZ:00003683":{"name":"Manchester","latitude":42.9956397,"longitude":-71.4547891},"GAZ:00003692":{"name":"East Region","latitude":3.950512799999999,"longitude":13.914399},"GAZ:00004832":{"name":"Cambridge","latitude":42.3736158,"longitude":-71.10973349999999},"GAZ:00004935":{"name":"Belfast City","latitude":54.59728500000001,"longitude":-5.93012},"GAZ:00007597":{"name":"City of Bangor","latitude":44.80118210000001,"longitude":-68.77781379999999},"GAZ:00007611":{"name":"Truro","latitude":50.263195,"longitude":-5.051041},"GAZ:00010239":{"name":"Cork","latitude":51.8968917,"longitude":-8.4863157},"GAZ:00010709":{"name":"Chachoengsao Province","latitude":13.6904194,"longitude":101.0779596},"GAZ:00052029":{"name":"Bristol","latitude":51.454513,"longitude":-2.58791},"GAZ:00052038":{"name":"Southampton","latitude":50.90970040000001,"longitude":-1.4043509},"GAZ:00052047":{"name":"Bury Saint Edmunds","latitude":52.2429228,"longitude":0.7104931999999999},"GAZ:00052099":{"name":"Glasgow","latitude":55.864237,"longitude":-4.251806},"GAZ:00052157":{"name":"Leicester","latitude":52.6368778,"longitude":-1.1397592},"GAZ:00281547":{"name":"Brittish Isles","latitude":54,"longitude":-4},"GAZ:00443620":{"name":"Chelmsford","latitude":51.7355868,"longitude":0.4685497},"GAZ:00444167":{"name":"Addenbrooke's Hospital","latitude":52.17595,"longitude":0.14492},"GAZ:00490568":{"name":"Ashford","latitude":51.1464659,"longitude":0.875019},"GAZ:00493993":{"name":"Barnstaple","latitude":51.0781599,"longitude":-4.058338},"GAZ:00498389":{"name":"Coventry","latitude":52.406822,"longitude":-1.519693},"GAZ:00498481":{"name":"Birmingham","latitude":33.5206608,"longitude":-86.80248999999999},"GAZ:00499910":{"name":"Shrewsbury","latitude":52.70730289999999,"longitude":-2.7553268}};
+  </script>
+  <script>
+    function sendToMicroreact() {
+      if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
+        return alert('The File API are not fully supported in this browser.');
+      }
+
+      var fileInput = $('form#upload-form input').get(0);
+      if (!fileInput.files) {
+        return alert('This browser does not seem to support the File API.');
+      }
+      if (fileInput.files.length === 0) {
+        return alert('Please select a CSV file');
+      }
+
+      $('#send-to-microreact-button').attr('disabled', true).text('Searching...');
+
+      var formData = new FormData();
+      formData.append('query', fileInput.files[0]);
+
+      $.ajax({
+        url: '/search',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(res) {
+          $('#send-to-microreact-button').attr('disabled', null).text('Send to Microreact');
+          var lines = res.split('\n');
+          if (lines.length === 1) {
+            return alert('Your search returned zero results.');
+          }
+          lines[0] = 'location__autocolour,latitude,longitude,id,manifest_id,raw_data_accession,sample_accession,donor_id,sample_description__autocolour,submitted_by__autocolour,tax_id__autocolour,scientific_name__autocolour,collected_by__autocolour,source__autocolour,collection_date__autocolour,gaz_location,host_associated__autocolour,specific_host__autocolour,host_disease_status__autocolour,host_isolation_source__autocolour,patient_location__autocolour,isolation_source__autocolour,serovar__autocolour,other_classification,strain__autocolour,isolate__autocolour,amr,query_number';
+          for (var i = 1; i < lines.length; i++) {
+            let location = null;
+            var match = lines[i].match(/,(GAZ:[0-9]+),/);
+            if (match != null && match.length > 1) {
+              location = GAZ_LOCATIONS[match[1]];
+            }
+            var prefix = location ? [ location.name, location.latitude, location.longitude ].join(',') : ',,';
+            lines[i] = prefix + ',' + lines[i];
+          }
+          $('form#microreact-upload-form input[name="data"]').val(lines.join('\n'));
+          $('form#microreact-upload-form input[name="description"]').val('Query file name: ' + fileInput.files[0].name);
+          $('form#microreact-upload-form').submit();
+        }
+      });
+    }
+  </script>
+
   <h2>Building your searches</h2>
 
   <p>
